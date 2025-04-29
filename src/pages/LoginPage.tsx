@@ -1,0 +1,99 @@
+import React, { useState, ChangeEvent, FormEvent } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { EnvelopeIcon, LockClosedIcon } from '@heroicons/react/24/outline';
+import { RootState } from '../store/store';
+import { loginStart, loginSuccess, loginFailure } from '../store/slices/authSlice';
+
+const LoginPage: React.FC = () => {
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [rememberMe, setRememberMe] = useState<boolean>(false);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { loading, error } = useSelector((state: RootState) => state.auth);
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    dispatch(loginStart());
+
+    try {
+      // TODO: Replace with actual API call
+      const mockUser = {
+        id: '1',
+        name: 'Test User',
+        email: email,
+      };
+      
+      dispatch(loginSuccess(mockUser));
+      navigate('/');
+    } catch (err) {
+      dispatch(loginFailure('Invalid email or password'));
+    }
+  };
+
+  return (
+    <div className="auth-container">
+      <div className="auth-form">
+        <h2>Sign in to your account</h2>
+        <p>
+          Or{' '}
+          <Link to="/register">create a new account</Link>
+        </p>
+        {error && <div className="error-message">{error}</div>}
+        <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label htmlFor="email">Email address</label>
+            <div className="relative">
+              <EnvelopeIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <input
+                id="email"
+                type="email"
+                required
+                className="pl-10"
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e: ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
+                disabled={loading}
+              />
+            </div>
+          </div>
+          <div className="form-group">
+            <label htmlFor="password">Password</label>
+            <div className="relative">
+              <LockClosedIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <input
+                id="password"
+                type="password"
+                required
+                className="pl-10"
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e: ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
+                disabled={loading}
+              />
+            </div>
+          </div>
+          <div className="remember-me">
+            <input
+              id="remember-me"
+              type="checkbox"
+              checked={rememberMe}
+              onChange={(e: ChangeEvent<HTMLInputElement>) => setRememberMe(e.target.checked)}
+              disabled={loading}
+            />
+            <label htmlFor="remember-me">Remember me</label>
+          </div>
+          <div className="forgot-password">
+            <Link to="/forgot-password">Forgot your password?</Link>
+          </div>
+          <button type="submit" className="submit-button" disabled={loading}>
+            {loading ? 'Signing in...' : 'Sign in'}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+export default LoginPage; 
