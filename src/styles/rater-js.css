@@ -1,0 +1,12 @@
+/* styles/rater-js.css */
+.rate-base-layer {
+    color: #e0e0e0;
+  }
+  
+  .rate-hover-layer {
+    color: #ffb400;
+  }
+  
+  .rate-select-layer {
+    color: #ffb400;
+  }
