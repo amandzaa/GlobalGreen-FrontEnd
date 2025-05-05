@@ -19,6 +19,10 @@ export const ProductPreview: React.FC<ProductPreviewProps> = ({ product }) => {
     organic = false,
   } = product;
 
+  // Safely handle price and salePrice to ensure they're numbers
+  const safePrice = typeof price === 'number' ? price : 0;
+  const safeSalePrice = typeof salePrice === 'number' ? salePrice : 0;
+
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6 mb-6">
       <h2 className="text-lg font-medium text-gray-700 mb-4">
@@ -64,18 +68,18 @@ export const ProductPreview: React.FC<ProductPreviewProps> = ({ product }) => {
           </div>
 
           <div className="mt-4 flex items-end">
-            {salePrice > 0 ? (
+            {safeSalePrice > 0 ? (
               <>
                 <p className="text-xl font-medium text-gray-900">
-                  ${salePrice.toFixed(2)}
+                  ${safeSalePrice.toFixed(2)}
                 </p>
                 <p className="text-sm line-through text-gray-500 ml-2">
-                  ${price.toFixed(2)}
+                  ${safePrice.toFixed(2)}
                 </p>
               </>
             ) : (
               <p className="text-xl font-medium text-gray-900">
-                {price > 0 ? `$${price.toFixed(2)}` : "Price not set"}
+                {safePrice > 0 ? `$${safePrice.toFixed(2)}` : "Price not set"}
               </p>
             )}
             <p className="text-sm text-gray-500 ml-2">/ {unit}</p>

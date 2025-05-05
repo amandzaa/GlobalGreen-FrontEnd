@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import DashboardLayout from "@/component/dashboardNavbarLayout/DashboardLayout";
+import DashboardLayout from "@/component/layout-dashboard/DashboardLayout";
 import Image from "next/image";
 
 // Color palette from the image

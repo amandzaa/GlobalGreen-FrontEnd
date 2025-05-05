@@ -1,8 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import DashboardLayout from "@/component/dashboardNavbarLayout/DashboardLayout";
-import Image from "next/image";
+import DashboardLayout from "@/component/layout-dashboard/DashboardLayout";
 import { ProductImageUploader, ProductPreview } from "@/component/uploadimage";
 
 // Color palette from the image
@@ -43,12 +42,6 @@ interface Category {
 }
 
 export default function AddNewProductPage() {
-  const defaultCollapsed = {
-    order: true,
-    product: false,
-    finance: true,
-    store: true,
-  };
 
   // Empty product state for new products
   const [product, setProduct] = useState<ProductData>({
@@ -79,7 +72,7 @@ export default function AddNewProductPage() {
     description: false,
   });
 
-  // Function to handle form changes
+  // Function to handle form changes - FIXED to ensure numeric values
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
@@ -88,10 +81,19 @@ export default function AddNewProductPage() {
     const { name, value, type } = e.target;
     const checked =
       type === "checkbox" ? (e.target as HTMLInputElement).checked : undefined;
-    setProduct({
-      ...product,
-      [name]: type === "checkbox" ? checked : value,
-    });
+    
+    // Handle numeric fields specially
+    if (name === "price" || name === "salePrice" || name === "stock") {
+      setProduct({
+        ...product,
+        [name]: type === "checkbox" ? checked : Number(value),  // Convert to number
+      });
+    } else {
+      setProduct({
+        ...product,
+        [name]: type === "checkbox" ? checked : value,
+      });
+    }
 
     // Update form progress
     if (name === "name" && value.trim() !== "") {
@@ -100,42 +102,6 @@ export default function AddNewProductPage() {
       setFormProgress((prev) => ({ ...prev, pricing: true }));
     } else if (name === "description" && value.trim().length > 10) {
       setFormProgress((prev) => ({ ...prev, description: true }));
-    }
-  };
-
-  // For handling image uploads
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        if (event.target && event.target.result) {
-          const newImage = event.target.result as string;
-          setSelectedImage(newImage);
-
-          // Add to product images
-          setProduct((prev) => ({
-            ...prev,
-            images: [...prev.images, newImage],
-          }));
-
-          // Update form progress
-          setFormProgress((prev) => ({ ...prev, images: true }));
-        }
-      };
-      reader.readAsDataURL(e.target.files[0]);
-    }
-  };
-
-  // Handle image removal
-  const handleRemoveImage = (index: number) => {
-    setProduct((prev) => ({
-      ...prev,
-      images: prev.images.filter((_, i) => i !== index),
-    }));
-
-    if (product.images.length <= 1) {
-      setFormProgress((prev) => ({ ...prev, images: false }));
     }
   };
 
@@ -199,7 +165,7 @@ export default function AddNewProductPage() {
   const handleImagesChange = (images: string[]) => {
     setProduct({
       ...product,
-      images
+      images,
     });
   };
 
@@ -208,7 +174,7 @@ export default function AddNewProductPage() {
       title="Add New Product"
       breadcrumb="Products > Add New Product"
       activePath="/seller-dashboard/add-product"
-      defaultCollapsed={defaultCollapsed}
+      defaultCollapsed={{product: false}}
       notificationCount={3}
       messageCount={2}
     >
@@ -402,8 +368,8 @@ export default function AddNewProductPage() {
               </div>
 
               {/* Images Section */}
-              <ProductImageUploader 
-                images={product.images} 
+              <ProductImageUploader
+                images={product.images}
                 onImagesChange={handleImagesChange}
                 required={true}
               />

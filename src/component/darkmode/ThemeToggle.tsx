@@ -1,7 +1,8 @@
 'use client';
 import { useTheme } from './ThemeProvider';
 import { useEffect, useState } from 'react';
-import { SunIcon, MoonIcon } from 'lucide-react'; // Assuming you're using lucide-react
+import { SunIcon, MoonIcon, Sun, Moon } from 'lucide-react'; 
+import { colors } from '@/types';
 
 export default function ThemeToggle() {
   const { theme, toggleTheme } = useTheme();
@@ -25,15 +26,15 @@ export default function ThemeToggle() {
   }
   
   return (
-    <button
-      onClick={handleToggle}
-      className="w-10 h-10 p-2 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center transition-colors"
-      aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+<button
+      onClick={toggleTheme}
+      className="p-2 rounded-full transition-colors flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-800"
+      aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
     >
-      {theme === 'light' ? (
-        <MoonIcon className="h-5 w-5 text-gray-800" />
+      {theme === 'dark' ? (
+        <SunIcon size={20} className="text-yellow-400" />
       ) : (
-        <SunIcon className="h-5 w-5 text-yellow-300" />
+        <MoonIcon size={20} style={{ color: colors.darkGreen }} />
       )}
     </button>
   );

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Info, ChevronDown, ShoppingBag, Bell, Settings, CreditCard, MessageSquare, Calendar, Lock, User } from "lucide-react";
+import DashboardLayout from "@/component/layout-dashboard/DashboardLayout";
 
 // TypeScript interfaces
 interface ProfileEditModalProps {
@@ -120,47 +121,16 @@ const GlobalGreenDashboard = () => {
   };
 
   return (
+    <DashboardLayout
+      title="Voucher Management"
+      breadcrumb="Voucher Management"
+      activePath="/seller-dashboard/voucher-product"
+      defaultCollapsed={{store: false}}
+      notificationCount={5}
+      messageCount={2}
+    >
+      
     <div className="flex min-h-screen bg-[#E6F4EA]">
-      {/* Sidebar */}
-      <div className="w-64 bg-[#20603D] text-white p-4">
-        <div className="flex items-center justify-center mb-10 mt-4">
-          <h1 className="text-2xl font-bold">GlobalGreen</h1>
-        </div>
-        
-        <div className="space-y-1">
-          <div className="mb-4">
-            <p className="text-[#87CEEB] uppercase text-xs font-semibold mb-2 pl-2">Main Menu</p>
-            <div className="bg-[#2E8B57] text-white rounded-md p-2 flex items-center">
-              <ShoppingBag size={18} className="mr-2" />
-              <span>My Store</span>
-            </div>
-          </div>
-          
-          <div className="mb-4">
-            <p className="text-[#87CEEB] uppercase text-xs font-semibold mb-2 pl-2">Account</p>
-            {tabs.map((tab) => (
-              <div 
-                key={tab.id}
-                className={`cursor-pointer p-2 rounded-md flex items-center ${activeTab === tab.id ? 'bg-[#2E8B57] text-white' : 'text-white hover:bg-[#2E8B57]/50'}`}
-                onClick={() => setActiveTab(tab.id)}
-              >
-                {tab.icon}
-                <span className="ml-2">{tab.name}</span>
-              </div>
-            ))}
-          </div>
-          
-          <div className="mt-auto pt-20">
-            <div className="p-2 hover:bg-[#2E8B57]/50 rounded-md cursor-pointer flex items-center">
-              <Settings size={18} className="mr-2" />
-              <span>Settings</span>
-            </div>
-            <div className="p-2 hover:bg-[#2E8B57]/50 rounded-md cursor-pointer flex items-center">
-              <span>Log Out</span>
-            </div>
-          </div>
-        </div>
-      </div>
 
       {/* Main content */}
       <div className="flex-1">
@@ -310,6 +280,7 @@ const GlobalGreenDashboard = () => {
         onClose={() => setIsPhoneModalOpen(false)}
       />
     </div>
+    </DashboardLayout>
   );
 };
 

@@ -14,11 +14,10 @@ import {
   MessageCircle,
   Filter,
   ChevronRight,
-  Download,
-  UploadCloud,
 } from "lucide-react";
-import DashboardLayout from "@/component/dashboardNavbarLayout/DashboardLayout";
-import OrdersTable from "@/component/tables/OrdersTable";
+import DashboardLayout from "@/component/layout-dashboard/DashboardLayout";
+import OrdersTable from "@/component/tables/component-tables/OrdersTable";
+import ActionButtons from "@/component/ActionButtons";
 
 // Define TypeScript interfaces
 interface Product {
@@ -152,9 +151,8 @@ export default function SellerDashboard() {
       countdown: "00:00:00",
       delivery: "Express Delivery",
       orderDate: "Apr 26, 2025",
-    }
+    },
   ];
-  
 
   // Colors from palette
   const colors: ColorPalette = {
@@ -167,64 +165,18 @@ export default function SellerDashboard() {
     text: "#333333",
   };
 
-  // Default collapsed sections
-  const defaultCollapsed = {
-    order: false,
-    product: true,
-    finance: true,
-    store: true,
-  };
+  // Export and Download History functionality is now implemented in the ActionButtons component
 
   return (
     <DashboardLayout
       title="My Order"
       breadcrumb=" Order > My Order"
       activePath="/seller-dashboard/my-order"
-      defaultCollapsed={defaultCollapsed}
+      defaultCollapsed={{order:false}}
       notificationCount={38}
       messageCount={1}
     >
       <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Top navigation */}
-        <header className="bg-white shadow-sm flex items-center justify-between p-4">
-          <div className="flex items-center gap-2">
-            <span className="font-medium text-gray-600">Orders</span>
-            <ChevronRight size={16} className="text-gray-400" />
-            <span className="font-medium" style={{ color: colors.primary }}>
-              My Orders
-            </span>
-          </div>
-
-          <div className="flex items-center gap-4">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Search..."
-                className="pl-9 pr-4 py-2 rounded-full border border-gray-200 focus:outline-none focus:ring-2 focus:ring-opacity-50"
-                style={{
-                  width: "240px",
-                  fontSize: "14px",
-                  borderColor: colors.primary,
-                }}
-              />
-              <Search
-                size={16}
-                className="absolute left-3 top-3 text-gray-400"
-              />
-            </div>
-
-            <div className="relative">
-              <Bell size={20} className="text-gray-600" />
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs">
-                3
-              </span>
-            </div>
-
-            <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
-              <span className="text-sm font-medium">FG</span>
-            </div>
-          </div>
-        </header>
         {/* Content area */}
         <main className="flex-1 overflow-y-auto p-6">
           <div className="bg-white rounded-lg shadow-sm">
@@ -236,22 +188,12 @@ export default function SellerDashboard() {
               >
                 My Orders
               </h1>
-              <div className="flex gap-2">
-                <button
-                  className="px-4 py-2 border rounded text-sm flex items-center gap-2"
-                  style={{ borderColor: colors.primary, color: colors.primary }}
-                >
-                  <Download size={16} />
-                  <span>Export</span>
-                </button>
-                <button
-                  className="px-4 py-2 rounded text-sm flex items-center gap-2 text-white"
-                  style={{ backgroundColor: colors.primary }}
-                >
-                  <UploadCloud size={16} />
-                  <span>Download History</span>
-                </button>
-              </div>
+              
+              {/* Using the new ActionButtons component with products data */}
+              <ActionButtons 
+                primaryColor={colors.primary}
+                products={products}
+              />
             </div>
 
             {/* Order Tabs */}
@@ -334,74 +276,6 @@ export default function SellerDashboard() {
                   onClick={() => setActiveTab("refund")}
                 >
                   Refund/Cancellation
-                </button>
-              </div>
-            </div>
-
-            {/* Search Filters */}
-            <div
-              className="p-4 flex flex-wrap gap-2 bg-gray-50"
-              style={{ backgroundColor: colors.lightGray }}
-            >
-              <div className="flex items-center w-full md:w-auto">
-                <div className="relative w-full md:w-64">
-                  <select className="w-full border rounded-l py-2 px-3 appearance-none bg-white pr-8 text-sm">
-                    <option>Order No.</option>
-                    <option>Product Name</option>
-                    <option>Customer</option>
-                  </select>
-                  <ChevronDown
-                    size={16}
-                    className="absolute right-2 top-3 text-gray-500"
-                  />
-                </div>
-                <input
-                  type="text"
-                  placeholder="Enter search term"
-                  className="flex-1 md:flex-none md:w-64 border-l-0 border py-2 px-3 text-sm"
-                />
-              </div>
-
-              <div className="flex items-center w-full md:w-auto">
-                <div className="relative w-full md:w-64">
-                  <select className="w-full border rounded py-2 px-3 appearance-none bg-white pr-8 text-sm">
-                    <option>All Delivery Services</option>
-                    <option>Express Delivery</option>
-                    <option>Standard Shipping</option>
-                    <option>Local Pickup</option>
-                  </select>
-                  <ChevronDown
-                    size={16}
-                    className="absolute right-2 top-3 text-gray-500"
-                  />
-                </div>
-              </div>
-
-              <div className="flex items-center w-full md:w-auto">
-                <div className="relative w-full md:w-64">
-                  <select className="w-full border rounded py-2 px-3 appearance-none bg-white pr-8 text-sm">
-                    <option>Date Range</option>
-                    <option>Last 7 days</option>
-                    <option>Last 30 days</option>
-                    <option>Custom range</option>
-                  </select>
-                  <ChevronDown
-                    size={16}
-                    className="absolute right-2 top-3 text-gray-500"
-                  />
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2 ml-auto">
-                <button
-                  className="text-white rounded px-6 py-2 text-sm flex items-center gap-2"
-                  style={{ backgroundColor: colors.primary }}
-                >
-                  <Filter size={14} />
-                  <span>Apply Filters</span>
-                </button>
-                <button className="border rounded px-6 py-2 text-sm">
-                  Reset
                 </button>
               </div>
             </div>

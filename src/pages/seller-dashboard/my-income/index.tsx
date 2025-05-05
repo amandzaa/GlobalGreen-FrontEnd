@@ -3,20 +3,13 @@
 
 import React, { useState } from "react";
 import { Calendar, ChevronRight, Download, Info, Search } from "lucide-react";
-import DashboardLayout from "@/component/dashboardNavbarLayout/DashboardLayout";
+import DashboardLayout from "@/component/layout-dashboard/DashboardLayout";
 
 const MyIncomePage = () => {
   const [activeTab, setActiveTab] = useState<"pending" | "released">(
     "released"
   );
   const [dateRange, setDateRange] = useState("21/04/2025 - 27/04/2025");
-
-  const defaultCollapsed = {
-    order: true,
-    product: true,
-    finance: false,
-    store: true,
-  };
 
   // Mocked data
   const incomeData = {
@@ -89,7 +82,7 @@ const MyIncomePage = () => {
       title="My Income"
       breadcrumb="Finance > My Income"
       activePath="/seller-dashboard/my-income"
-      defaultCollapsed={defaultCollapsed}
+      defaultCollapsed={{finance: false}}
       notificationCount={3}
       messageCount={2}
     >

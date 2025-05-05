@@ -18,6 +18,7 @@ export interface ProductNutrition {
 
 // Main product data interface
 export interface ProductData {
+  id?: string;
   name: string;
   category: string;
   price: number;
@@ -42,4 +43,17 @@ export interface ProductImageUploaderProps {
 // Props for the product preview component
 export interface ProductPreviewProps {
   product: ProductData;
+}
+
+
+export interface CustomProductData {
+  id?: string;
+  name: string;
+  category: string;
+  price: number;
+  salePrice?: number;
+  stock?: number;
+  description?: string;
+  isOnSale?: boolean;
+  images: string[];
 }

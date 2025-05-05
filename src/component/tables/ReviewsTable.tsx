@@ -453,7 +453,7 @@ export default function ReviewsTable({
             className="border rounded-md px-2 py-1 text-sm transition-colors duration-200 hover:border-blue-400"
             style={{ borderColor: colors.mediumGreen, color: colors.darkGreen }}
           >
-            <option value={6}>6 per page</option>
+            <option value={5}>6 per page</option>
             <option value={10}>10 per page</option>
             <option value={15}>15 per page</option>
             <option value={25}>25 per page</option>

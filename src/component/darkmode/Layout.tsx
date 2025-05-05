@@ -1,5 +1,5 @@
 import React, { ReactNode } from "react";
-import Header from "../dashboardNavbarLayout/Header";
+import Header from "../layout-dashboard/Header";
 import { ThemeProvider } from "./ThemeProvider";
 import ThemeDebugger from "./ThemeDebugger";
 

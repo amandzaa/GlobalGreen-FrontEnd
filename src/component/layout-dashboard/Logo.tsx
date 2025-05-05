@@ -1,9 +1,27 @@
 import React from 'react';
-import Link from 'next/link';
+import { useEffect, useState } from 'react';
 
 export default function Logo() {
+  const [isMobile, setIsMobile] = useState(false);
+  
+  useEffect(() => {
+    // Function to check if viewport is mobile width
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    
+    // Initial check
+    checkMobile();
+    
+    // Add event listener for window resize
+    window.addEventListener('resize', checkMobile);
+    
+    // Cleanup event listener
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   return (
-    <Link 
+    <a 
       href="/seller-dashboard" 
       className="flex items-center text-xl font-bold text-gray-800 hover:opacity-90"
     >
@@ -13,8 +31,12 @@ export default function Logo() {
           <path fillRule="evenodd" clipRule="evenodd" d="M11.5 16C13.9853 16 16 13.9853 16 11.5C16 9.01472 13.9853 7 11.5 7C9.01472 7 7 9.01472 7 11.5C7 13.9853 9.01472 16 11.5 16ZM11.5 14C12.8807 14 14 12.8807 14 11.5C14 10.1193 12.8807 9 11.5 9C10.1193 9 9 10.1193 9 11.5C9 12.8807 10.1193 14 11.5 14Z" fill="white"/>
         </svg>
       </span>
-      <span>GlobalGreen</span>
-      <span className="text-gray-600 font-normal ml-1">Seller Center</span>
-    </Link>
+      {!isMobile && (
+        <>
+          <span>GlobalGreen</span>
+          <span className="text-gray-600 font-normal ml-1">Seller Center</span>
+        </>
+      )}
+    </a>
   );
 }

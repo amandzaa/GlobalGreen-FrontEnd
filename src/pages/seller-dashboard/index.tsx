@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { ChevronRight, Info, Plus, Minus, ChevronLeft } from "lucide-react";
-import DashboardLayout from "@/component/dashboardNavbarLayout/DashboardLayout";
+import DashboardLayout from "@/component/layout-dashboard/DashboardLayout";
 import Link from "next/link";
 import {
   AreaChart,
