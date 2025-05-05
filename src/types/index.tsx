@@ -48,9 +48,21 @@ export interface Product {
   }
 
   export const colors = {
-    mediumGreen: '#2E8B57',
-    skyBlue: '#87CEEB',
+    primary: '#2E8B57',
+    secondary: '#87CEEB', 
     paleGreen: '#E6F4EA',
     darkGreen: '#20603D',
+    hoverGreen: '#2E8B57/50',
+    white: '#FFFFFF',
+    accent: '#3875B5',
+    lightGray: '#F5F7F5',
   };
   
+
+  // --color-primary: #2E8B57,
+  // --color-secondary: #87CEEB, 
+  // --color-paleGreen: #E6F4EA,
+  // --color-darkGreen: #20603D,
+  // --color-hoverGreen: #2E8B57/50,
+  // --color-white: #FFFFFF,
+  // --color-accent: #3875B5,

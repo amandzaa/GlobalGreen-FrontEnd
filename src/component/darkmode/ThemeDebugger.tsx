@@ -10,14 +10,10 @@ export default function ThemeDebugger() {
 
   useEffect(() => {
     setMounted(true);
-    
-    // Get current HTML classes
     setHtmlClasses(document.documentElement.className);
     
-    // Get theme from localStorage
     setLocalStorageTheme(localStorage.getItem('theme') || 'not set');
     
-    // Set up a listener to update when classes change
     const observer = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
         if (mutation.attributeName === 'class') {

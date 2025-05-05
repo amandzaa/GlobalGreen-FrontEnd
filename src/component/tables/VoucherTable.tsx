@@ -6,6 +6,7 @@ import { JSX } from "react/jsx-runtime";
 
 // Using the existing Voucher interface from the project
 import { Voucher as OriginalVoucher } from "@/data/sampleVouchers"; // Update path as needed
+import { colors } from "@/types";
 
 // Define the voucher type (matches the original interface but with some transformations for display)
 export interface DisplayVoucher {
@@ -33,13 +34,6 @@ interface VoucherTableProps {
   vouchers: OriginalVoucher[];
   onDelete?: (id: string) => void;
   onCreateNew?: () => void;
-  colors: {
-    primary: string;
-    secondary: string;
-    light: string;
-    dark: string;
-    accent: string;
-  };
 }
 
 // Status type for TypeScript checking - updated to match original interface
@@ -49,8 +43,7 @@ type TabType = VoucherStatus | "all";
 const VoucherTable: React.FC<VoucherTableProps> = ({ 
   vouchers: originalVouchers, 
   onDelete, 
-  onCreateNew,
-  colors 
+  onCreateNew
 }) => {
   const router = useRouter();
   
@@ -165,7 +158,7 @@ const VoucherTable: React.FC<VoucherTableProps> = ({
       <div style={{ backgroundColor: colors.primary }} className="px-6 py-4 flex justify-between items-center">
         <h2 className="text-xl font-medium text-white">Manage Vouchers</h2>
         <div 
-          style={{ backgroundColor: colors.dark }} 
+          style={{ backgroundColor: colors.darkGreen }} 
           className="text-white px-4 py-2 rounded text-sm font-medium cursor-pointer"
           onClick={handleCreateNew}
         >

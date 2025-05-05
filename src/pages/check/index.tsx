@@ -3,14 +3,7 @@
 import React, { useState } from "react";
 import DashboardLayout from "@/component/layout-dashboard/DashboardLayout";
 import Image from "next/image";
-
-// Color palette from the image
-const colors = {
-  mediumGreen: "#2E8B57",
-  skyBlue: "#87CEEB",
-  paleGreen: "#E6F4EA",
-  darkGreen: "#20603D",
-};
+import { colors } from "@/types";
 
 // Define types for product state
 interface ProductNutrition {
@@ -220,7 +213,7 @@ export default function AddNewProductPage() {
                     className="h-2.5 rounded-full"
                     style={{
                       width: `${completionPercentage}%`,
-                      backgroundColor: colors.mediumGreen,
+                      backgroundColor: colors.primary,
                     }}
                   ></div>
                 </div>
@@ -590,7 +583,7 @@ export default function AddNewProductPage() {
                   type="button"
                   onClick={handleSaveAsDraft}
                   className="px-6 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-green-500"
-                  style={{ backgroundColor: colors.skyBlue }}
+                  style={{ backgroundColor: colors.secondary }}
                 >
                   Save Draft
                 </button>
@@ -604,7 +597,7 @@ export default function AddNewProductPage() {
                       formProgress.images &&
                       formProgress.description
                         ? colors.darkGreen
-                        : colors.mediumGreen,
+                        : colors.primary,
                   }}
                   disabled={
                     !formProgress.basicInfo ||
@@ -705,7 +698,7 @@ export default function AddNewProductPage() {
                   </div>
                   <button
                     className="px-4 py-2 text-sm font-medium text-white rounded-md"
-                    style={{ backgroundColor: colors.mediumGreen }}
+                    style={{ backgroundColor: colors.primary }}
                     disabled={!product.name}
                   >
                     Add to Cart
@@ -836,7 +829,7 @@ export default function AddNewProductPage() {
 
               <button
                 className="w-full py-2 text-sm text-center text-white rounded-md"
-                style={{ backgroundColor: colors.skyBlue }}
+                style={{ backgroundColor: colors.secondary }}
               >
                 View All Similar Products
               </button>

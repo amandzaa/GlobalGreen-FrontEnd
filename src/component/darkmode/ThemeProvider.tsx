@@ -15,8 +15,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<Theme>('light');
   const [mounted, setMounted] = useState(false);
 
-  // First effect: Only runs once on mount to set up the initial theme state
-  // without making any DOM changes yet
   useEffect(() => {
     // Get theme from localStorage or system preference
     const storedTheme = localStorage.getItem('theme') as Theme | null;

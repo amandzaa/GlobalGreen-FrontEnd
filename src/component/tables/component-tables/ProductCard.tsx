@@ -19,12 +19,12 @@ export function ProductCard({
       <div className="flex items-center justify-between mb-2">
         <input
           type="checkbox"
-          className="rounded border-gray-300 text-[#2E8B57] focus:ring-[#2E8B57]"
+          className="rounded border-gray-300 text-[var(--color-primary)] focus:ring-[var(--color-primary)]"
           checked={isSelected}
           onChange={() => onSelect(product.id)}
         />
         <div className="flex gap-2">
-          <button className="text-[#2E8B57] hover:text-[#20603D]" title="Edit">
+          <button className="text-[var(--color-primary)] hover:text-[var(--color-darkGreen)]" title="Edit">
             <Edit size={16} />
           </button>
           <button
@@ -35,7 +35,7 @@ export function ProductCard({
             <Trash2 size={16} />
           </button>
           <button
-            className="text-[#2E8B57] hover:text-[#20603D]"
+            className="text-[var(--color-primary)] hover:text-[var(--color-darkGreen)]"
             title="Create Voucher"
           >
             <Package size={16} />
@@ -43,10 +43,10 @@ export function ProductCard({
         </div>
       </div>
 
-      <div className="bg-[#87CEEB] w-full h-40 mb-2 rounded flex items-center justify-center text-[#20603D]">
+      <div className="bg-[var(--color-secondary)] w-full h-40 mb-2 rounded flex items-center justify-center text-[var(--color-darkGreen)]">
         <Package size={36} />
       </div>
-      <h3 className="text-sm font-medium text-[#20603D] mb-1">
+      <h3 className="text-sm font-medium text-[var(--color-darkGreen)] mb-1">
         {product.name}
       </h3>
       <div className="text-xs text-gray-500">ID: {product.productId}</div>

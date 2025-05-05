@@ -1,8 +1,6 @@
 // pages/index.tsx
 import React, { useState } from "react";
 import Head from "next/head";
-import Image from "next/image";
-import Link from "next/link";
 import AuthModals from "@/component/modal/AuthModal";
 import NavbarSeller from "@/component/layout-productpage/NavbarSeller";
 import HeroBanner, { BannerSlide } from "@/component/heropage/HeroBanner";

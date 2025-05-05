@@ -68,13 +68,13 @@ export function SearchBar({
         <div className="flex gap-2">
           <button 
             onClick={() => onViewModeChange('list')} 
-            className={`p-1 ${viewMode === 'list' ? 'text-[#2E8B57]' : 'text-gray-400'}`}
+            className={`p-1 ${viewMode === 'list' ? 'text-[var(--color-primary)]' : 'text-gray-400'}`}
           >
             <List size={18} />
           </button>
           <button 
             onClick={() => onViewModeChange('grid')} 
-            className={`p-1 ${viewMode === 'grid' ? 'text-[#2E8B57]' : 'text-gray-400'}`}
+            className={`p-1 ${viewMode === 'grid' ? 'text-[var(--color-primary)]' : 'text-gray-400'}`}
           >
             <Grid size={18} />
           </button>

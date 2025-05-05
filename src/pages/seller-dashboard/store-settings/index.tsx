@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Info, ChevronDown, ShoppingBag, Bell, Settings, CreditCard, MessageSquare, Calendar, Lock, User } from "lucide-react";
+import { Info, ChevronDown, ShoppingBag, Bell, CreditCard, Calendar, Lock, User } from "lucide-react";
 import DashboardLayout from "@/component/layout-dashboard/DashboardLayout";
 
 // TypeScript interfaces
@@ -137,13 +137,13 @@ const GlobalGreenDashboard = () => {
         {/* Header */}
         <div className="bg-white shadow-sm p-4">
           <div className="flex justify-between items-center">
-            <h1 className="text-xl font-semibold text-[#20603D]">My Account</h1>
+            <h1 className="text-xl font-semibold text-[var(--color-darkGreen)]">My Account</h1>
             <div className="flex items-center space-x-4">
               <button className="p-2 rounded-full hover:bg-gray-100">
                 <Bell size={20} className="text-gray-600" />
               </button>
               <div className="flex items-center">
-                <div className="w-8 h-8 rounded-full bg-[#2E8B57] text-white flex items-center justify-center">
+                <div className="w-8 h-8 rounded-full bg-[var(--color-primary)] text-white flex items-center justify-center">
                   <span>GL</span>
                 </div>
                 <span className="ml-2 text-gray-700">{userData.username}</span>
@@ -167,7 +167,7 @@ const GlobalGreenDashboard = () => {
                     key={tab.id}
                     className={`px-6 py-4 text-sm font-medium whitespace-nowrap flex items-center ${
                       activeTab === tab.id
-                        ? "text-[#2E8B57] border-b-2 border-[#2E8B57]"
+                        ? "text-[var(--color-primary)] border-b-2 border-[var(--color-primary)]"
                         : "text-gray-700 hover:text-gray-900"
                     }`}
                     onClick={() => setActiveTab(tab.id)}
@@ -181,7 +181,7 @@ const GlobalGreenDashboard = () => {
 
             {/* Account Information */}
             <div className="p-6">
-              <h2 className="text-xl font-medium mb-6 text-[#20603D]">Account Information</h2>
+              <h2 className="text-xl font-medium mb-6 text-[var(--color-darkGreen)]">Account Information</h2>
 
               {/* My Profile */}
               <div className="py-4 border-b border-gray-200">
@@ -189,14 +189,14 @@ const GlobalGreenDashboard = () => {
                   <div className="font-medium">My Profile</div>
                   <div className="flex items-center">
                     <div className="flex items-center mr-8">
-                      <div className="w-8 h-8 rounded-full bg-[#2E8B57] flex items-center justify-center mr-2 overflow-hidden text-white">
+                      <div className="w-8 h-8 rounded-full bg-[var(--color-primary)] flex items-center justify-center mr-2 overflow-hidden text-white">
                         <span className="text-xs">GL</span>
                       </div>
                       <span>{userData.username}</span>
                     </div>
                     <button
                       onClick={() => setIsProfileModalOpen(true)}
-                      className="px-4 py-1.5 border border-[#2E8B57] text-[#2E8B57] rounded-md text-sm hover:bg-[#E6F4EA]"
+                      className="px-4 py-1.5 border border-[var(--color-primary)] text-[var(--color-primary)] rounded-md text-sm hover:bg-[#E6F4EA]"
                     >
                       Change
                     </button>
@@ -212,7 +212,7 @@ const GlobalGreenDashboard = () => {
                     <span className="mr-8">{userData.phone}</span>
                     <button
                       onClick={() => setIsPhoneModalOpen(true)}
-                      className="px-4 py-1.5 border border-[#2E8B57] text-[#2E8B57] rounded-md text-sm hover:bg-[#E6F4EA]"
+                      className="px-4 py-1.5 border border-[var(--color-primary)] text-[var(--color-primary)] rounded-md text-sm hover:bg-[#E6F4EA]"
                     >
                       Change
                     </button>
@@ -226,7 +226,7 @@ const GlobalGreenDashboard = () => {
                   <div className="font-medium">Email</div>
                   <div className="flex items-center">
                     <span className="mr-8">{userData.email}</span>
-                    <button className="px-4 py-1.5 border border-[#2E8B57] text-[#2E8B57] rounded-md text-sm hover:bg-[#E6F4EA]">
+                    <button className="px-4 py-1.5 border border-[var(--color-primary)] text-[var(--color-primary)] rounded-md text-sm hover:bg-[#E6F4EA]">
                       Change
                     </button>
                   </div>
@@ -241,7 +241,7 @@ const GlobalGreenDashboard = () => {
                     <span className="mr-8 text-gray-500">
                       Please change your password regularly to keep your GlobalGreen account secure.
                     </span>
-                    <button className="px-4 py-1.5 bg-[#2E8B57] text-white rounded-md text-sm hover:bg-[#20603D]">
+                    <button className="px-4 py-1.5 bg-[var(--color-primary)] text-white rounded-md text-sm hover:bg-[var(--color-darkGreen)]">
                       Update
                     </button>
                   </div>
@@ -256,8 +256,8 @@ const GlobalGreenDashboard = () => {
                     <Info size={16} className="ml-2 text-gray-400" />
                   </div>
                   <div className="flex items-center">
-                    <span className="mr-8 px-2 py-1 bg-[#87CEEB]/20 text-[#20603D] rounded">Active</span>
-                    <button className="px-4 py-1.5 bg-[#87CEEB] text-white rounded-md text-sm hover:bg-[#87CEEB]/80 flex items-center">
+                    <span className="mr-8 px-2 py-1 bg-[var(--color-secondary)]/20 text-[var(--color-darkGreen)] rounded">Active</span>
+                    <button className="px-4 py-1.5 bg-[var(--color-secondary)] text-white rounded-md text-sm hover:bg-[var(--color-secondary)]/80 flex items-center">
                       Manage
                       <ChevronDown size={16} className="ml-1" />
                     </button>

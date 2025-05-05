@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { FileText } from "lucide-react";
+import { colors } from "@/types";
 
 // Define TypeScript interfaces for the props
 interface Product {
@@ -16,19 +17,8 @@ interface Product {
   orderDate: string;
 }
 
-interface ColorPalette {
-  primary: string;
-  secondary: string;
-  background: string;
-  dark: string;
-  white: string;
-  lightGray: string;
-  text: string;
-}
-
 interface OrdersTableProps {
   products: Product[];
-  colors: ColorPalette;
   defaultItemsPerPage?: number;
   title?: string;
   subtitle?: string;
@@ -36,7 +26,6 @@ interface OrdersTableProps {
 
 export default function OrdersTable({ 
   products, 
-  colors, 
   defaultItemsPerPage = 5,
   title = "Recent Orders",
   subtitle = "Track your orders and their status"
@@ -131,7 +120,7 @@ export default function OrdersTable({
       {/* Header and Controls */}
       <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-4 space-y-3 md:space-y-0">
         <div>
-          <h2 className="text-xl font-bold" style={{ color: colors.dark }}>{title}</h2>
+          <h2 className="text-xl font-bold" style={{ color: colors.darkGreen }}>{title}</h2>
           <p className="text-sm text-gray-500">{subtitle}</p>
         </div>
         <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
@@ -142,7 +131,7 @@ export default function OrdersTable({
               value={searchTerm}
               onChange={handleSearchChange}
               className="border rounded-md pl-8 pr-2 py-2 text-sm w-full"
-              style={{ borderColor: colors.primary, color: colors.dark }}
+              style={{ borderColor: colors.primary, color: colors.darkGreen }}
             />
             <svg
               className="w-4 h-4 absolute left-2 top-1/2 transform -translate-y-1/2"
@@ -161,7 +150,7 @@ export default function OrdersTable({
           </div>
           <select 
             className="border rounded-md px-2 py-2 text-sm"
-            style={{ borderColor: colors.primary, color: colors.dark }}
+            style={{ borderColor: colors.primary, color: colors.darkGreen }}
           >
             <option>All statuses</option>
             <option>To be sent</option>
@@ -231,7 +220,7 @@ export default function OrdersTable({
                     <div>
                       <h3
                         className="font-medium"
-                        style={{ color: colors.dark }}
+                        style={{ color: colors.darkGreen }}
                       >
                         {product.name}
                       </h3>
@@ -450,7 +439,7 @@ export default function OrdersTable({
               setCurrentPage(1);
             }}
             className="border rounded-md px-2 py-1 text-sm transition-colors duration-200 hover:border-blue-400"
-            style={{ borderColor: colors.primary, color: colors.dark }}
+            style={{ borderColor: colors.primary, color: colors.darkGreen }}
           >
             <option value={5}>5 per page</option>
             <option value={10}>10 per page</option>

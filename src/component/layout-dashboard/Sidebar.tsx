@@ -12,11 +12,11 @@ import {
   Settings, 
   LogOut, 
   ChevronLeft,
-  LayoutDashboard,
-  BarChart3
+  LayoutDashboard
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { colors } from '@/types';
 
 // Define the structure for menu items
 interface MenuItem {
@@ -136,15 +136,6 @@ const Sidebar: React.FC<SidebarProps> = ({
       ],
     },
   ];
-
-  // Enhanced color palette matching GlobalGreen theme
-  const colors = {
-    darkGreen: '#20603D',
-    mediumGreen: '#2E8B57',
-    lightBlue: '#87CEEB',
-    hoverGreen: '#2E8B57/50',
-    white: '#FFFFFF',
-  };
 
   // Auto-expand section with active item on mount
   const initialCollapsedState: {[key: string]: boolean} = {};

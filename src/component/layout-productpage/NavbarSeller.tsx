@@ -13,12 +13,6 @@ const NavbarGlobalGreen: React.FC<NavbarGlobalGreenProps> = ({
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  
-  const popularSearches = [
-    "Organic Seeds",
-    "Eco-Friendly Products",
-    "Sustainable Tools",
-  ];
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -27,11 +21,11 @@ const NavbarGlobalGreen: React.FC<NavbarGlobalGreenProps> = ({
   return (
     <div className="flex flex-col w-full fixed top-0 left-0 right-0 z-50 shadow-md">
       {/* Main navigation bar */}
-      <div className="bg-[#2E8B57] text-white px-4 py-3 flex flex-wrap items-start">
+      <div className="bg-[var(--color-primary)] text-white px-4 py-3 flex flex-wrap items-start">
         <div className="flex w-full justify-between items-center mb-3">
           {/* Logo - always visible */}
           <Link href="/" className="flex items-center">
-            <div className="w-8 h-8 bg-[#E6F4EA] rounded text-[#20603D] flex items-center justify-center mr-2">
+            <div className="w-8 h-8 bg-[var(--color-paleGreen)] rounded text-[var(--color-darkGreen)] flex items-center justify-center mr-2">
               <span className="font-bold text-lg">G</span>
             </div>
             <span className="font-bold text-2xl">GlobalGreen</span>
@@ -46,7 +40,7 @@ const NavbarGlobalGreen: React.FC<NavbarGlobalGreenProps> = ({
               Start Selling
             </button>
             <button 
-              className="hover:bg-[#E6F4EA]/90 px-4 py-2 bg-[#E6F4EA] text-[#20603D] font-medium rounded hidden md:block"
+              className="hover:bg-[var(--color-paleGreen)]/90 px-4 py-2 bg-[var(--color-paleGreen)] text-[var(--color-darkGreen)] font-medium rounded hidden md:block"
               onClick={onLoginClick}
             >
               Login
@@ -73,7 +67,7 @@ const NavbarGlobalGreen: React.FC<NavbarGlobalGreenProps> = ({
               <input
                 type="text"
                 placeholder="Search eco-friendly products"
-                className="w-full h-full px-4 text-black rounded-l bg-white focus:outline-none focus:ring-2 focus:ring-[#2E8B57]"
+                className="w-full h-full px-4 text-black rounded-l bg-white focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -85,7 +79,7 @@ const NavbarGlobalGreen: React.FC<NavbarGlobalGreenProps> = ({
                 <ChevronDown size={16} className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500" />
               </div>
             </div>
-            <button className="bg-[#20603D] hover:bg-[#20603D]/80 text-white px-4 rounded-r flex items-center justify-center">
+            <button className="bg-[var(--color-darkGreen)] hover:bg-[var(--color-darkGreen)]/80 text-white px-4 rounded-r flex items-center justify-center">
               <Search size={20} />
             </button>
           </div>
@@ -94,7 +88,7 @@ const NavbarGlobalGreen: React.FC<NavbarGlobalGreenProps> = ({
 
       {/* Mobile menu items */}
       {isMenuOpen && (
-        <div className="md:hidden bg-[#20603D] text-white py-2 px-4">
+        <div className="md:hidden bg-[var(--color-darkGreen)] text-white py-2 px-4">
           <div className="flex justify-end mb-2">
             <button 
               className="text-white p-1"
@@ -105,19 +99,15 @@ const NavbarGlobalGreen: React.FC<NavbarGlobalGreenProps> = ({
             </button>
           </div>
           <nav className="flex flex-col space-y-2">
-            <Link href="/seller" className="py-2 hover:text-[#87CEEB]">Seller Centre</Link>
-            <Link href="/start-selling" className="py-2 hover:text-[#87CEEB]">Start Selling</Link>
-            <Link href="/download" className="py-2 hover:text-[#87CEEB]">Download</Link>
-            <Link href="/help" className="py-2 hover:text-[#87CEEB]">Help</Link>
             {/* Adding login/register buttons to mobile menu */}
             <button 
-              className="py-2 text-left hover:text-[#87CEEB]"
+              className="py-2 text-left hover:text-[var(--color-secondary)]"
               onClick={onLoginClick}
             >
               Login
             </button>
             <button 
-              className="py-2 text-left hover:text-[#87CEEB]"
+              className="py-2 text-left hover:text-[var(--color-secondary)]"
               onClick={onRegisterClick}
             >
               Start Selling

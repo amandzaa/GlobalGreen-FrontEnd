@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import ProductCard from '@/component/layout-productpage/ProductCard';
-import Link from 'next/link';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { colors } from '@/types';
 
 interface Product {
   id: string;
@@ -147,15 +147,6 @@ const PaginatedProductGrid: React.FC<PaginatedProductGridProps> = ({
     }
   };
 
-  // Global green color palette
-  const colors = {
-    primary: '#2E8B57',    // Medium green
-    secondary: '#87CEEB',  // Light blue
-    light: '#E6F4EA',      // Very light cream
-    dark: '#20603D',       // Dark green
-    accent: '#3875B5',     // Button blue
-  };
-
   return (
     <div>
       <div className="mb-4">
@@ -256,13 +247,13 @@ const PaginatedProductGrid: React.FC<PaginatedProductGridProps> = ({
                         : 'text-gray-700 hover:bg-gray-200'
                     }`}
                     style={{ 
-                      backgroundColor: currentPage === page ? colors.dark : undefined,
+                      backgroundColor: currentPage === page ? colors.darkGreen : undefined,
                     }}
                     disabled={isAnimating}
                     whileHover={currentPage !== page && !isAnimating ? { 
                       scale: 1.1, 
                       backgroundColor: colors.primary, 
-                      color: '#ffffff' 
+                      color: colors.white
                     } : {}}
                     whileTap={currentPage !== page && !isAnimating ? { scale: 0.95 } : {}}
                     transition={{ duration: 0.2 }}

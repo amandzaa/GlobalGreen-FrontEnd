@@ -1,23 +1,8 @@
 import { useState } from "react";
-import {
-  ChevronDown,
-  Leaf,
-  ShoppingBag,
-  Package,
-  FileText,
-  Star,
-  PieChart,
-  Calendar,
-  Tag,
-  Search,
-  Bell,
-  MessageCircle,
-  Filter,
-  ChevronRight,
-} from "lucide-react";
 import DashboardLayout from "@/component/layout-dashboard/DashboardLayout";
 import OrdersTable from "@/component/tables/component-tables/OrdersTable";
 import ActionButtons from "@/component/ActionButtons";
+import { colors } from "@/types";
 
 // Define TypeScript interfaces
 interface Product {
@@ -32,16 +17,6 @@ interface Product {
   countdown?: string;
   delivery: string;
   orderDate: string;
-}
-
-interface ColorPalette {
-  primary: string;
-  secondary: string;
-  background: string;
-  dark: string;
-  white: string;
-  lightGray: string;
-  text: string;
 }
 
 export default function SellerDashboard() {
@@ -154,17 +129,6 @@ export default function SellerDashboard() {
     },
   ];
 
-  // Colors from palette
-  const colors: ColorPalette = {
-    primary: "#2E8B57", // Medium green
-    secondary: "#87CEEB", // Light blue
-    background: "#E6F4EA", // Very light green
-    dark: "#20603D", // Dark green
-    white: "#FFFFFF",
-    lightGray: "#F5F7F5",
-    text: "#333333",
-  };
-
   // Export and Download History functionality is now implemented in the ActionButtons component
 
   return (
@@ -184,7 +148,7 @@ export default function SellerDashboard() {
             <div className="flex justify-between items-center px-6 py-4 border-b border-gray-200">
               <h1
                 className="text-xl font-medium"
-                style={{ color: colors.dark }}
+                style={{ color: colors.darkGreen }}
               >
                 My Orders
               </h1>
@@ -281,7 +245,7 @@ export default function SellerDashboard() {
             </div>
 
             {/* Orders Table Component */}
-            <OrdersTable products={products} colors={colors} />
+            <OrdersTable products={products}/>
           </div>
         </main>
       </div>

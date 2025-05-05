@@ -32,19 +32,19 @@ export function ProductRow({
       <div className="w-6 mr-2">
         <input
           type="checkbox"
-          className="rounded border-gray-300 text-[#2E8B57] focus:ring-[#2E8B57]"
+          className="rounded border-gray-300 text-[var(--color-primary)] focus:ring-[var(--color-primary)]"
           checked={isSelected}
           onChange={() => onSelect(product.id)}
         />
       </div>
       <div className="w-2/5 flex">
-        <div className="w-16 h-16 bg-[#87CEEB] mr-3 overflow-hidden rounded">
-          <div className="bg-[#87CEEB] w-full h-full flex items-center justify-center text-[#20603D]">
+        <div className="w-16 h-16 bg-[var(--color-secondary)] mr-3 overflow-hidden rounded">
+          <div className="bg-[var(--color-secondary)] w-full h-full flex items-center justify-center text-[var(--color-darkGreen)]">
             <Package size={24} />
           </div>
         </div>
         <div>
-          <h3 className="text-sm font-medium text-[#20603D]">{product.name}</h3>
+          <h3 className="text-sm font-medium text-[var(--color-darkGreen)]">{product.name}</h3>
           <div className="text-xs text-gray-500 mt-1">
             Parent SKU: {product.parentSku}
           </div>
@@ -58,17 +58,17 @@ export function ProductRow({
       <div className="w-1/12 text-sm">{product.stock}</div>
       <div className="w-1/5">
         {product.status === "needImproved" && (
-          <div className="text-sm text-[#20603D]">Need to be Improved</div>
+          <div className="text-sm text-[var(--color-darkGreen)]">Need to be Improved</div>
         )}
         {product.qualityInfo && (
-          <div className="text-xs text-[#2E8B57] mt-1">
+          <div className="text-xs text-[var(--color-primary)] mt-1">
             {product.qualityInfo.message}
           </div>
         )}
       </div>
       <div className="w-1/12">
         <div className="flex flex-col gap-1">
-          <button className="text-[#2E8B57] text-sm hover:text-[#20603D] flex items-center">
+          <button className="text-[var(--color-primary)] text-sm hover:text-[var(--color-darkGreen)] flex items-center">
             <Edit size={12} className="mr-1" /> Edit
           </button>
           <button
@@ -77,7 +77,7 @@ export function ProductRow({
           >
             <Trash2 size={12} className="mr-1" /> Delete
           </button>
-          <button className="text-[#2E8B57] text-sm hover:text-[#20603D] flex items-center">
+          <button className="text-[var(--color-primary)] text-sm hover:text-[var(--color-darkGreen)] flex items-center">
             <Package size={12} className="mr-1" /> Create Voucher
           </button>
         </div>

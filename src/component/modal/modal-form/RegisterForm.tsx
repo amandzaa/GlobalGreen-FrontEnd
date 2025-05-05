@@ -1,7 +1,6 @@
 // components/RegisterForm.tsx
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { useRouter } from 'next/router';
 import { Mail, User, Phone, Eye, EyeOff, Lock, AlertCircle, CheckCircle, Info } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 import { registerUser, reset } from '@/redux/features/auth/authSlice';
@@ -29,7 +28,6 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin, onClose })
   const [showExistingUserModal, setShowExistingUserModal] = useState(false);
 
   // Hooks
-  const router = useRouter();
   const dispatch = useAppDispatch();
   
   // Get auth state from Redux store

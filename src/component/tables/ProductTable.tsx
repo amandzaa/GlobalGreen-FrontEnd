@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { Info } from 'lucide-react';
 import { Product } from './component-tables/ProductTypes';
 import { SearchBar } from './component-tables/SearchBar';
 import { ListView } from './component-tables/ListView';
@@ -7,7 +6,6 @@ import { GridView } from './component-tables/GridView';
 import { Pagination } from './component-tables/Pagination';
 import { DeleteModal } from './component-tables/DeleteModal';
 import { AnimationStyles } from './component-tables/AnimationStyles';
-import { LoadingSpinner } from './component-tables/LoadingSpinner';
 
 interface ProductTableProps {
   products: Product[];
@@ -231,9 +229,6 @@ export default function ProductTable({ products, itemsPerPage = 5 }: ProductTabl
       
       {/* Animation Styles */}
       <AnimationStyles />
-      
-      {/* Loading spinner
-      <LoadingSpinner isAnimating={isAnimating} /> */}
       
       {/* Content based on view mode */}
       {viewMode === 'list' ? (

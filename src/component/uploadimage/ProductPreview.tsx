@@ -1,7 +1,8 @@
 "use client";
 
 import React from "react";
-import { ProductPreviewProps, colors} from '@/component/uploadimage/types'
+import { ProductPreviewProps } from '@/component/uploadimage/types'
+import { colors } from "@/types";
 
 /**
  * ProductPreview component to display a preview of the product
@@ -95,7 +96,7 @@ export const ProductPreview: React.FC<ProductPreviewProps> = ({ product }) => {
             </div>
             <button
               className="px-4 py-2 text-sm font-medium text-white rounded-md"
-              style={{ backgroundColor: colors.mediumGreen }}
+              style={{ backgroundColor: colors.primary }}
               disabled={!name}
             >
               Add to Cart

@@ -1,6 +1,7 @@
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { colors } from '@/types';
 
 interface ProductCardProps {
   id: string;
@@ -42,14 +43,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
     return count.toString();
   };
 
-  // Global green color palette from the image
-  const colors = {
-    primary: '#2E8B57',    // Medium green
-    secondary: '#87CEEB',  // Light blue
-    light: '#E6F4EA',      // Very light cream
-    dark: '#20603D',       // Dark green
-    accent: '#3875B5',     // Button blue
-  };
 
   return (
     <Link 
@@ -76,7 +69,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         {/* Discount tag */}
         {discount && discount > 0 && (
           <div className="absolute top-2 right-2 text-white text-xs font-medium px-2 py-0.5 rounded"
-               style={{ backgroundColor: colors.dark }}>
+               style={{ backgroundColor: colors.darkGreen }}>
             -{discount}%
           </div>
         )}
@@ -99,7 +92,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           {originalPrice && originalPrice > price && (
             <div className="flex items-center text-xs text-gray-500 mt-1">
               <span className="line-through mr-2">${formatPrice(originalPrice)}</span>
-              <span style={{ color: colors.dark }}>-{discount}%</span>
+              <span style={{ color: colors.darkGreen }}>-{discount}%</span>
             </div>
           )}
         </div>

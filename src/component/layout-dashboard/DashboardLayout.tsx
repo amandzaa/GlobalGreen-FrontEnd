@@ -1,8 +1,7 @@
-// components/DashboardLayout.tsx
 "use client";
 
-import React, { ReactNode, useState } from "react";
-import { ChevronRight, ShoppingBag, PieChart, FileText } from "lucide-react";
+import React, { ReactNode} from "react";
+import { ChevronRight} from "lucide-react";
 import Sidebar from "./Sidebar";
 import FloatingActionButtons from "./FloatingActionButtons";
 import Header from "./Header";
@@ -21,7 +20,6 @@ interface DashboardLayoutProps {
 
 const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   children,
-  title,
   breadcrumb,
   activePath,
   defaultCollapsed = {},

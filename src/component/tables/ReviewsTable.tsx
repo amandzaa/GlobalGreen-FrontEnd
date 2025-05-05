@@ -1,3 +1,4 @@
+import { colors } from '@/types';
 import { useState, useEffect } from 'react';
 
 // Define types for our data
@@ -15,13 +16,6 @@ export interface Review {
 export interface ReviewsTableProps {
   reviews?: Review[];
   defaultItemsPerPage?: number;
-  colors?: {
-    darkGreen?: string;
-    mediumGreen?: string;
-    lightGreen?: string;
-    buttonBlue?: string;
-    lightBlue?: string;
-  };
   title?: string;
   subtitle?: string;
 }
@@ -29,13 +23,6 @@ export interface ReviewsTableProps {
 export default function ReviewsTable({
   reviews = [],
   defaultItemsPerPage = 6,
-  colors = {
-    darkGreen: "#1C4532",
-    mediumGreen: "#2F7C31",
-    lightGreen: "#DCFCE7",
-    buttonBlue: "#3B82F6",
-    lightBlue: "#93C5FD"
-  },
   title = "Latest reviews",
   subtitle = "Payment received across all channels"
 }: ReviewsTableProps) {
@@ -156,7 +143,7 @@ export default function ReviewsTable({
       <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-4 space-y-3 md:space-y-0">
         <div>
           <h2 className="text-xl font-bold" style={{ color: colors.darkGreen }}>{title}</h2>
-          <p className="text-sm" style={{ color: colors.mediumGreen }}>{subtitle}</p>
+          <p className="text-sm" style={{ color: colors.primary }}>{subtitle}</p>
         </div>
         <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
           <div className="relative">
@@ -166,12 +153,12 @@ export default function ReviewsTable({
               value={searchTerm}
               onChange={handleSearchChange}
               className="border rounded-md pl-8 pr-2 py-1 text-sm w-full"
-              style={{ borderColor: colors.mediumGreen, color: colors.darkGreen }}
+              style={{ borderColor: colors.primary, color: colors.darkGreen }}
             />
             <svg
               className="w-4 h-4 absolute left-2 top-1/2 transform -translate-y-1/2"
               fill="none"
-              stroke={colors.mediumGreen}
+              stroke={colors.primary}
               viewBox="0 0 24 24"
               xmlns="http://www.w3.org/2000/svg"
             >
@@ -185,7 +172,7 @@ export default function ReviewsTable({
           </div>
           <select 
             className="border rounded-md px-2 py-1 text-sm"
-            style={{ borderColor: colors.mediumGreen, color: colors.darkGreen }}
+            style={{ borderColor: colors.primary, color: colors.darkGreen }}
           >
             <option>All products</option>
             {Array.from(new Set(reviews.map(review => review.product))).map(product => (
@@ -198,9 +185,9 @@ export default function ReviewsTable({
       {/* Responsive Table with Animation */}
       <div className="overflow-x-auto">
         <div className="relative min-h-[300px]">
-          <table className="min-w-full divide-y" style={{ borderColor: `${colors.mediumGreen}30` }}>
+          <table className="min-w-full divide-y" style={{ borderColor: `${colors.primary}30` }}>
             <thead className="bg-white sticky top-0 z-10">
-              <tr className="border-b" style={{ borderColor: `${colors.mediumGreen}30` }}>
+              <tr className="border-b" style={{ borderColor: `${colors.primary}30` }}>
                 <th className="w-4 py-3">
                   <input 
                     type="checkbox" 
@@ -218,7 +205,7 @@ export default function ReviewsTable({
                 <th className="w-4 py-3"></th>
               </tr>
             </thead>
-            <tbody className="divide-y relative" style={{ borderColor: `${colors.mediumGreen}20` }}>
+            <tbody className="divide-y relative" style={{ borderColor: `${colors.primary}20` }}>
               {visibleReviews && visibleReviews.length > 0 ? (
                 visibleReviews.map((review) => (
                   <tr 
@@ -241,13 +228,13 @@ export default function ReviewsTable({
                     <td className="py-4 px-2">
                       <div className="flex items-center">
                         <div className="w-8 h-8 bg-gray-200 rounded-md mr-2 flex-shrink-0"></div>
-                        <span className="text-sm" style={{ color: colors.buttonBlue }}>{review.product}</span>
+                        <span className="text-sm" style={{ color: colors.accent }}>{review.product}</span>
                       </div>
                     </td>
                     <td className="py-4 px-2 hidden md:table-cell">
                       <div className="flex items-center">
-                        <div className="w-8 h-8 rounded-full flex items-center justify-center mr-2 flex-shrink-0" style={{ backgroundColor: `${colors.lightBlue}50` }}>
-                          <span style={{ color: colors.mediumGreen, fontWeight: 500 }}>{review.customerInitial}</span>
+                        <div className="w-8 h-8 rounded-full flex items-center justify-center mr-2 flex-shrink-0" style={{ backgroundColor: `${colors.secondary}50` }}>
+                          <span style={{ color: colors.primary, fontWeight: 500 }}>{review.customerInitial}</span>
                         </div>
                         <span className="text-sm" style={{ color: colors.darkGreen }}>{review.customer}</span>
                       </div>
@@ -451,7 +438,7 @@ export default function ReviewsTable({
               setCurrentPage(1);
             }}
             className="border rounded-md px-2 py-1 text-sm transition-colors duration-200 hover:border-blue-400"
-            style={{ borderColor: colors.mediumGreen, color: colors.darkGreen }}
+            style={{ borderColor: colors.primary, color: colors.darkGreen }}
           >
             <option value={5}>6 per page</option>
             <option value={10}>10 per page</option>

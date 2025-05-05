@@ -7,11 +7,11 @@ interface TableHeaderProps {
 
 export function TableHeader({ onSelectAll, isAllSelected }: TableHeaderProps) {
   return (
-    <div className="bg-[#E6F4EA] py-2 px-4 flex items-center border-b border-gray-200">
+    <div className="bg-[var(--color-paleGreen)] py-2 px-4 flex items-center border-b border-gray-200">
       <div className="w-6 mr-2">
         <input 
           type="checkbox" 
-          className="rounded border-gray-300 text-[#2E8B57] focus:ring-[#2E8B57]" 
+          className="rounded border-gray-300 text-[var(--color-primary)] focus:ring-[var(--color-primary)]" 
           checked={isAllSelected}
           onChange={onSelectAll}
         />

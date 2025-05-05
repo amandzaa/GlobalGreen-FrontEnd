@@ -33,13 +33,13 @@ export const VoucherPreview: React.FC<VoucherPreviewProps> = ({ formData }) => {
 
   return (
     <div className="mt-8 border-t border-gray-200 pt-6">
-      <h3 className="text-lg font-medium text-[#20603D] mb-4">
+      <h3 className="text-lg font-medium text-[var(--color-darkGreen)] mb-4">
         Voucher Preview
       </h3>
       
       <div className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
         {/* Voucher Header */}
-        <div className="bg-[#2E8B57] p-4 text-white">
+        <div className="bg-[var(--color-primary)] p-4 text-white">
           <div className="flex justify-between items-center">
             <div>
               <h4 className="text-xl font-bold">{formData.title || "Voucher Title"}</h4>

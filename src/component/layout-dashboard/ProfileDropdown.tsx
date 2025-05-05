@@ -5,22 +5,15 @@ import { useAuth } from '@/redux/hooks/useAuth';
 import { useRouter } from 'next/router';
 import { useAppDispatch } from '@/redux/store';
 import { logout } from '@/redux/features/auth/authSlice';
+import { colors } from '@/types';
 
 export default function ProfileDropdown() {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [theme, setTheme] = useState('light');
-  const { user, isAuthenticated } = useAuth(); // Use the auth hook
+  const { user, isAuthenticated } = useAuth();
   const router = useRouter();
-  const dispatch = useAppDispatch(); // Use typed dispatch
+  const dispatch = useAppDispatch();
   
-  // Mock color values
-  const colors = {
-    mediumGreen: '#4CAF50',
-    darkGreen: '#2E7D32'
-  };
-  
-  // Extract user details from auth state
-  // Combine first_name and last_name if they exist, fallback to name or 'Guest'
   const userName = user ? 
     (user.first_name && user.last_name) ? 
       `${user.first_name} ${user.last_name}` : 
@@ -74,7 +67,7 @@ export default function ProfileDropdown() {
       >
         <div
           className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden"
-          style={{ border: `2px solid ${colors.mediumGreen}` }}
+          style={{ border: `2px solid ${colors.primary}` }}
         >
           {userImageUrl ? (
             <img 
@@ -127,7 +120,7 @@ export default function ProfileDropdown() {
         <div className="py-1">
           <Link
             href="/seller-dashboard/profile"
-            className="flex items-center px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            className="flex items-center px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-[var(--color-darkGreen)] transition-colors"
             style={{ color: theme === 'dark' ? '#E2E8F0' : '#4B5563' }}
           >
             <User size={16} className="mr-2" />
@@ -135,7 +128,7 @@ export default function ProfileDropdown() {
           </Link>
           <Link
             href="/seller-dashboard/settings"
-            className="flex items-center px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            className="flex items-center px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-[var(--color-darkGreen)] transition-colors"
             style={{ color: theme === 'dark' ? '#E2E8F0' : '#4B5563' }}
           >
             <Settings size={16} className="mr-2" />
@@ -143,7 +136,7 @@ export default function ProfileDropdown() {
           </Link>
           <Link
             href="/help"
-            className="flex items-center px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            className="flex items-center px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-[var(--color-darkGreen)] transition-colors"
             style={{ color: theme === 'dark' ? '#E2E8F0' : '#4B5563' }}
           >
             <HelpCircle size={16} className="mr-2" />
@@ -154,7 +147,7 @@ export default function ProfileDropdown() {
         <div className="py-1 border-t border-gray-200 dark:border-gray-700">
           <button
             onClick={handleSignOut}
-            className="flex items-center w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            className="flex items-center w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-[var(--color-darkGreen)] transition-colors"
           >
             <LogOut size={16} className="mr-2" />
             Sign out

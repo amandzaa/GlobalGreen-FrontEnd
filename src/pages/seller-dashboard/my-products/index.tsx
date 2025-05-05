@@ -2,10 +2,9 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown, Search, Info } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import DashboardLayout from "@/component/layout-dashboard/DashboardLayout";
 import ProductTable from "@/component/tables/ProductTable";
-import { Product } from "@/component/tables/component-tables/ProductTypes";
 import { sampleproducts } from "@/data/sampleProducts";
 
 type ProductTab =
@@ -18,7 +17,6 @@ type ProductTab =
 export default function MyProductsPage() {
   const [activeTab, setActiveTab] = useState<ProductTab>("all");
   const [searchTerm, setSearchTerm] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState("");
 
 
   // Filter products based on active tab
@@ -75,19 +73,19 @@ export default function MyProductsPage() {
       <div className="p-6 bg-[#F7FAF7]">
         {/* Page Header */}
         <div className="flex justify-between items-center mb-4">
-          <h1 className="text-xl font-medium text-[#20603D]">My Products</h1>
+          <h1 className="text-xl font-medium text-[var(--color-darkGreen)]">My Products</h1>
           <div className="flex gap-2">
             <div className="relative">
-              <button className="px-4 py-2 border border-[#2E8B57] text-[#2E8B57] rounded text-sm bg-white hover:bg-[#F7FAF7] flex items-center">
+              <button className="px-4 py-2 border border-[var(--color-primary)] text-[var(--color-primary)] rounded text-sm bg-white hover:bg-[#F7FAF7] flex items-center">
                 Product Settings <ChevronDown size={16} className="ml-2" />
               </button>
             </div>
             <div className="relative">
-              <button className="px-4 py-2 border border-[#2E8B57] text-[#2E8B57] rounded text-sm bg-white hover:bg-[#F7FAF7] flex items-center">
+              <button className="px-4 py-2 border border-[var(--color-primary)] text-[var(--color-primary)] rounded text-sm bg-white hover:bg-[#F7FAF7] flex items-center">
                 Mass Setup <ChevronDown size={16} className="ml-2" />
               </button>
             </div>
-            <button className="bg-[#2E8B57] text-white px-4 py-2 rounded text-sm font-medium flex items-center hover:bg-[#20603D]">
+            <button className="bg-[var(--color-primary)] text-white px-4 py-2 rounded text-sm font-medium flex items-center hover:bg-[var(--color-darkGreen)]">
               <span className="mr-1">+</span> Add New Product
             </button>
           </div>
@@ -100,8 +98,8 @@ export default function MyProductsPage() {
               onClick={() => setActiveTab("all")}
               className={`px-6 py-3 text-sm font-medium ${
                 activeTab === "all"
-                  ? "text-[#2E8B57] border-b-2 border-[#2E8B57]"
-                  : "text-gray-600 hover:text-[#2E8B57]"
+                  ? "text-[var(--color-primary)] border-b-2 border-[var(--color-primary)]"
+                  : "text-gray-600 hover:text-[var(--color-primary)]"
               }`}
             >
               All ({sampleproducts.length})
@@ -110,8 +108,8 @@ export default function MyProductsPage() {
               onClick={() => setActiveTab("live")}
               className={`px-6 py-3 text-sm font-medium ${
                 activeTab === "live"
-                  ? "text-[#2E8B57] border-b-2 border-[#2E8B57]"
-                  : "text-gray-600 hover:text-[#2E8B57]"
+                  ? "text-[var(--color-primary)] border-b-2 border-[var(--color-primary)]"
+                  : "text-gray-600 hover:text-[var(--color-primary)]"
               }`}
             >
               Live ({liveCount})
@@ -120,8 +118,8 @@ export default function MyProductsPage() {
               onClick={() => setActiveTab("needAction")}
               className={`px-6 py-3 text-sm font-medium ${
                 activeTab === "needAction"
-                  ? "text-[#2E8B57] border-b-2 border-[#2E8B57]"
-                  : "text-gray-600 hover:text-[#2E8B57]"
+                  ? "text-[var(--color-primary)] border-b-2 border-[var(--color-primary)]"
+                  : "text-gray-600 hover:text-[var(--color-primary)]"
               }`}
             >
               Need Action ({needActionCount})
@@ -130,8 +128,8 @@ export default function MyProductsPage() {
               onClick={() => setActiveTab("underReview")}
               className={`px-6 py-3 text-sm font-medium ${
                 activeTab === "underReview"
-                  ? "text-[#2E8B57] border-b-2 border-[#2E8B57]"
-                  : "text-gray-600 hover:text-[#2E8B57]"
+                  ? "text-[var(--color-primary)] border-b-2 border-[var(--color-primary)]"
+                  : "text-gray-600 hover:text-[var(--color-primary)]"
               }`}
             >
               Under Review by GlobalGreen ({underReviewCount})
@@ -140,8 +138,8 @@ export default function MyProductsPage() {
               onClick={() => setActiveTab("notYetDisplayed")}
               className={`px-6 py-3 text-sm font-medium ${
                 activeTab === "notYetDisplayed"
-                  ? "text-[#2E8B57] border-b-2 border-[#2E8B57]"
-                  : "text-gray-600 hover:text-[#2E8B57]"
+                  ? "text-[var(--color-primary)] border-b-2 border-[var(--color-primary)]"
+                  : "text-gray-600 hover:text-[var(--color-primary)]"
               }`}
             >
               Not Yet Displayed ({notYetDisplayedCount})

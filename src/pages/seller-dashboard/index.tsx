@@ -1,16 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ChevronRight, Info, Plus, Minus, ChevronLeft } from "lucide-react";
 import DashboardLayout from "@/component/layout-dashboard/DashboardLayout";
-import Link from "next/link";
 import {
-  AreaChart,
-  Area,
   BarChart,
   Bar,
-  PieChart,
-  Pie,
   LineChart,
   Line,
   XAxis,
@@ -18,8 +12,6 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  Cell,
-  Legend,
 } from "recharts";
 import ReviewsTable, { Review } from "@/component/tables/ReviewsTable";
 
@@ -778,7 +770,6 @@ export default function SellerDashboard() {
             <h2 className="text-xl mb-4">Customized Table</h2>
             <ReviewsTable
               reviews={sampleReviews}
-              colors={colors}
               title="Customer Feedback"
               subtitle="All recent product reviews"
               defaultItemsPerPage={10}

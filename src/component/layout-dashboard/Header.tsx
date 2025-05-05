@@ -25,6 +25,7 @@ import ProfileDropdown from "./ProfileDropdown";
 import NotificationsPanel from "./NotificationsPanel";
 import { useTheme } from "../darkmode/ThemeProvider";
 import ThemeToggle from "../darkmode/ThemeToggle";
+import { colors } from "@/types";
 
 interface HeaderProps {
   notificationCount: number;
@@ -131,12 +132,6 @@ export default function Header({
     }
   };
   
-  // Constants for styling
-  const colors = {
-    darkGreen: '#20603D',
-    mediumGreen: '#2E8B57', 
-    lightBlue: '#87CEEB',
-  };
 
   // Preload the user image
   useEffect(() => {
@@ -207,7 +202,7 @@ export default function Header({
               {notificationCount > 0 && (
                 <span
                   className="absolute top-0 right-0 w-4 h-4 rounded-full text-white text-xs flex items-center justify-center animate-pulse"
-                  style={{ backgroundColor: colors.mediumGreen }}
+                  style={{ backgroundColor: colors.primary }}
                   aria-hidden="true"
                 >
                   {notificationCount > 9 ? "9+" : notificationCount}
@@ -228,7 +223,7 @@ export default function Header({
                   <h3 className="font-semibold" style={{ color: colors.darkGreen }}>Notifications</h3>
                   <button 
                     className="text-sm hover:underline"
-                    style={{ color: colors.mediumGreen }}
+                    style={{ color: colors.primary }}
                   >
                     Mark all as read
                   </button>
@@ -256,7 +251,7 @@ export default function Header({
               {messageCount > 0 && (
                 <span
                   className="absolute top-0 right-0 w-4 h-4 rounded-full text-white text-xs flex items-center justify-center animate-pulse"
-                  style={{ backgroundColor: colors.mediumGreen }}
+                  style={{ backgroundColor: colors.primary }}
                   aria-hidden="true"
                 >
                   {messageCount > 9 ? "9+" : messageCount}
@@ -275,7 +270,7 @@ export default function Header({
               >
                 <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
                   <h3 className="font-semibold" style={{ color: colors.darkGreen }}>Messages</h3>
-                  <Link href="/messages" className="text-sm hover:underline" style={{ color: colors.mediumGreen }}>
+                  <Link href="/messages" className="text-sm hover:underline" style={{ color: colors.primary }}>
                     View all
                   </Link>
                 </div>
@@ -314,7 +309,7 @@ export default function Header({
               <button
                 type="button"
                 className="absolute left-3 top-1/2 transform -translate-y-1/2"
-                style={{ color: colors.mediumGreen }}
+                style={{ color: colors.primary }}
                 aria-label="Search"
               >
                 <Search size={18} />
@@ -388,7 +383,7 @@ export default function Header({
               <button
                 type="submit"
                 className="absolute right-3 top-1/2 transform -translate-y-1/2"
-                style={{ color: colors.mediumGreen }}
+                style={{ color: colors.primary }}
                 aria-label="Submit search"
               >
                 <Search size={16} />

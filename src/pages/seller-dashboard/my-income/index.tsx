@@ -4,6 +4,7 @@
 import React, { useState } from "react";
 import { Calendar, ChevronRight, Download, Info, Search } from "lucide-react";
 import DashboardLayout from "@/component/layout-dashboard/DashboardLayout";
+import { colors } from "@/types";
 
 const MyIncomePage = () => {
   const [activeTab, setActiveTab] = useState<"pending" | "released">(
@@ -29,53 +30,7 @@ const MyIncomePage = () => {
     { period: "31 Mar - 6 Apr 2025", id: "3", amount: 100000 },
   ];
 
-  const orderData = [
-    {
-      id: "ORD-23578",
-      releaseDate: "28 April 2025",
-      status: "Completed",
-      paymentMethod: "Bank Transfer",
-      income: 45000,
-    },
-    {
-      id: "ORD-23492",
-      releaseDate: "27 April 2025",
-      status: "Completed",
-      paymentMethod: "Credit Card",
-      income: 78500,
-    },
-    {
-      id: "ORD-23445",
-      releaseDate: "26 April 2025",
-      status: "Completed",
-      paymentMethod: "E-Wallet",
-      income: 51500,
-    },
-  ];
 
-  const invoiceData = [
-    {
-      id: "INV-8751",
-      date: "21 April 2025",
-      amount: 15000,
-      type: "Commission Fee",
-    },
-    {
-      id: "INV-8722",
-      date: "14 April 2025",
-      amount: 12500,
-      type: "Platform Fee",
-    },
-  ];
-
-  // GlobalGreen color palette
-  const colors = {
-    primary: "#2E8B57", // Medium green
-    secondary: "#87CEEB", // Light blue
-    background: "#E6F4EA", // Very light green/cream
-    darkGreen: "#20603D", // Dark green
-    actionBlue: "#3470A6", // Blue for buttons (derived from example button)
-  };
 
   return (
     <DashboardLayout
@@ -98,7 +53,7 @@ const MyIncomePage = () => {
         >
           <Info
             size={20}
-            style={{ color: colors.actionBlue }}
+            style={{ color: colors.accent }}
             className="mr-2 flex-shrink-0 mt-1"
           />
           <p className="text-sm text-gray-600">
@@ -159,7 +114,7 @@ const MyIncomePage = () => {
         <div className="flex justify-end mt-4">
           <button
             className="text-sm flex items-center"
-            style={{ color: colors.actionBlue }}
+            style={{ color: colors.accent }}
           >
             Seller Balance <ChevronRight size={16} />
           </button>
@@ -223,8 +178,8 @@ const MyIncomePage = () => {
             <button
               className="border rounded-md px-4 py-2 text-sm text-white"
               style={{
-                backgroundColor: colors.actionBlue,
-                borderColor: colors.actionBlue,
+                backgroundColor: colors.accent,
+                borderColor: colors.accent,
               }}
             >
               Export
@@ -237,7 +192,7 @@ const MyIncomePage = () => {
           <div
             className="grid grid-cols-5 p-3 border-b border-gray-200 text-sm"
             style={{
-              backgroundColor: colors.background,
+              backgroundColor: colors.paleGreen,
               color: colors.darkGreen,
             }}
           >
@@ -294,7 +249,7 @@ const MyIncomePage = () => {
             <h2 className="text-lg font-medium">Income Transaction Notes</h2>
             <button
               className="text-sm flex items-center"
-              style={{ color: colors.actionBlue }}
+              style={{ color: colors.accent }}
             >
               Other <ChevronRight size={16} />
             </button>
@@ -307,7 +262,7 @@ const MyIncomePage = () => {
                 className="flex justify-between items-center py-3 border-b border-gray-200 last:border-0"
               >
                 <span className="text-sm">{note.period}</span>
-                <button style={{ color: colors.actionBlue }}>
+                <button style={{ color: colors.accent }}>
                   <Download size={16} />
                 </button>
               </li>
@@ -321,7 +276,7 @@ const MyIncomePage = () => {
             <h2 className="text-lg font-medium">My Invoice</h2>
             <button
               className="text-sm flex items-center"
-              style={{ color: colors.actionBlue }}
+              style={{ color: colors.accent }}
             >
               Other <ChevronRight size={16} />
             </button>

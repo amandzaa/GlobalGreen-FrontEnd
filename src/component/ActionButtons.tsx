@@ -21,7 +21,7 @@ interface ActionButtonsProps {
 }
 
 const ActionButtons = ({ 
-  primaryColor = "#2E8B57",
+  primaryColor = "var(--color-primary)",
   products = []
 }: ActionButtonsProps) => {
   const [isExporting, setIsExporting] = useState(false);

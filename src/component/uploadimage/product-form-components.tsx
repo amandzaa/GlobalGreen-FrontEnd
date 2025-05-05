@@ -1,14 +1,8 @@
 "use client";
 
 import React from "react";
+import { colors } from "@/types";
 
-// Color palette that can be imported and used across components
-export const productColors = {
-  mediumGreen: "#2E8B57",
-  skyBlue: "#87CEEB",
-  paleGreen: "#E6F4EA",
-  darkGreen: "#20603D",
-};
 
 // Define types for product state
 export interface ProductNutrition {
@@ -91,7 +85,7 @@ export const ProgressBar = ({
           className="h-2.5 rounded-full"
           style={{
             width: `${completionPercentage}%`,
-            backgroundColor: productColors.mediumGreen,
+            backgroundColor: colors.primary,
           }}
         ></div>
       </div>
@@ -447,7 +441,7 @@ export const ActionButtons = ({
         type="button"
         onClick={handleSaveAsDraft}
         className="px-6 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-green-500"
-        style={{ backgroundColor: productColors.skyBlue }}
+        style={{ backgroundColor: colors.secondary }}
       >
         Save Draft
       </button>
@@ -460,8 +454,8 @@ export const ActionButtons = ({
             formProgress.pricing &&
             formProgress.images &&
             formProgress.description
-              ? productColors.darkGreen
-              : productColors.mediumGreen,
+              ? colors.darkGreen
+              : colors.primary,
         }}
         disabled={
           !formProgress.basicInfo ||
@@ -488,7 +482,7 @@ export const ProductTips = () => {
         <div className="flex items-start">
           <div
             className="flex-shrink-0 p-1.5 bg-green-100 rounded-full"
-            style={{ backgroundColor: productColors.paleGreen }}
+            style={{ backgroundColor: colors.paleGreen }}
           >
             <svg
               className="w-5 h-5 text-green-800"
@@ -496,7 +490,7 @@ export const ProductTips = () => {
               stroke="currentColor"
               viewBox="0 0 24 24"
               xmlns="http://www.w3.org/2000/svg"
-              style={{ color: productColors.darkGreen }}
+              style={{ color: colors.darkGreen }}
             >
               <path
                 strokeLinecap="round"
@@ -515,7 +509,7 @@ export const ProductTips = () => {
         <div className="flex items-start">
           <div
             className="flex-shrink-0 p-1.5 bg-green-100 rounded-full"
-            style={{ backgroundColor: productColors.paleGreen }}
+            style={{ backgroundColor: colors.paleGreen }}
           >
             <svg
               className="w-5 h-5 text-green-800"
@@ -523,7 +517,7 @@ export const ProductTips = () => {
               stroke="currentColor"
               viewBox="0 0 24 24"
               xmlns="http://www.w3.org/2000/svg"
-              style={{ color: productColors.darkGreen }}
+              style={{ color: colors.darkGreen }}
             >
               <path
                 strokeLinecap="round"
@@ -542,7 +536,7 @@ export const ProductTips = () => {
         <div className="flex items-start">
           <div
             className="flex-shrink-0 p-1.5 bg-green-100 rounded-full"
-            style={{ backgroundColor: productColors.paleGreen }}
+            style={{ backgroundColor: colors.paleGreen }}
           >
             <svg
               className="w-5 h-5 text-green-800"
@@ -550,7 +544,7 @@ export const ProductTips = () => {
               stroke="currentColor"
               viewBox="0 0 24 24"
               xmlns="http://www.w3.org/2000/svg"
-              style={{ color: productColors.darkGreen }}
+              style={{ color: colors.darkGreen }}
             >
               <path
                 strokeLinecap="round"
@@ -613,7 +607,7 @@ export const SimilarProducts = ({
 
         <button
           className="w-full py-2 text-sm text-center text-white rounded-md"
-          style={{ backgroundColor: productColors.skyBlue }}
+          style={{ backgroundColor: colors.secondary }}
         >
           View All Similar Products
         </button>

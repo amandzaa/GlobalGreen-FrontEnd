@@ -42,7 +42,10 @@ const AuthModals: React.FC<AuthModalsProps> = ({
         closeOnClickOutside={true}
         overlayOpacity={50}
       >
-        <RegisterForm onSwitchToLogin={onSwitchToLogin} />
+        <RegisterForm 
+          onSwitchToLogin={onSwitchToLogin} 
+          onClose={onCloseRegister} // Pass onCloseRegister as onClose prop
+        />
       </Modal>
     </>
   );
