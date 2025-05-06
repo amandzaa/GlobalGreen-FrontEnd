@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Image from "next/image"; // Import Next.js Image component
 import { colors } from "@/types";
 
 
@@ -419,12 +420,12 @@ export const NutritionSection = ({
 
 // Action Buttons Component
 export const ActionButtons = ({
-  handleSubmit,
+  onSubmit, // Renamed from handleSubmit to avoid the unused variable error
   handleSaveAsDraft,
   formProgress,
   isEdit = false,
 }: {
-  handleSubmit: (e: React.FormEvent) => void;
+  onSubmit: (e: React.FormEvent) => void; // Renamed parameter
   handleSaveAsDraft: () => void;
   formProgress: FormProgress;
   isEdit?: boolean;
@@ -447,6 +448,7 @@ export const ActionButtons = ({
       </button>
       <button
         type="submit"
+        onClick={onSubmit} // Use the renamed parameter
         className="px-6 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-green-500"
         style={{
           backgroundColor:
@@ -588,10 +590,12 @@ export const SimilarProducts = ({
             key={item.id}
             className="flex items-center p-3 border rounded-lg hover:bg-gray-50"
           >
-            <img
+            <Image
               src={item.image}
               alt={item.name}
-              className="w-16 h-16 object-cover rounded-md"
+              width={64}
+              height={64}
+              className="object-cover rounded-md"
             />
             <div className="ml-4 flex-1">
               <h3 className="text-sm font-medium text-gray-800">

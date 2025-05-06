@@ -223,8 +223,8 @@ const sampleReviews: Review[] = [
 
 
 export default function SellerDashboard() {
-  const [formattedDate, setFormattedDate] = useState("");
   const [dateRange, setDateRange] = useState("Mar 1 - 31, 2022");
+  const [lastUpdated, setLastUpdated] = useState("");
   const data = mockDashboardData;
 
   // Calculate percentage change for display
@@ -242,9 +242,11 @@ export default function SellerDashboard() {
       minute: "2-digit",
       hour12: false,
     };
-    setFormattedDate(
-      new Intl.DateTimeFormat("en-GB", options).format(date).replace(",", "")
-    );
+    const formattedDate = new Intl.DateTimeFormat("en-GB", options)
+      .format(date)
+      .replace(",", "");
+    
+    setLastUpdated(`Last updated: ${formattedDate}`);
   }, []);
 
   const defaultCollapsed = {
@@ -270,15 +272,20 @@ export default function SellerDashboard() {
         {/* Main Dashboard Content */}
         <main className="container mx-auto p-4">
           <div className="mb-8">
-            <h2
-              className="text-2xl font-bold"
-              style={{ color: colors.darkGreen }}
-            >
-              Globalgreen Dashboard
-            </h2>
-            <p style={{ color: colors.primary }}>
-              Here&apos;s what&apos;s going on at your business right now
-            </p>
+            <div className="flex justify-between items-center">
+              <div>
+                <h2
+                  className="text-2xl font-bold"
+                  style={{ color: colors.darkGreen }}
+                >
+                  Globalgreen Dashboard
+                </h2>
+                <p style={{ color: colors.primary }}>
+                  Here&apos;s what&apos;s going on at your business right now
+                </p>
+              </div>
+              <p className="text-sm text-gray-500">{lastUpdated}</p>
+            </div>
           </div>
 
           {/* Order Status Cards */}
@@ -427,6 +434,7 @@ export default function SellerDashboard() {
                       strokeWidth={2}
                       dot={false}
                       activeDot={{ r: 6 }}
+                      name="Current Period"
                     />
                     <Line
                       type="monotone"
@@ -435,6 +443,7 @@ export default function SellerDashboard() {
                       strokeDasharray="4 4"
                       strokeWidth={2}
                       dot={false}
+                      name="Previous Period"
                     />
                   </LineChart>
                 </ResponsiveContainer>
@@ -707,11 +716,19 @@ export default function SellerDashboard() {
                       fill="none"
                       stroke={colors.primary}
                       strokeWidth="3"
-                      strokeDasharray="30, 100"
+                      strokeDasharray={`${data.payingCustomers}, 100`}
                       strokeLinecap="round"
                       transform="rotate(90 18 18)"
                     />
                   </svg>
+                  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
+                    <span
+                      className="text-3xl font-bold"
+                      style={{ color: colors.darkGreen }}
+                    >
+                      {data.payingCustomers}%
+                    </span>
+                  </div>
                 </div>
               </div>
               <div className="mt-4">
@@ -757,9 +774,13 @@ export default function SellerDashboard() {
           </div>
 
           {/* Reviews Section */}
-          {/* Customized ReviewsTable */}
           <div className="mb-8">
-            <h2 className="text-xl mb-4">Customized Table</h2>
+            <h2 
+              className="text-xl mb-4"
+              style={{ color: colors.darkGreen }}
+            >
+              Recent Reviews
+            </h2>
             <ReviewsTable
               reviews={sampleReviews}
               title="Customer Feedback"

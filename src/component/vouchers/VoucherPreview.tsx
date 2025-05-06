@@ -26,7 +26,7 @@ export const VoucherPreview: React.FC<VoucherPreviewProps> = ({ formData }) => {
     try {
       const dateTime = new Date(`${date}T${time || "00:00"}`);
       return format(dateTime, "MMMM d, yyyy 'at' h:mm a");
-    } catch (error) {
+    } catch {
       return "";
     }
   };

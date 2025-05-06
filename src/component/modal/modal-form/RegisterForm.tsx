@@ -132,7 +132,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin, onClose })
       setFormSubmitted(false);
     }
 
-  }, [isSuccess, isError, errorMessage, formSubmitted, onClose]);
+  }, [isSuccess, isError, errorMessage, formSubmitted, onClose, showSuccessModal, showExistingUserModal]);
 
   // Clean up auth state when component unmounts
   useEffect(() => {
@@ -253,7 +253,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin, onClose })
                   </p>
                 )}
                 <p className="text-gray-500 text-sm mt-1">
-                  We'll send you a verification code to this email
+                  We&apos;ll send you a verification code to this email
                 </p>
               </div>
 
@@ -425,7 +425,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin, onClose })
                 {confirmPassword && !passwordsMatch && (
                   <div className="flex items-center mt-1 text-red-500 text-sm">
                     <AlertCircle className="w-4 h-4 mr-1" />
-                    Passwords don't match
+                    Passwords don&apos;t match
                   </div>
                 )}
               </div>
@@ -438,7 +438,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin, onClose })
                     required
                   />
                   <span className="text-sm text-gray-600">
-                    I agree to GlobalGreen's <a href="#" className="text-green-600 hover:underline">Terms of Service</a> and <a href="#" className="text-green-600 hover:underline">Privacy Policy</a>
+                    I agree to GlobalGreen&apos;s <a href="#" className="text-green-600 hover:underline">Terms of Service</a> and <a href="#" className="text-green-600 hover:underline">Privacy Policy</a>
                   </span>
                 </label>
               </div>

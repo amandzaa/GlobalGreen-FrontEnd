@@ -263,7 +263,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                   >
                     {section.items.map((item) => {
                       const itemActive = isActive(item.href);
-                      const isItemHovered = hoveredItem === item.href;
+                      // const isItemHovered = hoveredItem === item.href;
                       
                       return (
                         <Link 

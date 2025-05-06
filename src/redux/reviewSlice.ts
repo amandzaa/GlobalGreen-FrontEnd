@@ -50,13 +50,13 @@ const reviewSlice = createSlice({
     },
     submitReviewRequest: (
       state,
-      action: PayloadAction<{ productId: string }>
+      { payload }: PayloadAction<{ productId: string }>
     ) => {
       state.isSubmitting = true;
       state.submitError = null;
     },
-    submitReviewSuccess: (state, action: PayloadAction<Review>) => {
-      state.submittedReviews.push(action.payload);
+    submitReviewSuccess: (state, { payload }: PayloadAction<Review>) => {
+      state.submittedReviews.push(payload);
       state.isSubmitting = false;
       state.isModalOpen = false;
       // Reset form after successful submission
@@ -64,9 +64,9 @@ const reviewSlice = createSlice({
       state.currentComment = "";
       state.feedbackMessage = "";
     },
-    submitReviewFailure: (state, action: PayloadAction<string>) => {
+    submitReviewFailure: (state, { payload }: PayloadAction<string>) => {
       state.isSubmitting = false;
-      state.submitError = action.payload;
+      state.submitError = payload;
     },
     resetForm: (state) => {
       state.currentRating = 0;

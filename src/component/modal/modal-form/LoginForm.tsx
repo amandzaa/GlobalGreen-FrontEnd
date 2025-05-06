@@ -237,7 +237,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToRegister }) => {
 
         <div className="text-center pt-4">
           <p className="text-gray-600">
-            Don't have a GlobalGreen account? 
+            Don&apos;t have a GlobalGreen account? 
             <button 
               type="button"
               onClick={onSwitchToRegister}

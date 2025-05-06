@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import Image from "next/image";
 import DashboardLayout from "@/component/layout-dashboard/DashboardLayout";
 import { Button } from "@/component/ui/button";
 import { 
@@ -133,10 +134,10 @@ export default function ProductManagementPage() {
     updateFormProgress(name, value);
   };
 
-  const updateFormProgress = (name: string, value: any) => {
-    if (name === "name" && value.trim() !== "") {
+  const updateFormProgress = (name: string, value: string | number | boolean) => {
+    if (name === "name" && typeof value === "string" && value.trim() !== "") {
       setFormProgress((prev) => ({ ...prev, basicInfo: true }));
-    } else if ((name === "price" || name === "stock") && Number(value) > 0) {
+    } else if ((name === "price" || name === "stock") && typeof value === "number" && value > 0) {
       setFormProgress((prev) => ({ ...prev, pricing: true }));
     } else if (name === "description" && value.toString().trim().length > 10) {
       setFormProgress((prev) => ({ ...prev, description: true }));
@@ -205,7 +206,7 @@ export default function ProductManagementPage() {
     // In a real app, you would send this to your API
     console.log("Saving product:", product);
     
-        // Update local state if needed
+    // Update local state if needed
     setProducts(prevProducts => {
       const productWithId = {
         ...product,
@@ -331,13 +332,17 @@ export default function ProductManagementPage() {
                               onClick={() => loadProductById(p.id)}
                             >
                               {p.thumbnail && (
-                                <img
-                                  src={p.thumbnail}
-                                  alt={p.name}
-                                  className="w-12 h-12 object-cover mr-3 rounded"
-                                />
+                                <div className="flex-shrink-0 h-10 w-10 relative">
+                                  <Image
+                                    src={p.thumbnail}
+                                    alt={p.name}
+                                    fill
+                                    className="object-cover rounded"
+                                    sizes="40px"
+                                  />
+                                </div>
                               )}
-                              <div>
+                              <div className="ml-4">
                                 <p className="font-medium">{p.name}</p>
                                 <p className="text-sm text-gray-500">ID: {p.id}</p>
                               </div>
@@ -413,7 +418,7 @@ export default function ProductManagementPage() {
 
                     {/* Action Buttons */}
                     <ActionButtons
-                      handleSubmit={handleSubmit}
+                      onSubmit={handleSubmit}
                       handleSaveAsDraft={() => {}}
                       formProgress={formProgress}
                       isEdit={!!selectedProductId}
@@ -480,11 +485,13 @@ export default function ProductManagementPage() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
-                          <div className="flex-shrink-0 h-10 w-10">
-                            <img
-                              className="h-10 w-10 rounded object-cover"
+                          <div className="flex-shrink-0 h-10 w-10 relative">
+                            <Image
+                              className="rounded object-cover"
                               src={product.thumbnail || "/api/placeholder/100/100"}
                               alt={product.name}
+                              fill
+                              sizes="40px"
                             />
                           </div>
                           <div className="ml-4">
