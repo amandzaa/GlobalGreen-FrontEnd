@@ -1,5 +1,5 @@
 // components/AuthModals.tsx
-import React, { useState } from "react";
+import React from "react";
 import Modal from "./Modal";
 import LoginForm from "./modal-form/LoginForm";
 import RegisterForm from "./modal-form/RegisterForm";

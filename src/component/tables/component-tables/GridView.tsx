@@ -7,7 +7,7 @@ interface GridViewProps {
   onSelectProduct: (id: string) => void;
   onDeleteProduct: (id: string) => void;
   isAnimating: boolean;
-  animationDirection: 'next' | 'prev';
+//   animationDirection: 'next' | 'prev';
   gridColumns: string;
 }
 
@@ -17,7 +17,7 @@ export function GridView({
   onSelectProduct,
   onDeleteProduct,
   isAnimating,
-  animationDirection,
+//   animationDirection,
   gridColumns
 }: GridViewProps) {
   return (

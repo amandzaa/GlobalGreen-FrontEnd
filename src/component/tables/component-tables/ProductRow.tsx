@@ -1,4 +1,4 @@
-import { Edit, Info, Package, Trash2 } from "lucide-react";
+import { Edit, Package, Trash2 } from "lucide-react";
 import { Product } from "./ProductTypes";
 
 interface ProductRowProps {

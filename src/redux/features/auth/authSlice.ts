@@ -1,6 +1,6 @@
 // redux/features/auth/authSlice.ts
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 
 // Define types for better TypeScript support
 interface User {
@@ -30,6 +30,19 @@ interface AuthState {
   errorMessage: string;
 }
 
+// API response types
+interface AuthResponse {
+  user?: User;
+  userId?: string;
+  id?: string;
+  email?: string;
+  first_name?: string;
+  last_name?: string;
+  token?: string;
+  accessToken?: string;
+  message?: string;
+}
+
 // Initialize state (no need to read from localStorage since Redux Persist handles this)
 const initialState: AuthState = {
   user: null,
@@ -41,7 +54,11 @@ const initialState: AuthState = {
 };
 
 // Create async thunk for registration action
-export const registerUser = createAsyncThunk(
+export const registerUser = createAsyncThunk<
+  AuthResponse, 
+  RegisterData, 
+  { rejectValue: string }
+>(
   'auth/register',
   async (userData: RegisterData, { rejectWithValue }) => {
     try {
@@ -56,7 +73,7 @@ export const registerUser = createAsyncThunk(
       
       console.log("Sending registration data to API:", transformedData);
       
-      const response = await axios.post(
+      const response = await axios.post<AuthResponse>(
         'https://globalgreen-backend-production.up.railway.app/auth/register',
         transformedData
       );
@@ -66,17 +83,18 @@ export const registerUser = createAsyncThunk(
       // We don't need to store in localStorage as Redux Persist handles this
       // Just return the response data
       return response.data;
-    } catch (error: any) {
+    } catch (error) {
       // Handle error responses
-      console.error("Registration error:", error.response?.data || error.message);
+      const err = error as AxiosError<{ message?: string }>;
+      console.error("Registration error:", err.response?.data || err.message);
       
-      if (error.response && error.response.data.message) {
-        return rejectWithValue(error.response.data.message);
-      } else if (error.response && error.response.data) {
+      if (err.response && err.response.data && err.response.data.message) {
+        return rejectWithValue(err.response.data.message);
+      } else if (err.response && err.response.data) {
         // Handle case where error message might be in a different format
         return rejectWithValue(
-          typeof error.response.data === 'string' 
-            ? error.response.data 
+          typeof err.response.data === 'string' 
+            ? err.response.data 
             : 'An error occurred during registration.'
         );
       } else {
@@ -87,11 +105,15 @@ export const registerUser = createAsyncThunk(
 );
 
 // Create async thunk for login action
-export const loginUser = createAsyncThunk(
+export const loginUser = createAsyncThunk<
+  AuthResponse,
+  { email: string; password: string },
+  { rejectValue: string }
+>(
   'auth/login',
-  async ({ email, password }: { email: string; password: string }, { rejectWithValue }) => {
+  async ({ email, password }, { rejectWithValue }) => {
     try {
-      const response = await axios.post(
+      const response = await axios.post<AuthResponse>(
         'https://globalgreen-backend-production.up.railway.app/auth/login',
         { email, password }
       );
@@ -100,17 +122,18 @@ export const loginUser = createAsyncThunk(
       
       // We don't need to store in localStorage as Redux Persist handles this
       return response.data;
-    } catch (error: any) {
+    } catch (error) {
       // Handle error responses
-      console.error("Login error:", error.response?.data || error.message);
+      const err = error as AxiosError<{ message?: string }>;
+      console.error("Login error:", err.response?.data || err.message);
       
-      if (error.response && error.response.data.message) {
-        return rejectWithValue(error.response.data.message);
-      } else if (error.response && error.response.data) {
+      if (err.response && err.response.data && err.response.data.message) {
+        return rejectWithValue(err.response.data.message);
+      } else if (err.response && err.response.data) {
         // Handle case where error message might be in a different format
         return rejectWithValue(
-          typeof error.response.data === 'string' 
-            ? error.response.data 
+          typeof err.response.data === 'string' 
+            ? err.response.data 
             : 'An error occurred during login.'
         );
       } else {
@@ -121,18 +144,22 @@ export const loginUser = createAsyncThunk(
 );
 
 // Create async thunk for fetching user data
-export const fetchUserData = createAsyncThunk(
+export const fetchUserData = createAsyncThunk<
+  User,
+  void,
+  { state: { auth: AuthState }; rejectValue: string }
+>(
   'auth/fetchUser',
   async (_, { getState, rejectWithValue }) => {
     try {
-      const state = getState() as { auth: AuthState };
+      const state = getState();
       const token = state.auth.token;
       
       if (!token) {
         return rejectWithValue('No token available');
       }
       
-      const response = await axios.get(
+      const response = await axios.get<User>(
         'https://globalgreen-backend-production.up.railway.app/auth/me',
         {
           headers: {
@@ -143,8 +170,9 @@ export const fetchUserData = createAsyncThunk(
       
       return response.data;
       // No need to save to localStorage as Redux Persist handles this
-    } catch (error: any) {
-      console.error("Fetch user error:", error.response?.data || error.message);
+    } catch (error) {
+      const err = error as AxiosError;
+      console.error("Fetch user error:", err.response?.data || err.message);
       return rejectWithValue('Failed to fetch user data');
     }
   }
@@ -187,7 +215,7 @@ export const authSlice = createSlice({
         state.errorMessage = '';
       })
       // When registration is successful
-      .addCase(registerUser.fulfilled, (state, action: PayloadAction<any>) => {
+      .addCase(registerUser.fulfilled, (state, action: PayloadAction<AuthResponse>) => {
         console.log("Registration fulfilled with payload:", action.payload);
         state.isLoading = false;
         state.isSuccess = true;
@@ -207,6 +235,7 @@ export const authSlice = createSlice({
             };
           }
           
+          // Explicitly handle undefined by converting to null
           state.token = action.payload.token || action.payload.accessToken || null;
         }
       })
@@ -215,7 +244,7 @@ export const authSlice = createSlice({
         console.log("Registration rejected with payload:", action.payload);
         state.isLoading = false;
         state.isError = true;
-        state.errorMessage = action.payload as string || 'Registration failed. Please try again.';
+        state.errorMessage = action.payload ?? 'Registration failed. Please try again.';
         state.user = null;
         state.token = null;
       })
@@ -226,7 +255,7 @@ export const authSlice = createSlice({
         state.isError = false;
       })
       // When login is successful
-      .addCase(loginUser.fulfilled, (state, action: PayloadAction<any>) => {
+      .addCase(loginUser.fulfilled, (state, action: PayloadAction<AuthResponse>) => {
         state.isLoading = false;
         state.isSuccess = true;
         
@@ -243,13 +272,14 @@ export const authSlice = createSlice({
           };
         }
         
-        state.token = action.payload.token || action.payload.accessToken;
+        // Ensure undefined is converted to null
+        state.token = action.payload.token || action.payload.accessToken || null;
       })
       // When login fails
       .addCase(loginUser.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
-        state.errorMessage = action.payload as string;
+        state.errorMessage = action.payload ?? 'Login failed. Please try again.';
         state.user = null;
       })
       // When fetching user data

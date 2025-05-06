@@ -1,10 +1,8 @@
-// pages/invoice.tsx
+// pages/invoice-page/index.tsx
 import React from 'react';
 import Head from 'next/head';
-import { saveAs } from 'file-saver';
 import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
-
 // Define types for invoice data
 interface Product {
   id: number;
@@ -48,6 +46,14 @@ interface InvoiceData {
   discount: number;
   grandTotal: number;
   amountInWords: string;
+}
+
+// Define a proper type for CSS property handling
+type CSSPropertyString = keyof Pick<CSSStyleDeclaration, 'color' | 'backgroundColor' | 'borderColor'>;
+type StyleValue = string | null;
+
+interface StylesMap {
+  [key: string]: StyleValue;
 }
 
 const InvoicePage: React.FC = () => {
@@ -153,7 +159,7 @@ const InvoicePage: React.FC = () => {
     
     // Override any CSS that might use oklch colors before capturing
     const elementsWithColors = invoice.querySelectorAll('*');
-    const originalStyles: { [key: string]: string } = {};
+    const originalStyles: StylesMap = {};
     
     // Store original styles and replace any oklch colors with safe RGB colors
     elementsWithColors.forEach((el, i) => {
@@ -165,9 +171,17 @@ const InvoicePage: React.FC = () => {
         // If the color value contains "oklch", replace it
         if (colorValue.includes('oklch')) {
           const key = `${i}-${prop}`;
-          originalStyles[key] = (el as HTMLElement).style[prop as any];
+          const htmlEl = el as HTMLElement;
+          
+          // Convert CSS property names to camelCase for direct style access
+          const styleProp = prop === 'color' ? 'color' :
+            prop === 'background-color' ? 'backgroundColor' : 'borderColor';
+            
+          // Store original value
+          originalStyles[key] = htmlEl.style[styleProp];
+          
           // Set a safe fallback color
-          (el as HTMLElement).style[prop as any] = 
+          htmlEl.style[styleProp] = 
             prop === 'color' ? '#000000' : 
             prop === 'background-color' ? '#ffffff' : 
             '#cccccc';
@@ -193,8 +207,15 @@ const InvoicePage: React.FC = () => {
         const colorProps = ['color', 'background-color', 'border-color'];
         colorProps.forEach(prop => {
           const key = `${i}-${prop}`;
-          if (originalStyles[key]) {
-            (el as HTMLElement).style[prop as any] = originalStyles[key];
+          if (originalStyles[key] !== undefined) {
+            const htmlEl = el as HTMLElement;
+            
+            // Convert CSS property names to camelCase for direct style access
+            const styleProp = prop === 'color' ? 'color' :
+              prop === 'background-color' ? 'backgroundColor' : 'borderColor';
+              
+            // Restore the original value
+            htmlEl.style[styleProp] = originalStyles[key] || '';
           }
         });
       });

@@ -2,7 +2,7 @@ import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
 import DashboardLayout from "@/component/layout-dashboard/DashboardLayout";
-import { VoucherForm } from "@/component/vouchers/VoucherForm";
+import { VoucherForm, VoucherFormData } from "@/component/vouchers/VoucherForm";
 import { findVoucherById, Voucher, sampleVouchers } from "@/data/sampleVouchers"; // Update path as needed
 
 const EditVoucherPage: NextPage = () => {
@@ -26,7 +26,7 @@ const EditVoucherPage: NextPage = () => {
     setIsLoading(false);
   }, [id]);
 
-  const handleSubmit = (formData: any) => {
+  const handleSubmit = (formData: VoucherFormData) => {
     // In a real app, this would send data to an API to update the voucher
     console.log("Updating voucher:", formData);
     
@@ -48,7 +48,7 @@ const EditVoucherPage: NextPage = () => {
   };
 
   // Format voucher data to match VoucherForm's expected structure
-  const formatVoucherData = (voucher: Voucher) => {
+  const formatVoucherData = (voucher: Voucher): VoucherFormData => {
     return {
       code: voucher.code,
       title: voucher.title,

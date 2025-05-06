@@ -14,6 +14,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import ReviewsTable, { Review } from "@/component/tables/ReviewsTable";
+import { colors } from "@/types";
 
 interface DashboardData {
   totalOrders: number;
@@ -220,18 +221,9 @@ const sampleReviews: Review[] = [
   },
 ];
 
-// Globalgreen color palette
-const colors = {
-  mediumGreen: "#2E8B57",
-  lightBlue: "#87CEEB",
-  lightCream: "#E6F4EA",
-  darkGreen: "#20603D",
-  buttonBlue: "#3B75B4",
-  lightGreen: "#DCFCE7",
-};
 
 export default function SellerDashboard() {
-  const [currentDate, setCurrentDate] = useState("");
+  const [formattedDate, setFormattedDate] = useState("");
   const [dateRange, setDateRange] = useState("Mar 1 - 31, 2022");
   const data = mockDashboardData;
 
@@ -250,7 +242,7 @@ export default function SellerDashboard() {
       minute: "2-digit",
       hour12: false,
     };
-    setCurrentDate(
+    setFormattedDate(
       new Intl.DateTimeFormat("en-GB", options).format(date).replace(",", "")
     );
   }, []);
@@ -273,7 +265,7 @@ export default function SellerDashboard() {
     >
       <div
         className="min-h-screen"
-        style={{ backgroundColor: colors.lightCream }}
+        style={{ backgroundColor: colors.secondary }}
       >
         {/* Main Dashboard Content */}
         <main className="container mx-auto p-4">
@@ -284,8 +276,8 @@ export default function SellerDashboard() {
             >
               Globalgreen Dashboard
             </h2>
-            <p style={{ color: colors.mediumGreen }}>
-              Here's what's going on at your business right now
+            <p style={{ color: colors.primary }}>
+              Here&apos;s what&apos;s going on at your business right now
             </p>
           </div>
 
@@ -294,12 +286,12 @@ export default function SellerDashboard() {
             <div className="bg-white p-4 rounded-lg shadow flex items-center">
               <div
                 className="w-10 h-10 rounded-md flex items-center justify-center mr-4"
-                style={{ backgroundColor: `${colors.mediumGreen}30` }}
+                style={{ backgroundColor: `${colors.primary}30` }}
               >
                 <svg
                   className="w-6 h-6"
                   fill="none"
-                  stroke={colors.mediumGreen}
+                  stroke={colors.primary}
                   viewBox="0 0 24 24"
                   xmlns="http://www.w3.org/2000/svg"
                 >
@@ -318,7 +310,7 @@ export default function SellerDashboard() {
                 >
                   {data.newOrders} new orders
                 </h3>
-                <p className="text-sm" style={{ color: colors.mediumGreen }}>
+                <p className="text-sm" style={{ color: colors.primary }}>
                   Awaiting processing
                 </p>
               </div>
@@ -327,7 +319,7 @@ export default function SellerDashboard() {
             <div className="bg-white p-4 rounded-lg shadow flex items-center">
               <div
                 className="w-10 h-10 rounded-md flex items-center justify-center mr-4"
-                style={{ backgroundColor: `${colors.lightBlue}70` }}
+                style={{ backgroundColor: `${colors.secondary}70` }}
               >
                 <svg
                   className="w-6 h-6"
@@ -351,7 +343,7 @@ export default function SellerDashboard() {
                 >
                   {data.ordersOnHold} orders
                 </h3>
-                <p className="text-sm" style={{ color: colors.mediumGreen }}>
+                <p className="text-sm" style={{ color: colors.primary }}>
                   On hold
                 </p>
               </div>
@@ -384,7 +376,7 @@ export default function SellerDashboard() {
                 >
                   {data.outOfStockProducts} products
                 </h3>
-                <p className="text-sm" style={{ color: colors.mediumGreen }}>
+                <p className="text-sm" style={{ color: colors.primary }}>
                   Out of stock
                 </p>
               </div>
@@ -403,7 +395,7 @@ export default function SellerDashboard() {
                   >
                     Total sells
                   </h3>
-                  <p className="text-sm" style={{ color: colors.mediumGreen }}>
+                  <p className="text-sm" style={{ color: colors.primary }}>
                     Payment received across all channels
                   </p>
                 </div>
@@ -412,7 +404,7 @@ export default function SellerDashboard() {
                   value={dateRange}
                   onChange={(e) => setDateRange(e.target.value)}
                   style={{
-                    borderColor: colors.mediumGreen,
+                    borderColor: colors.primary,
                     color: colors.darkGreen,
                   }}
                 >
@@ -431,7 +423,7 @@ export default function SellerDashboard() {
                     <Line
                       type="monotone"
                       dataKey="current"
-                      stroke={colors.mediumGreen}
+                      stroke={colors.primary}
                       strokeWidth={2}
                       dot={false}
                       activeDot={{ r: 6 }}
@@ -439,7 +431,7 @@ export default function SellerDashboard() {
                     <Line
                       type="monotone"
                       dataKey="previous"
-                      stroke={colors.lightBlue}
+                      stroke={colors.secondary}
                       strokeDasharray="4 4"
                       strokeWidth={2}
                       dot={false}
@@ -460,7 +452,7 @@ export default function SellerDashboard() {
                     </h3>
                     <p
                       className="text-xs"
-                      style={{ color: colors.mediumGreen }}
+                      style={{ color: colors.primary }}
                     >
                       Last 7 days
                     </p>
@@ -491,11 +483,11 @@ export default function SellerDashboard() {
                 <div className="mt-4 h-12">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart
-                      data={[...Array(7)].map((_, i) => ({
+                      data={Array(7).fill(0).map(() => ({
                         value: Math.random() * 10 + 5,
                       }))}
                     >
-                      <Bar dataKey="value" fill={colors.mediumGreen} />
+                      <Bar dataKey="value" fill={colors.primary} />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
@@ -503,7 +495,7 @@ export default function SellerDashboard() {
                   <div className="flex items-center">
                     <div
                       className="w-3 h-3 rounded-full mr-2"
-                      style={{ backgroundColor: colors.mediumGreen }}
+                      style={{ backgroundColor: colors.primary }}
                     ></div>
                     <span
                       className="text-xs"
@@ -547,7 +539,7 @@ export default function SellerDashboard() {
                     </h3>
                     <p
                       className="text-xs"
-                      style={{ color: colors.mediumGreen }}
+                      style={{ color: colors.primary }}
                     >
                       Last 7 days
                     </p>
@@ -555,7 +547,7 @@ export default function SellerDashboard() {
                   <div
                     className="text-xs px-2 py-1 rounded"
                     style={{
-                      backgroundColor: `${colors.mediumGreen}20`,
+                      backgroundColor: `${colors.primary}20`,
                       color: colors.darkGreen,
                     }}
                   >
@@ -576,7 +568,7 @@ export default function SellerDashboard() {
                       <Line
                         type="monotone"
                         dataKey="value"
-                        stroke={colors.mediumGreen}
+                        stroke={colors.primary}
                         strokeWidth={2}
                         dot={false}
                         activeDot={{ r: 6 }}
@@ -596,7 +588,7 @@ export default function SellerDashboard() {
                 <h3 className="text-sm" style={{ color: colors.darkGreen }}>
                   Top coupons
                 </h3>
-                <p className="text-xs" style={{ color: colors.mediumGreen }}>
+                <p className="text-xs" style={{ color: colors.primary }}>
                   Last 7 days
                 </p>
               </div>
@@ -612,7 +604,7 @@ export default function SellerDashboard() {
                     <path
                       d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                       fill="none"
-                      stroke={colors.mediumGreen}
+                      stroke={colors.primary}
                       strokeWidth="3"
                       strokeDasharray={`${data.percentageDiscount}, 100`}
                     />
@@ -632,7 +624,7 @@ export default function SellerDashboard() {
                   <div className="flex items-center">
                     <div
                       className="w-3 h-3 rounded-full mr-2"
-                      style={{ backgroundColor: colors.mediumGreen }}
+                      style={{ backgroundColor: colors.primary }}
                     ></div>
                     <span
                       className="text-xs"
@@ -652,7 +644,7 @@ export default function SellerDashboard() {
                   <div className="flex items-center">
                     <div
                       className="w-3 h-3 rounded-full mr-2"
-                      style={{ backgroundColor: colors.lightBlue }}
+                      style={{ backgroundColor: colors.secondary }}
                     ></div>
                     <span
                       className="text-xs"
@@ -697,7 +689,7 @@ export default function SellerDashboard() {
                 <h3 className="text-sm" style={{ color: colors.darkGreen }}>
                   Paying vs non paying
                 </h3>
-                <p className="text-xs" style={{ color: colors.mediumGreen }}>
+                <p className="text-xs" style={{ color: colors.primary }}>
                   Last 7 days
                 </p>
               </div>
@@ -713,7 +705,7 @@ export default function SellerDashboard() {
                     <path
                       d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                       fill="none"
-                      stroke={colors.mediumGreen}
+                      stroke={colors.primary}
                       strokeWidth="3"
                       strokeDasharray="30, 100"
                       strokeLinecap="round"
@@ -727,7 +719,7 @@ export default function SellerDashboard() {
                   <div className="flex items-center">
                     <div
                       className="w-3 h-3 rounded-full mr-2"
-                      style={{ backgroundColor: colors.mediumGreen }}
+                      style={{ backgroundColor: colors.primary }}
                     ></div>
                     <span
                       className="text-xs"

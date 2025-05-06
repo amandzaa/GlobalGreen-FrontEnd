@@ -249,7 +249,7 @@ export default function ProductTable({ products, itemsPerPage = 5 }: ProductTabl
           onSelectProduct={handleSelectProduct}
           onDeleteProduct={openDeleteModal}
           isAnimating={isAnimating}
-          animationDirection={animationDirection}
+          // animationDirection={animationDirection}
           gridColumns={gridColumns}
         />
       )}
@@ -274,7 +274,7 @@ export default function ProductTable({ products, itemsPerPage = 5 }: ProductTabl
       {/* Delete Confirmation Modal */}
       <DeleteModal
         isOpen={showDeleteModal}
-        isBulkDelete={isBulkDelete}
+        // isBulkDelete={isBulkDelete}
         itemName={getProductToDeleteName()}
         onConfirm={handleDelete}
         onCancel={cancelDelete}

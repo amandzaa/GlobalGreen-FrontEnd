@@ -2,7 +2,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Search } from "lucide-react";
 import DashboardLayout from "@/component/layout-dashboard/DashboardLayout";
 import ProductTable from "@/component/tables/ProductTable";
 import { sampleproducts } from "@/data/sampleProducts";
@@ -17,7 +17,6 @@ type ProductTab =
 export default function MyProductsPage() {
   const [activeTab, setActiveTab] = useState<ProductTab>("all");
   const [searchTerm, setSearchTerm] = useState("");
-
 
   // Filter products based on active tab
   const getFilteredProducts = () => {
@@ -61,6 +60,11 @@ export default function MyProductsPage() {
     (p) => p.status === "notYetDisplayed"
   ).length;
 
+  // Handle search input change
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+  };
+
   return (
     <DashboardLayout
       title="My Products"
@@ -88,6 +92,22 @@ export default function MyProductsPage() {
             <button className="bg-[var(--color-primary)] text-white px-4 py-2 rounded text-sm font-medium flex items-center hover:bg-[var(--color-darkGreen)]">
               <span className="mr-1">+</span> Add New Product
             </button>
+          </div>
+        </div>
+
+        {/* Search Bar */}
+        <div className="mb-4">
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+              <Search size={18} className="text-gray-400" />
+            </div>
+            <input
+              type="text"
+              className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] block w-full pl-10 p-2.5"
+              placeholder="Search by product name, ID or SKU..."
+              value={searchTerm}
+              onChange={handleSearchChange}
+            />
           </div>
         </div>
 

@@ -30,7 +30,10 @@ const MyIncomePage = () => {
     { period: "31 Mar - 6 Apr 2025", id: "3", amount: 100000 },
   ];
 
-
+  const handleDateRangeChange = (newRange: string) => {
+    setDateRange(newRange);
+    // Future implementation for date range filter
+  };
 
   return (
     <DashboardLayout
@@ -57,7 +60,7 @@ const MyIncomePage = () => {
             className="mr-2 flex-shrink-0 mt-1"
           />
           <p className="text-sm text-gray-600">
-            The "Pending" and "Already Released" amounts do not include
+            The &ldquo;Pending&rdquo; and &ldquo;Already Released&rdquo; amounts do not include
             adjustment fees. Download the Income Statement or Income Transaction
             Notes to see the adjustment details.
           </p>
@@ -157,7 +160,10 @@ const MyIncomePage = () => {
 
         {/* Filter */}
         <div className="flex justify-between mb-4">
-          <div className="relative border border-gray-300 rounded-md flex items-center p-2 w-64">
+          <div 
+            className="relative border border-gray-300 rounded-md flex items-center p-2 w-64 cursor-pointer"
+            onClick={() => handleDateRangeChange(dateRange)}
+          >
             <Calendar size={16} className="text-gray-400 mr-2" />
             <span className="text-sm">{dateRange}</span>
             <ChevronRight size={16} className="text-gray-400 ml-2 rotate-90" />
@@ -304,8 +310,8 @@ const MyIncomePage = () => {
             Take a Peek First! The Secret to Increasing Orders
           </h3>
           <p className="text-xs text-gray-500 mt-1">
-            There's a fun way to keep ads from Creators running, but pay later
-            after they sell! Check out tips & tricks to optimize Affiliate...
+            There&apos;s a fun way to keep ads from Creators running, but pay later
+            after they sell! Check out tips &amp; tricks to optimize Affiliate...
           </p>
           <p className="text-xs text-gray-400 mt-1">24-04-2025 00:00</p>
         </div>

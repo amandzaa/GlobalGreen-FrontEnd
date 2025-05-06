@@ -9,10 +9,19 @@ import { colors } from '@/types';
 
 export default function ProfileDropdown() {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
-  const [theme, setTheme] = useState('light');
-  const { user, isAuthenticated } = useAuth();
+  // Using the theme value but not setting it directly
+  const { user } = useAuth();
   const router = useRouter();
   const dispatch = useAppDispatch();
+  
+  // Get system/browser theme preference
+  const [theme] = useState(() => {
+    // Check if window is defined (for SSR)
+    if (typeof window !== 'undefined') {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+    return 'light';
+  });
   
   const userName = user ? 
     (user.first_name && user.last_name) ? 
@@ -120,7 +129,7 @@ export default function ProfileDropdown() {
         <div className="py-1">
           <Link
             href="/seller-dashboard/profile"
-            className="flex items-center px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-[var(--color-darkGreen)] transition-colors"
+            className="flex items-center px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
             style={{ color: theme === 'dark' ? '#E2E8F0' : '#4B5563' }}
           >
             <User size={16} className="mr-2" />
@@ -128,7 +137,7 @@ export default function ProfileDropdown() {
           </Link>
           <Link
             href="/seller-dashboard/settings"
-            className="flex items-center px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-[var(--color-darkGreen)] transition-colors"
+            className="flex items-center px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
             style={{ color: theme === 'dark' ? '#E2E8F0' : '#4B5563' }}
           >
             <Settings size={16} className="mr-2" />
@@ -136,7 +145,7 @@ export default function ProfileDropdown() {
           </Link>
           <Link
             href="/help"
-            className="flex items-center px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-[var(--color-darkGreen)] transition-colors"
+            className="flex items-center px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
             style={{ color: theme === 'dark' ? '#E2E8F0' : '#4B5563' }}
           >
             <HelpCircle size={16} className="mr-2" />
@@ -147,7 +156,7 @@ export default function ProfileDropdown() {
         <div className="py-1 border-t border-gray-200 dark:border-gray-700">
           <button
             onClick={handleSignOut}
-            className="flex items-center w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-[var(--color-darkGreen)] transition-colors"
+            className="flex items-center w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
           >
             <LogOut size={16} className="mr-2" />
             Sign out
@@ -157,3 +166,12 @@ export default function ProfileDropdown() {
     </div>
   );
 }
+
+// // Demo component for display in isolation
+// export function Demo() {
+//   return (
+//     <div className="flex justify-end p-4 border-b border-gray-200">
+//       <ProfileDropdown />
+//     </div>
+//   );
+// }

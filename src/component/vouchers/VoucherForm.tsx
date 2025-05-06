@@ -8,13 +8,11 @@ import { FormSelect } from "./FormSelect";
 import { DateTimeInput } from "./DateTimeInput";
 import { VoucherPreview } from "./VoucherPreview";
 import { VoucherTips } from "./VoucherTips";
-import { ProductSelection, Product } from "./ProductSelection";
+import { ProductSelection } from "./ProductSelection";
 
-// Sample products data for demonstration
-// In a real implementation, you would likely fetch this from an API
 import { sampleproducts } from "@/data/sampleProducts";
 
-interface VoucherFormData {
+export interface VoucherFormData {
   code: string;
   title: string;
   description: string;

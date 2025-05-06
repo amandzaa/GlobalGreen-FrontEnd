@@ -32,21 +32,19 @@ interface HeaderProps {
   messageCount?: number;
   userName?: string;
   onSearch?: (query: string) => void;
-  toggleSidebar?: () => void;
 }
 
 export default function Header({
   notificationCount,
   messageCount = 0,
   userName = "Jane Smith",
-  onSearch,
-  toggleSidebar
+  onSearch
 }: HeaderProps) {
   const [showNotifications, setShowNotifications] = useState(false);
   const [showMessages, setShowMessages] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [showProfileMenu, setShowProfileMenu] = useState(false);
+  // const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showMobileSearch, setShowMobileSearch] = useState(false);
   const notificationsPanelRef = useRef<HTMLDivElement | null>(null);
   const profileMenuRef = useRef<HTMLDivElement | null>(null);
@@ -65,12 +63,12 @@ export default function Header({
         setShowNotifications(false);
       }
       
-      if (
-        profileMenuRef.current &&
-        !profileMenuRef.current.contains(event.target as Node)
-      ) {
-        setShowProfileMenu(false);
-      }
+      // if (
+      //   profileMenuRef.current &&
+      //   !profileMenuRef.current.contains(event.target as Node)
+      // ) {
+      //   setShowProfileMenu(false);
+      // }
       
       if (
         messagesPanelRef.current &&
@@ -99,7 +97,7 @@ export default function Header({
       if (event.key === "Escape") {
         setShowMobileMenu(false);
         setShowNotifications(false);
-        setShowProfileMenu(false);
+        // setShowProfileMenu(false);
         setShowMessages(false);
         setShowMobileSearch(false);
       }
@@ -189,7 +187,7 @@ export default function Header({
               onClick={() => {
                 setShowNotifications(!showNotifications);
                 setShowMessages(false);
-                setShowProfileMenu(false);
+                // setShowProfileMenu(false);
               }}
               aria-label={`Notifications${
                 notificationCount > 0 ? ` (${notificationCount} unread)` : ""
@@ -240,7 +238,7 @@ export default function Header({
               onClick={() => {
                 setShowMessages(!showMessages);
                 setShowNotifications(false);
-                setShowProfileMenu(false);
+                // setShowProfileMenu(false);
               }}
               aria-label={`Messages${
                 messageCount > 0 ? ` (${messageCount} unread)` : ""

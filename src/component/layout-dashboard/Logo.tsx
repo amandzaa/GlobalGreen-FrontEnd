@@ -1,3 +1,4 @@
+import { Link } from 'lucide-react';
 import React from 'react';
 import { useEffect, useState } from 'react';
 
@@ -21,7 +22,7 @@ export default function Logo() {
   }, []);
 
   return (
-    <a 
+    <Link 
       href="/seller-dashboard" 
       className="flex items-center text-xl font-bold text-gray-800 hover:opacity-90"
     >
@@ -37,6 +38,6 @@ export default function Logo() {
           <span className="text-gray-600 font-normal ml-1">Seller Center</span>
         </>
       )}
-    </a>
+    </Link>
   );
 }

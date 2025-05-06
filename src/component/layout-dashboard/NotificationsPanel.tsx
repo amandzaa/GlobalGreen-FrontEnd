@@ -17,8 +17,10 @@ interface Notification {
   isNew?: boolean;
 }
 
+type TabType = 'all' | 'info' | 'promotion' | 'shop';
+
 export default function NotificationsPanel() {
-  const [activeTab, setActiveTab] = useState<'info' | 'promotion' | 'shop' | 'all'>('all');
+  const [activeTab, setActiveTab] = useState<TabType>('all');
   const [isLoading, setIsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedNotifications, setExpandedNotifications] = useState<string[]>([]);
@@ -233,14 +235,14 @@ export default function NotificationsPanel() {
 
       {/* Tabs */}
       <div className="flex border-b border-gray-200">
-        {["all", "info", "promotion", "shop"].map((tab) => (
+        {(["all", "info", "promotion", "shop"] as TabType[]).map((tab) => (
           <motion.button
             key={tab}
-            onClick={() => setActiveTab(tab as any)}
-            className={`flex-1 py-3 text-sm font-medium ${
+            onClick={() => setActiveTab(tab)}
+            className={`flex-1 py-3 text-sm font-medium relative ${
               activeTab === tab
                 ? 'text-green-600'
-                : 'text-gray-500 hover:text-[var(--color-hoverGreen)]'
+                : 'text-gray-500 hover:text-green-500'
             } transition-colors duration-300`}
             whileHover={{ backgroundColor: "rgba(0,0,0,0.03)" }}
             whileTap={{ scale: 0.98 }}
@@ -249,7 +251,7 @@ export default function NotificationsPanel() {
             {activeTab === tab && (
               <motion.div
                 layoutId="activeTabIndicator"
-                className="border-b- border-green-600 absolute bottom-0 left-0 right-0"
+                className="border-b-2 border-green-600 absolute bottom-0 left-0 right-0"
                 initial={false}
                 transition={{ type: "spring", stiffness: 500, damping: 30 }}
               />
@@ -432,6 +434,15 @@ export default function NotificationsPanel() {
           </motion.div>
         )}
       </AnimatePresence>
+    </div>
+  );
+}
+
+// Demo component to showcase the NotificationsPanel
+export function Demo() {
+  return (
+    <div className="p-4 flex justify-center">
+      <NotificationsPanel />
     </div>
   );
 }

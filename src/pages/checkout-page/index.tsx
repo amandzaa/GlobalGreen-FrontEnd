@@ -1,7 +1,6 @@
 // pages/checkout.tsx
 import React, { useState } from 'react';
 import Head from 'next/head';
-import Image from 'next/image';
 
 interface CartItem {
   id: number;
@@ -14,7 +13,7 @@ interface CartItem {
 
 const CheckoutPage: React.FC = () => {
   // Sample cart data
-  const [cartItems, setCartItems] = useState<CartItem[]>([
+  const [cartItems] = useState<CartItem[]>([
     {
       id: 1,
       name: 'Fitbit Sense Advanced Smartwatch',

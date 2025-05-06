@@ -52,6 +52,7 @@ export interface Product {
     secondary: '#87CEEB', 
     paleGreen: '#E6F4EA',
     darkGreen: '#20603D',
+    lightGreen: "#DCFCE7",
     hoverGreen: '#2E8B57/50',
     white: '#FFFFFF',
     accent: '#3875B5',

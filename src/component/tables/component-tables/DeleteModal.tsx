@@ -2,7 +2,7 @@ import { AlertTriangle } from 'lucide-react';
 
 interface DeleteModalProps {
   isOpen: boolean;
-  isBulkDelete: boolean;
+  // Removed unused prop
   itemName: string;
   onConfirm: () => void;
   onCancel: () => void;
@@ -10,13 +10,12 @@ interface DeleteModalProps {
 
 export function DeleteModal({
   isOpen,
-  isBulkDelete,
   itemName,
   onConfirm,
   onCancel
 }: DeleteModalProps) {
   if (!isOpen) return null;
-  
+ 
   return (
     <div className="modal-overlay">
       <div className="modal-content">
@@ -29,7 +28,7 @@ export function DeleteModal({
               Confirm Deletion
             </h3>
           </div>
-          
+         
           <p className="text-sm text-gray-500 mb-6">
             Are you sure you want to delete{' '}
             <span className="font-medium text-gray-700">
@@ -37,7 +36,7 @@ export function DeleteModal({
             </span>
             ? This action cannot be undone.
           </p>
-          
+         
           <div className="flex justify-end gap-3">
             <button
               onClick={onCancel}
@@ -54,7 +53,7 @@ export function DeleteModal({
           </div>
         </div>
       </div>
-      
+     
       {/* Include the required CSS for the modal */}
       <style jsx global>{`
         .modal-overlay {
@@ -66,7 +65,7 @@ export function DeleteModal({
           align-items: center;
           justify-content: center;
         }
-        
+       
         .modal-content {
           background-color: white;
           border-radius: 0.5rem;

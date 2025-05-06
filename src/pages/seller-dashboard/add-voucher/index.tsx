@@ -1,14 +1,14 @@
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import DashboardLayout from "@/component/layout-dashboard/DashboardLayout";
-import { VoucherForm } from "@/component/vouchers/VoucherForm";
+import { VoucherForm, VoucherFormData } from "@/component/vouchers/VoucherForm";
 
 const CreateVoucherPage: NextPage = () => {
   const router = useRouter();
   
   // Default values are already handled in the VoucherForm component
 
-  const handleSubmit = (formData: any) => {
+  const handleSubmit = (formData: VoucherFormData) => {
     // In a real app, this would send data to an API
     console.log("Submitting voucher:", formData);
     

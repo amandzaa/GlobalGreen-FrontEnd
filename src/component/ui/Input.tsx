@@ -1,12 +1,12 @@
-
 "use client";
-
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
-export interface InputProps
-  extends React.InputHTMLAttributes<HTMLInputElement> {}
-
+// Option 1: Add at least one new property to make the interface unique
+export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+  // Adding a custom property to distinguish from the parent interface
+  wrapperClassName?: string;
+}
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, type, ...props }, ref) => {
     return (
@@ -22,6 +22,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     );
   }
 );
+
 Input.displayName = "Input";
 
 export { Input };

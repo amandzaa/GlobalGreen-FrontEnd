@@ -1,6 +1,7 @@
-// pages/index.tsx
+// pages/seller-homepage/index.tsx
 import React, { useState } from "react";
 import Head from "next/head";
+import Image from "next/image";
 import AuthModals from "@/component/modal/AuthModal";
 import NavbarSeller from "@/component/layout-productpage/NavbarSeller";
 import HeroBanner, { BannerSlide } from "@/component/heropage/HeroBanner";
@@ -41,7 +42,7 @@ const Home: React.FC = () => {
     {
       title: "Explore Our Spring Collection",
       description:
-        "Step into the season with fresh, vibrant styles curated to refresh your store’s look. Discover top-selling trends, limited-edition pieces, and exclusive discounts on our new spring arrivals—available for a limited time only.",
+        "Step into the season with fresh, vibrant styles curated to refresh your store's look. Discover top-selling trends, limited-edition pieces, and exclusive discounts on our new spring arrivals—available for a limited time only.",
       buttonText: "Shop Now",
       imageSrc: "https://picsum.photos/id/1011/800/400",
       buttonLink: "/spring-collection",
@@ -256,7 +257,7 @@ const Home: React.FC = () => {
                       have an account
                     </li>
                     <li>Complete your personal data and verify your email</li>
-                    <li>Click "Open Store" on the profile page</li>
+                    <li>Click &quot;Open Store&quot; on the profile page</li>
                     <li>Fill in store information such as name and address</li>
                     <li>Upload product photos and set prices</li>
                     <li>Set up available shipping methods</li>
@@ -337,7 +338,7 @@ const Home: React.FC = () => {
               {openSections.shipping && (
                 <div className="px-6 py-4 text-gray-700 border-t border-gray-100">
                   <p className="mb-4">
-                    GlobalGreen's Free Shipping program is a major attraction
+                    GlobalGreen&apos;s Free Shipping program is a major attraction
                     for buyers. By activating this feature in your store, you
                     can increase sales conversion by up to 3 times!
                   </p>
@@ -396,11 +397,14 @@ const Home: React.FC = () => {
                   key={index}
                   className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow"
                 >
-                  <img
-                    src={article.image}
-                    alt={article.title}
-                    className="w-full h-48 object-cover"
-                  />
+                  <div className="relative w-full h-48">
+                    <Image
+                      src={article.image}
+                      alt={article.title}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
                   <div className="p-5">
                     <span className="inline-block bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded mb-2">
                       {article.category}

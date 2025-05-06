@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Download, UploadCloud, FileText, Loader } from "lucide-react";
+import { Download, UploadCloud, Loader } from "lucide-react";
 
 // Define TypeScript interfaces
 interface Product {
