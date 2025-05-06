@@ -9,6 +9,7 @@ const LoginPage: React.FC = () => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [rememberMe, setRememberMe] = useState<boolean>(false);
+  const [role, setRole] = useState<'buyer' | 'seller'>('buyer');
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { loading, error } = useSelector((state: RootState) => state.auth);
@@ -23,10 +24,15 @@ const LoginPage: React.FC = () => {
         id: '1',
         name: 'Test User',
         email: email,
+        role: role,
       };
       
       dispatch(loginSuccess(mockUser));
-      navigate('/');
+      if (role === 'seller') {
+        navigate('/seller/dashboard');
+      } else {
+        navigate('/');
+      }
     } catch (err) {
       dispatch(loginFailure('Invalid email or password'));
     }
@@ -73,6 +79,18 @@ const LoginPage: React.FC = () => {
                 disabled={loading}
               />
             </div>
+          </div>
+          <div className="form-group">
+            <label htmlFor="role">Login as</label>
+            <select
+              id="role"
+              value={role}
+              onChange={(e) => setRole(e.target.value as 'buyer' | 'seller')}
+              disabled={loading}
+            >
+              <option value="buyer">Buyer</option>
+              <option value="seller">Seller</option>
+            </select>
           </div>
           <div className="remember-me">
             <input

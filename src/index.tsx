@@ -5,6 +5,8 @@ import { Provider } from 'react-redux'; // Import Provider
 import { store } from './store/store'; // Import your Redux store
 import App from './App';
 import './index.css';
+import { ThemeProvider } from './contexts/ThemeContext';
+import { WishlistProvider } from './contexts/WishlistContext';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -13,9 +15,13 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <Provider store={store}> {/* Wrap App with Provider */}
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
+      <ThemeProvider>
+        <WishlistProvider>
+          <BrowserRouter>
+            <App />
+          </BrowserRouter>
+        </WishlistProvider>
+      </ThemeProvider>
     </Provider>
   </React.StrictMode>
 );

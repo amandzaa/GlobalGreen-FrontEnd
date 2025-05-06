@@ -10,6 +10,7 @@ interface FormData {
   email: string;
   password: string;
   confirmPassword: string;
+  role: 'buyer' | 'seller';
 }
 
 const RegistrationPage: React.FC = () => {
@@ -18,12 +19,13 @@ const RegistrationPage: React.FC = () => {
     email: '',
     password: '',
     confirmPassword: '',
+    role: 'buyer',
   });
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { loading, error } = useSelector((state: RootState) => state.auth);
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
@@ -47,6 +49,7 @@ const RegistrationPage: React.FC = () => {
         id: '1',
         name: formData.name,
         email: formData.email,
+        role: formData.role,
       };
       
       dispatch(registerSuccess(mockUser));
@@ -133,6 +136,19 @@ const RegistrationPage: React.FC = () => {
                 disabled={loading}
               />
             </div>
+          </div>
+          <div className="form-group">
+            <label htmlFor="role">Register as</label>
+            <select
+              id="role"
+              name="role"
+              value={formData.role}
+              onChange={handleChange}
+              disabled={loading}
+            >
+              <option value="buyer">Buyer</option>
+              <option value="seller">Seller</option>
+            </select>
           </div>
           <button type="submit" className="submit-button" disabled={loading}>
             {loading ? 'Creating account...' : 'Create account'}
