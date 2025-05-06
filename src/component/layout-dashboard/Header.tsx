@@ -32,21 +32,21 @@ interface HeaderProps {
   messageCount?: number;
   userName?: string;
   onSearch?: (query: string) => void;
-  toggleSidebar?: () => void;
+  // toggleSidebar?: () => void;
 }
 
 export default function Header({
   notificationCount,
   messageCount = 0,
   userName = "Jane Smith",
-  onSearch,
-  toggleSidebar
+  onSearch
+  // toggleSidebar
 }: HeaderProps) {
   const [showNotifications, setShowNotifications] = useState(false);
   const [showMessages, setShowMessages] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [, setShowProfileMenu] = useState(false);
   const [showMobileSearch, setShowMobileSearch] = useState(false);
   const notificationsPanelRef = useRef<HTMLDivElement | null>(null);
   const profileMenuRef = useRef<HTMLDivElement | null>(null);

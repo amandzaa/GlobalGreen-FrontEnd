@@ -1,19 +1,41 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
-import { persistStore, persistReducer } from 'redux-persist';
-import storage from 'redux-persist/lib/storage';
+import { persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
+
 import authReducer from './features/auth/authSlice';
+import cartReducer from './features/cart/cartSlice';
+
+// Dynamic import for storage to handle SSR
+const createNoopStorage = () => {
+  return {
+    getItem(_key: string) {
+      return Promise.resolve(null);
+    },
+    setItem(_key: string, value: any) {
+      return Promise.resolve(value);
+    },
+    removeItem(_key: string) {
+      return Promise.resolve();
+    }
+  };
+};
+
+// Use proper storage based on environment
+const storage = typeof window !== 'undefined' 
+  ? require('redux-persist/lib/storage').default 
+  : createNoopStorage();
 
 // Configure Redux Persist
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['auth'], // only auth will be persisted
+  whitelist: ['auth', 'cart'], // persist both auth and cart
 };
 
 // Combine all reducers
 const rootReducer = combineReducers({
   auth: authReducer,
+  cart: cartReducer,
   // Add other reducers here as your application grows
 });
 
@@ -26,10 +48,11 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        // Ignore Redux Persist actions
-        ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE'],
+        // Use constants instead of string literals for better type safety
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
       },
     }),
+  devTools: process.env.NODE_ENV !== 'production',
 });
 
 // Create the persistor
