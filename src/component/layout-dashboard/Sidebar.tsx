@@ -150,8 +150,9 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   const [collapsedSections, setCollapsedSections] = useState(initialCollapsedState);
   const [hoveredSection, setHoveredSection] = useState<string | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
-
+  
   const toggleSection = (sectionId: string) => {
     setCollapsedSections({
       ...collapsedSections,
@@ -184,9 +185,13 @@ const Sidebar: React.FC<SidebarProps> = ({
     return null;
   }
 
+  // Colors for styling - can be adjusted to match your theme
+  const activeHighlightColor = colors.secondary || '#4cceac';
+  const hoverTransition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+
   return (
     <aside 
-      className={`${isMinimized ? 'w-16' : 'w-64'} h-screen sticky transition-all duration-300 ease-in-out flex flex-col ${
+      className={`${isMinimized ? 'w-16' : 'w-64'} h-screen sticky transition-all duration-500 ease-in-out flex flex-col ${
         isMobileScreen ? 'fixed z-40 shadow-xl' : 'shadow-lg'
       }`}
       style={{ 
@@ -204,7 +209,8 @@ const Sidebar: React.FC<SidebarProps> = ({
         )}
         <button 
           onClick={toggleMinimize}
-          className="p-1 rounded-md hover:bg-mediumGreen transition-colors duration-200 text-white"
+          className="p-1 rounded-md hover:bg-mediumGreen transition-all duration-300 ease-in-out text-white hover:text-secondary hover:scale-105"
+          style={{ transition: 'all 0.25s ease' }}
         >
           {isMinimized ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
         </button>
@@ -229,25 +235,38 @@ const Sidebar: React.FC<SidebarProps> = ({
                   onClick={() => toggleSection(section.id)}
                   onMouseEnter={() => setHoveredSection(section.id)}
                   onMouseLeave={() => setHoveredSection(null)}
-                  className={`flex items-center justify-between w-full px-4 py-3 text-sm transition-all duration-200 rounded-md ${
-                    isHovered ? 'bg-mediumGreen' : sectionActive ? 'bg-mediumGreen' : 'hover:bg-mediumGreen/50'
+                  className={`flex items-center justify-between w-full px-4 py-3 text-sm rounded-md ${
+                    sectionActive 
+                      ? 'bg-mediumGreen font-medium' 
+                      : isHovered 
+                        ? 'bg-mediumGreen/70' 
+                        : 'hover:bg-mediumGreen/50'
                   }`}
                   style={{ 
-                    color: colors.white,
+                    color: sectionActive ? activeHighlightColor : isHovered ? activeHighlightColor : colors.white,
                     margin: isMinimized ? '0 4px' : '0 8px',
                     width: isMinimized ? 'calc(100% - 8px)' : 'calc(100% - 16px)',
+                    borderLeft: sectionActive ? `3px solid ${activeHighlightColor}` : isHovered ? `3px solid ${activeHighlightColor}` : `3px solid transparent`,
+                    paddingLeft: sectionActive || isHovered ? (isMinimized ? '13px' : '13px') : (isMinimized ? '13px' : '13px'),
+                    transition: 'all 0.25s ease',
+                    boxShadow: sectionActive || isHovered ? '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)' : 'none',
+                    transform: isHovered && !sectionActive ? 'translateX(3px)' : 'translateX(0)',
                   }}
                 >
                   <div className="flex items-center">
-                    <span className="mr-2">{section.icon}</span>
+                    <span className={`mr-2 ${isHovered && !sectionActive ? 'transform scale-110' : ''}`} style={{ transition: 'transform 0.25s ease' }}>
+                      {section.icon}
+                    </span>
                     {!isMinimized && <span>{section.name}</span>}
                   </div>
                   {!isMinimized && (
-                    collapsedSections[section.id] ? (
-                      <ChevronRight size={16} className="transition-transform duration-300" />
-                    ) : (
-                      <ChevronDown size={16} className="transition-transform duration-300" />
-                    )
+                    <span className={`transform ${isHovered ? 'translate-x-1' : ''}`} style={{ transition: 'transform 0.25s ease' }}>
+                      {collapsedSections[section.id] ? (
+                        <ChevronRight size={16} className="transition-transform duration-300" />
+                      ) : (
+                        <ChevronDown size={16} className="transition-transform duration-300" />
+                      )}
+                    </span>
                   )}
                 </button>
                 
@@ -259,11 +278,12 @@ const Sidebar: React.FC<SidebarProps> = ({
                       maxHeight: !collapsedSections[section.id] ? '500px' : '0px',
                       opacity: !collapsedSections[section.id] ? 1 : 0,
                       transform: !collapsedSections[section.id] ? 'translateY(0)' : 'translateY(-10px)',
+                      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                     }}
                   >
                     {section.items.map((item) => {
                       const itemActive = isActive(item.href);
-                      // const isItemHovered = hoveredItem === item.href;
+                      const isItemHovered = hoveredItem === item.href;
                       
                       return (
                         <Link 
@@ -271,16 +291,35 @@ const Sidebar: React.FC<SidebarProps> = ({
                           href={item.href}
                           onMouseEnter={() => setHoveredItem(item.href)}
                           onMouseLeave={() => setHoveredItem(null)}
-                          className={`px-4 py-2 text-sm transition-all duration-200 my-1 rounded-md relative flex items-center ${
-                            itemActive ? 'bg-mediumGreen text-white' : 'text-white hover:bg-mediumGreen/50'
+                          className={`px-4 py-2 text-sm my-1 rounded-md relative flex items-center ${
+                            itemActive ? 'bg-mediumGreen font-medium' : 'text-white hover:bg-mediumGreen/50'
                           }`}
                           style={{ 
                             marginLeft: '8px',
                             width: 'calc(100% - 16px)',
+                            color: itemActive ? activeHighlightColor : isItemHovered ? activeHighlightColor : colors.white,
+                            borderLeft: itemActive ? `3px solid ${activeHighlightColor}` : isItemHovered ? `3px solid ${activeHighlightColor}` : `3px solid transparent`,
+                            paddingLeft: itemActive || isItemHovered ? '13px' : '13px',
+                            transition: 'all 0.25s ease',
+                            boxShadow: itemActive || isItemHovered ? '0 1px 2px rgba(0,0,0,0.12)' : 'none',
+                            transform: isItemHovered && !itemActive ? 'translateX(3px)' : 'translateX(0)',
                           }}
                         >
-                          <span className="mr-2">{item.icon}</span>
+                          <span className={`mr-2 ${isItemHovered && !itemActive ? 'transform scale-110' : ''}`} style={{ transition: 'transform 0.25s ease' }}>
+                            {item.icon}
+                          </span>
                           <span>{item.name}</span>
+                          
+                          {/* Visual active indicator dot for active items */}
+                          <span 
+                            className="absolute right-3 w-2 h-2 rounded-full" 
+                            style={{ 
+                              backgroundColor: itemActive ? activeHighlightColor : isItemHovered ? activeHighlightColor : 'transparent',
+                              transform: itemActive || isItemHovered ? 'scale(1)' : 'scale(0)',
+                              opacity: itemActive ? 1 : isItemHovered ? 0.7 : 0,
+                              transition: 'all 0.25s ease',
+                            }}
+                          />
                         </Link>
                       );
                     })}
@@ -297,17 +336,61 @@ const Sidebar: React.FC<SidebarProps> = ({
             <p className="text-lightBlue uppercase text-xs font-semibold mb-2">Account</p>
           )}
           
-          <div className={`p-2 hover:bg-mediumGreen/50 rounded-md cursor-pointer flex items-center text-white my-1 ${
-            isMinimized ? 'justify-center' : ''
-          }`}>
-            <Settings size={18} className={isMinimized ? '' : 'mr-2'} />
+          <div 
+            className={`p-2 hover:bg-mediumGreen/50 rounded-md cursor-pointer flex items-center text-white my-1 ${
+              isMinimized ? 'justify-center' : ''
+            }`}
+            style={{ 
+              transition: 'all 0.25s ease',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateX(3px)';
+              e.currentTarget.style.color = activeHighlightColor;
+              e.currentTarget.style.borderLeft = `3px solid ${activeHighlightColor}`;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateX(0)';
+              e.currentTarget.style.color = colors.white;
+              e.currentTarget.style.borderLeft = '3px solid transparent';
+            }}
+          >
+            <Settings size={18} className={`${isMinimized ? '' : 'mr-2'} transition-transform duration-250`}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'scale(1.1) rotate(15deg)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'scale(1) rotate(0deg)';
+              }}
+            />
             {!isMinimized && <span>Settings</span>}
           </div>
           
-          <div className={`p-2 hover:bg-mediumGreen/50 rounded-md cursor-pointer flex items-center text-white my-1 ${
-            isMinimized ? 'justify-center' : ''
-          }`}>
-            <LogOut size={18} className={isMinimized ? '' : 'mr-2'} />
+          <div 
+            className={`p-2 hover:bg-mediumGreen/50 rounded-md cursor-pointer flex items-center text-white my-1 ${
+              isMinimized ? 'justify-center' : ''
+            }`}
+            style={{ 
+              transition: 'all 0.25s ease',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateX(3px)';
+              e.currentTarget.style.color = activeHighlightColor;
+              e.currentTarget.style.borderLeft = `3px solid ${activeHighlightColor}`;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateX(0)';
+              e.currentTarget.style.color = colors.white;
+              e.currentTarget.style.borderLeft = '3px solid transparent';
+            }}
+          >
+            <LogOut size={18} className={`${isMinimized ? '' : 'mr-2'} transition-transform duration-250`}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'scale(1.1) translateX(2px)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'scale(1) translateX(0)';
+              }}
+            />
             {!isMinimized && <span>Log Out</span>}
           </div>
         </div>

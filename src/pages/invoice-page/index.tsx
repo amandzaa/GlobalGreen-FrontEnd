@@ -49,6 +49,7 @@ interface InvoiceData {
 }
 
 // Define a proper type for CSS property handling
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 type CSSPropertyString = keyof Pick<CSSStyleDeclaration, 'color' | 'backgroundColor' | 'borderColor'>;
 type StyleValue = string | null;
 

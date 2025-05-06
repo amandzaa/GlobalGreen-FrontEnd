@@ -26,7 +26,7 @@ import { CustomProductData } from "@/component/uploadimage/types";
 export default function ProductManagementPage() {
 
   // States for product management
-  const [products, setProducts] = useState<CustomProductData[]>([]);
+  const [, setProducts] = useState<CustomProductData[]>([]);
   const [isEditMode, setIsEditMode] = useState(false);
   const [product, setProduct] = useState<ProductData & { id?: string }>({
     ...defaultProductData,

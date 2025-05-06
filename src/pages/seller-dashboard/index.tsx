@@ -267,7 +267,7 @@ export default function SellerDashboard() {
     >
       <div
         className="min-h-screen"
-        style={{ backgroundColor: colors.secondary }}
+        style={{ backgroundColor: colors.paleGreen }}
       >
         {/* Main Dashboard Content */}
         <main className="container mx-auto p-4">

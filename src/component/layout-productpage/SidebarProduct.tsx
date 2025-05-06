@@ -1,320 +1,233 @@
-'use client';
+import { useState } from 'react';
+import { Search, ChevronDown, ChevronUp, Sun, Leaf, Filter } from 'lucide-react';
 
-import React, { useState, useEffect } from 'react';
-import { 
-  ChevronDown, 
-  ChevronRight, 
-  ShoppingBag, 
-  Package, 
-  Tag, 
-  DollarSign, 
-  Store, 
-  Settings, 
-  LogOut, 
-  ChevronLeft,
-  LayoutDashboard
-} from 'lucide-react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { colors } from '@/types';
-
-// Define the structure for menu items
-interface MenuItem {
-  name: string;
-  href: string;
-  icon: React.ReactNode;
-}
-
-// Define the structure for menu sections
-interface MenuSection {
-  name: string;
+// Define our types
+interface Category {
   id: string;
-  items: MenuItem[];
-  icon: React.ReactNode;
+  name: string;
 }
 
-interface SidebarProps {
-  defaultCollapsed?: {
-    [key: string]: boolean;
-  };
-  activePath?: string;
-  navbarHeight?: number;
-  isMobileOpen?: boolean; // Prop to control mobile visibility
-}
+type ExpandedSections = {
+  categories: boolean;
+  seasonal: boolean;
+  type: boolean;
+};
 
-const Sidebar: React.FC<SidebarProps> = ({ 
-  defaultCollapsed = {}, 
-  activePath,
-  navbarHeight = 64,
-  isMobileOpen = false // Default to closed on mobile
-}) => {
-  const pathname = usePathname();
-  const currentPath = activePath || pathname;
-  const [isMinimized, setIsMinimized] = useState(false);
-  const [isMobileScreen, setIsMobileScreen] = useState(false);
-  const [isTabletScreen, setIsTabletScreen] = useState(false);
-  
-  // Check screen size and set responsive states
-  useEffect(() => {
-    const checkScreenSize = () => {
-      const width = window.innerWidth;
-      setIsMobileScreen(width < 768); // 768px is the md breakpoint
-      setIsTabletScreen(width >= 768 && width < 1024); // 768-1024px is typical tablet size
-      
-      // Auto-minimize on tablet
-      if (width >= 768 && width < 1024) {
-        setIsMinimized(true);
-      }
-    };
-    
-    // Initial check
-    checkScreenSize();
-    
-    // Add event listener for window resize
-    window.addEventListener('resize', checkScreenSize);
-    
-    // Cleanup
-    return () => window.removeEventListener('resize', checkScreenSize);
-  }, []);
+type SeasonalOption = 'all' | 'in-season';
+type ProductType = 'all' | 'organic' | 'conventional';
 
-  // Define the menu structure with icons
-  const menuSections: MenuSection[] = [
-    {
-      name: 'Dashboard',
-      id: 'dashboard',
-      icon: <LayoutDashboard size={18} />,
-      items: [
-        { name: 'Overview', href: '/seller-dashboard', icon: <LayoutDashboard size={16} /> },
-        // { name: 'Analytics', href: '/seller-dashboard/analytics', icon: <BarChart3 size={16} /> },
-      ],
-    },
-    {
-      name: 'Order',
-      id: 'order',
-      icon: <Package size={18} />,
-      items: [
-        { name: 'My Order', href: '/seller-dashboard/my-order', icon: <Package size={16} /> },
-        { name: 'Refund/Cancellation', href: '/seller-dashboard/refund-cancellation', icon: <Package size={16} /> },
-        { name: 'Shipping Settings', href: '/seller-dashboard/shipping-settings', icon: <Package size={16} /> },
-      ],
-    },
-    {
-      name: 'Product',
-      id: 'product',
-      icon: <ShoppingBag size={18} />,
-      items: [
-        { name: 'My Products', href: '/seller-dashboard/my-products', icon: <ShoppingBag size={16} /> },
-        { name: 'Add New Product', href: '/seller-dashboard/add-product', icon: <ShoppingBag size={16} /> },
-        { name: 'Edit Product', href: '/seller-dashboard/edit-product', icon: <ShoppingBag size={16} /> },
-      ],
-    },
-    {
-      name: 'Voucher',
-      id: 'voucher',
-      icon: <Tag size={18} />,
-      items: [
-        { name: 'My Vouchers', href: '/seller-dashboard/my-vouchers', icon: <Tag size={16} /> },
-        { name: 'Add New Voucher', href: '/seller-dashboard/add-voucher', icon: <Tag size={16} /> },
-        { name: 'Edit Voucher', href: '/seller-dashboard/edit-voucher', icon: <Tag size={16} /> },
-      ],
-    },
-    {
-      name: 'Finance',
-      id: 'finance',
-      icon: <DollarSign size={18} />,
-      items: [
-        { name: 'My Income', href: '/seller-dashboard/my-income', icon: <DollarSign size={16} /> },
-      ],
-    },
-    {
-      name: 'Store',
-      id: 'store',
-      icon: <Store size={18} />,
-      items: [
-        { name: 'Store Settings', href: '/seller-dashboard/store-settings', icon: <Store size={16} /> },
-        { name: 'Account & Security', href: '/seller-dashboard/account-security', icon: <Settings size={16} /> },
-      ],
-    },
+export default function Sidebar() {
+  const [expanded, setExpanded] = useState<ExpandedSections>({
+    categories: true,
+    seasonal: true,
+    type: true
+  });
+  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedSeasonal, setSelectedSeasonal] = useState<SeasonalOption>('all');
+  const [selectedType, setSelectedType] = useState<ProductType>('all');
+  const [isVisible, setIsVisible] = useState<boolean>(true);
+
+  const categories: Category[] = [
+    { id: 'fruits', name: 'Fruits' },
+    { id: 'vegetables', name: 'Vegetables' },
+    { id: 'exotic', name: 'Exotic Produce' },
+    { id: 'organic', name: 'Organic Selection' }
   ];
 
-  // Auto-expand section with active item on mount
-  const initialCollapsedState: {[key: string]: boolean} = {};
-  menuSections.forEach(section => {
-    // Check if section has active item to auto-expand it
-    const hasActiveItem = section.items.some(item => currentPath === item.href);
-    
-    initialCollapsedState[section.id] = defaultCollapsed[section.id] !== undefined 
-      ? defaultCollapsed[section.id] 
-      : !hasActiveItem; // Expand active sections by default
-  });
+  const toggleCategory = (categoryId: string): void => {
+    if (selectedCategories.includes(categoryId)) {
+      setSelectedCategories(selectedCategories.filter(id => id !== categoryId));
+    } else {
+      setSelectedCategories([...selectedCategories, categoryId]);
+    }
+  };
 
-  const [collapsedSections, setCollapsedSections] = useState(initialCollapsedState);
-  const [hoveredSection, setHoveredSection] = useState<string | null>(null);
-  const [hoveredItem, setHoveredItem] = useState<string | null>(null);
-
-  const toggleSection = (sectionId: string) => {
-    setCollapsedSections({
-      ...collapsedSections,
-      [sectionId]: !collapsedSections[sectionId],
+  const toggleExpanded = (section: keyof ExpandedSections): void => {
+    setExpanded({
+      ...expanded,
+      [section]: !expanded[section]
     });
   };
 
-  // Toggle sidebar minimize/maximize
-  const toggleMinimize = () => {
-    setIsMinimized(!isMinimized);
-  };
-
-  // Check if a menu item is active
-  const isActive = (href: string) => {
-    return currentPath === href;
-  };
-
-  // Check if section has active item
-  const sectionHasActiveItem = (section: MenuSection) => {
-    return section.items.some(item => isActive(item.href));
-  };
-
-  // If on tablet, don't render the sidebar at all
-  if (isTabletScreen) {
-    return null;
-  }
-
-  // If on mobile and sidebar not open, don't render
-  if (isMobileScreen && !isMobileOpen) {
-    return null;
-  }
+  // Animation classes based on visibility state
+  const sidebarClasses = `w-64 bg-white p-4 h-screen border-r border-gray-200 overflow-y-auto 
+    transform transition-all duration-300 ease-in-out ${isVisible ? 'translate-x-0' : '-translate-x-full'}`;
 
   return (
-    <aside 
-      className={`${isMinimized ? 'w-16' : 'w-64'} h-screen sticky transition-all duration-300 ease-in-out flex flex-col ${
-        isMobileScreen ? 'fixed z-40 shadow-xl' : 'shadow-lg'
-      }`}
-      style={{ 
-        backgroundColor: colors.darkGreen,
-        top: `${navbarHeight}px`,
-        height: `calc(100vh - ${navbarHeight}px)`,
-        marginTop: 0,
-        left: 0,
-      }}
-    >
-      {/* Logo and Toggle Button */}
-      <div className="flex items-center justify-between p-4 border-b border-opacity-20 border-white">
-        {!isMinimized && (
-          <h1 className="text-xl font-bold text-white">GlobalGreen</h1>
-        )}
+    <div className={sidebarClasses}>
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-lg font-semibold text-green-700">Filter Products</h2>
         <button 
-          onClick={toggleMinimize}
-          className="p-1 rounded-md hover:bg-mediumGreen transition-colors duration-200 text-white"
+          onClick={() => setIsVisible(!isVisible)}
+          className="text-gray-500 hover:text-gray-700 focus:outline-none"
         >
-          {isMinimized ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
+          {isVisible ? '←' : '→'}
         </button>
       </div>
-
-      {/* Main Menu Area - With Flex Grow to Push Account Section to Bottom */}
-      <div className="flex flex-col h-full">
-        <nav className="py-4 flex-grow overflow-y-auto">
-          {/* Main Menu Label */}
-          {!isMinimized && (
-            <p className="text-lightBlue uppercase text-xs font-semibold mb-2 pl-4">Main Menu</p>
-          )}
-
-          {/* Menu Sections */}
-          {menuSections.map((section) => {
-            const sectionActive = sectionHasActiveItem(section);
-            const isHovered = hoveredSection === section.id;
-            
-            return (
-              <div key={section.id} className="mb-1">
-                <button 
-                  onClick={() => toggleSection(section.id)}
-                  onMouseEnter={() => setHoveredSection(section.id)}
-                  onMouseLeave={() => setHoveredSection(null)}
-                  className={`flex items-center justify-between w-full px-4 py-3 text-sm transition-all duration-200 rounded-md ${
-                    isHovered ? 'bg-mediumGreen' : sectionActive ? 'bg-mediumGreen' : 'hover:bg-mediumGreen/50'
-                  }`}
-                  style={{ 
-                    color: colors.white,
-                    margin: isMinimized ? '0 4px' : '0 8px',
-                    width: isMinimized ? 'calc(100% - 8px)' : 'calc(100% - 16px)',
-                  }}
-                >
-                  <div className="flex items-center">
-                    <span className="mr-2">{section.icon}</span>
-                    {!isMinimized && <span>{section.name}</span>}
-                  </div>
-                  {!isMinimized && (
-                    collapsedSections[section.id] ? (
-                      <ChevronRight size={16} className="transition-transform duration-300" />
-                    ) : (
-                      <ChevronDown size={16} className="transition-transform duration-300" />
-                    )
-                  )}
-                </button>
-                
-                {/* Only show submenu when not minimized */}
-                {!isMinimized && (
-                  <div 
-                    className="pl-4 overflow-hidden transition-all duration-300 ease-in-out"
-                    style={{ 
-                      maxHeight: !collapsedSections[section.id] ? '500px' : '0px',
-                      opacity: !collapsedSections[section.id] ? 1 : 0,
-                      transform: !collapsedSections[section.id] ? 'translateY(0)' : 'translateY(-10px)',
-                    }}
-                  >
-                    {section.items.map((item) => {
-                      const itemActive = isActive(item.href);
-                      const isItemHovered = hoveredItem === item.href;
-                      
-                      return (
-                        <Link 
-                          key={item.href} 
-                          href={item.href}
-                          onMouseEnter={() => setHoveredItem(item.href)}
-                          onMouseLeave={() => setHoveredItem(null)}
-                          className={`px-4 py-2 text-sm transition-all duration-200 my-1 rounded-md relative flex items-center ${
-                            itemActive ? 'bg-mediumGreen text-white' : 
-                            isItemHovered ? 'bg-mediumGreen/50 text-white' : 'text-white hover:bg-mediumGreen/50'
-                          }`}
-                          style={{ 
-                            marginLeft: '8px',
-                            width: 'calc(100% - 16px)',
-                          }}
-                        >
-                          <span className="mr-2">{item.icon}</span>
-                          <span>{item.name}</span>
-                        </Link>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </nav>
-
-        {/* Bottom Actions - Now in a fixed position at the bottom */}
-        <div className="px-4 py-2 border-t border-white/20">
-          {!isMinimized && (
-            <p className="text-lightBlue uppercase text-xs font-semibold mb-2">Account</p>
-          )}
-          
-          <div className={`p-2 hover:bg-mediumGreen/50 rounded-md cursor-pointer flex items-center text-white my-1 ${
-            isMinimized ? 'justify-center' : ''
-          }`}>
-            <Settings size={18} className={isMinimized ? '' : 'mr-2'} />
-            {!isMinimized && <span>Settings</span>}
+      
+      {/* Search Bar */}
+      <div className="mb-6 relative">
+        <div className="relative">
+          <input
+            type="text"
+            placeholder="Search fruits & vegetables..."
+            className="w-full py-2 pl-10 pr-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-200 ease-in-out hover:border-green-300"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <Search className="absolute left-3 top-2.5 text-gray-400 h-5 w-5" />
+        </div>
+      </div>
+      
+      {/* Categories */}
+      <div className="mb-6 border-b border-gray-200 pb-4">
+        <div 
+          className="flex items-center justify-between cursor-pointer mb-2"
+          onClick={() => toggleExpanded('categories')}
+        >
+          <h3 className="font-medium text-gray-800 flex items-center">
+            <Filter className="mr-2 h-4 w-4" />
+            Categories
+          </h3>
+          {expanded.categories ? 
+            <ChevronUp className="h-4 w-4 transition-transform duration-200" /> : 
+            <ChevronDown className="h-4 w-4 transition-transform duration-200" />
+          }
+        </div>
+        
+        <div 
+          className={`pl-2 mt-2 space-y-1 overflow-hidden transition-all duration-300 ease-in-out ${
+            expanded.categories ? 'max-h-60 opacity-100' : 'max-h-0 opacity-0'
+          }`}
+        >
+          {categories.map((category) => (
+            <div key={category.id} className="flex items-center transform transition hover:translate-x-1 duration-200">
+              <input
+                type="checkbox"
+                id={category.id}
+                checked={selectedCategories.includes(category.id)}
+                onChange={() => toggleCategory(category.id)}
+                className="mr-2 h-4 w-4 rounded text-green-600 focus:ring-green-500"
+              />
+              <label htmlFor={category.id} className="text-sm text-gray-700">{category.name}</label>
+            </div>
+          ))}
+        </div>
+      </div>
+      
+      {/* Seasonal Filter */}
+      <div className="mb-6 border-b border-gray-200 pb-4">
+        <div 
+          className="flex items-center justify-between cursor-pointer mb-2"
+          onClick={() => toggleExpanded('seasonal')}
+        >
+          <h3 className="font-medium text-gray-800 flex items-center">
+            <Sun className="mr-2 h-4 w-4" />
+            Seasonal
+          </h3>
+          {expanded.seasonal ? 
+            <ChevronUp className="h-4 w-4 transition-transform duration-200" /> : 
+            <ChevronDown className="h-4 w-4 transition-transform duration-200" />
+          }
+        </div>
+        
+        <div 
+          className={`pl-2 mt-2 space-y-1 overflow-hidden transition-all duration-300 ease-in-out ${
+            expanded.seasonal ? 'max-h-24 opacity-100' : 'max-h-0 opacity-0'
+          }`}
+        >
+          <div className="flex items-center transform transition hover:translate-x-1 duration-200">
+            <input
+              type="radio"
+              id="all-seasons"
+              name="seasonal"
+              value="all"
+              checked={selectedSeasonal === 'all'}
+              onChange={() => setSelectedSeasonal('all')}
+              className="mr-2 h-4 w-4 text-green-600 focus:ring-green-500"
+            />
+            <label htmlFor="all-seasons" className="text-sm text-gray-700">All Items</label>
           </div>
-          
-          <div className={`p-2 hover:bg-mediumGreen/50 rounded-md cursor-pointer flex items-center text-white my-1 ${
-            isMinimized ? 'justify-center' : ''
-          }`}>
-            <LogOut size={18} className={isMinimized ? '' : 'mr-2'} />
-            {!isMinimized && <span>Log Out</span>}
+          <div className="flex items-center transform transition hover:translate-x-1 duration-200">
+            <input
+              type="radio"
+              id="in-season"
+              name="seasonal"
+              value="in-season"
+              checked={selectedSeasonal === 'in-season'}
+              onChange={() => setSelectedSeasonal('in-season')}
+              className="mr-2 h-4 w-4 text-green-600 focus:ring-green-500"
+            />
+            <label htmlFor="in-season" className="text-sm text-gray-700">In Season</label>
           </div>
         </div>
       </div>
-    </aside>
+      
+      {/* Organic/Conventional */}
+      <div className="mb-6 border-b border-gray-200 pb-4">
+        <div 
+          className="flex items-center justify-between cursor-pointer mb-2"
+          onClick={() => toggleExpanded('type')}
+        >
+          <h3 className="font-medium text-gray-800 flex items-center">
+            <Leaf className="mr-2 h-4 w-4" />
+            Product Type
+          </h3>
+          {expanded.type ? 
+            <ChevronUp className="h-4 w-4 transition-transform duration-200" /> : 
+            <ChevronDown className="h-4 w-4 transition-transform duration-200" />
+          }
+        </div>
+        
+        <div 
+          className={`pl-2 mt-2 space-y-1 overflow-hidden transition-all duration-300 ease-in-out ${
+            expanded.type ? 'max-h-36 opacity-100' : 'max-h-0 opacity-0'
+          }`}
+        >
+          <div className="flex items-center transform transition hover:translate-x-1 duration-200">
+            <input
+              type="radio"
+              id="all-types"
+              name="type"
+              value="all"
+              checked={selectedType === 'all'}
+              onChange={() => setSelectedType('all')}
+              className="mr-2 h-4 w-4 text-green-600 focus:ring-green-500"
+            />
+            <label htmlFor="all-types" className="text-sm text-gray-700">All Items</label>
+          </div>
+          <div className="flex items-center transform transition hover:translate-x-1 duration-200">
+            <input
+              type="radio"
+              id="organic"
+              name="type"
+              value="organic"
+              checked={selectedType === 'organic'}
+              onChange={() => setSelectedType('organic')}
+              className="mr-2 h-4 w-4 text-green-600 focus:ring-green-500"
+            />
+            <label htmlFor="organic" className="text-sm text-gray-700">Organic Only</label>
+          </div>
+          <div className="flex items-center transform transition hover:translate-x-1 duration-200">
+            <input
+              type="radio"
+              id="conventional"
+              name="type"
+              value="conventional"
+              checked={selectedType === 'conventional'}
+              onChange={() => setSelectedType('conventional')}
+              className="mr-2 h-4 w-4 text-green-600 focus:ring-green-500"
+            />
+            <label htmlFor="conventional" className="text-sm text-gray-700">Conventional</label>
+          </div>
+        </div>
+      </div>
+      
+      {/* Apply Filters Button */}
+      <button className="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg font-medium transform transition duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50">
+        Apply Filters
+      </button>
+    </div>
   );
-};
-
-export default Sidebar;
+}
