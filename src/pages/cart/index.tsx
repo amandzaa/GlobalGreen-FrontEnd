@@ -10,6 +10,7 @@ import CartSummary from '@/component/cart/CartSummary';
 import CartTable from '@/component/cart/CartTable';
 import EmptyCart from '@/component/cart/EmptyCart';
 import { CartProduct } from '@/types/cart';
+import NavbarGlobalGreen from '@/component/layout-productpage/NavbarSeller';
 
 // Error fallback component to handle any crashes gracefully
 const ErrorFallback = ({ error, resetErrorBoundary }: { error: Error, resetErrorBoundary: () => void }) => {
@@ -105,6 +106,7 @@ const CartPage: NextPage = () => {
 
   return (
     <>
+    <NavbarGlobalGreen/>
       <Head>
         <title>Shopping Cart</title>
       </Head>

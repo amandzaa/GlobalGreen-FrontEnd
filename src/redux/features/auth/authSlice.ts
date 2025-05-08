@@ -2,23 +2,25 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import axios, { AxiosError } from 'axios';
 
-// Define types for better TypeScript support
 interface User {
-  id: string;
+  user_id: string;
   email: string;
   name?: string;
   first_name?: string;
   last_name?: string;
-  imageUrl?: string;
-  // Add more user properties as needed
+  image_url?: string;
+  role?: string;
+  phone?: string;
+  created_at?: string;
 }
 
-interface RegisterData {
+export interface RegisterData {
   email: string;
   password: string;
   firstName: string;
   lastName: string;
-  phoneNumber?: string;
+  phone?: string;
+  role?:string;
 }
 
 interface AuthState {
@@ -38,8 +40,9 @@ interface AuthResponse {
   email?: string;
   first_name?: string;
   last_name?: string;
+  role?: string;
   token?: string;
-  accessToken?: string;
+  access_token?: string;
   message?: string;
 }
 
@@ -66,9 +69,10 @@ export const registerUser = createAsyncThunk<
       const transformedData = {
         email: userData.email,
         password: userData.password,
-        first_name: userData.firstName,    // Changed from firstName to first_name
-        last_name: userData.lastName,      // Changed from lastName to last_name
-        phone: userData.phoneNumber        // Changed from phoneNumber to phone
+        first_name: userData.firstName,
+        last_name: userData.lastName,
+        phone: userData.phone,
+        role:"Seller"
       };
       
       console.log("Sending registration data to API:", transformedData);
@@ -119,8 +123,7 @@ export const loginUser = createAsyncThunk<
       );
       
       console.log("Login API response:", response.data);
-      
-      // We don't need to store in localStorage as Redux Persist handles this
+
       return response.data;
     } catch (error) {
       // Handle error responses
@@ -168,6 +171,7 @@ export const fetchUserData = createAsyncThunk<
         }
       );
       
+      console.log("cek response fetch", response.data)
       return response.data;
       // No need to save to localStorage as Redux Persist handles this
     } catch (error) {
@@ -209,6 +213,7 @@ export const authSlice = createSlice({
     builder
       // When registration request is initiated
       .addCase(registerUser.pending, (state) => {
+        console.error("regist PENDING PAYLOAD:"); 
         state.isLoading = true;
         state.isSuccess = false;
         state.isError = false;
@@ -216,7 +221,7 @@ export const authSlice = createSlice({
       })
       // When registration is successful
       .addCase(registerUser.fulfilled, (state, action: PayloadAction<AuthResponse>) => {
-        console.log("Registration fulfilled with payload:", action.payload);
+        console.log("regist RESPONSE FULLFILLED PAYLOAD:", action.payload);
         state.isLoading = false;
         state.isSuccess = true;
         
@@ -228,7 +233,7 @@ export const authSlice = createSlice({
           } else {
             // Create user object from available fields
             state.user = {
-              id: action.payload.userId || action.payload.id || 'unknown',
+              user_id: action.payload.userId || action.payload.id || 'unknown',
               email: action.payload.email || '',
               first_name: action.payload.first_name,
               last_name: action.payload.last_name
@@ -236,7 +241,7 @@ export const authSlice = createSlice({
           }
           
           // Explicitly handle undefined by converting to null
-          state.token = action.payload.token || action.payload.accessToken || null;
+          state.token = action.payload.token || action.payload.access_token || null;
         }
       })
       // When registration fails
@@ -253,30 +258,35 @@ export const authSlice = createSlice({
         state.isLoading = true;
         state.isSuccess = false;
         state.isError = false;
+        console.error("LOGIN pending PAYLOAD:"); 
       })
       // When login is successful
       .addCase(loginUser.fulfilled, (state, action: PayloadAction<AuthResponse>) => {
+        console.log("regist RESPONSE FULLFILLED PAYLOAD:", action.payload);
         state.isLoading = false;
         state.isSuccess = true;
         
-        // Set user data, handling potential different response structures
         if (action.payload.user) {
-          state.user = action.payload.user;
+            state.user = {
+            user_id: action.payload.user.user_id,
+            email: action.payload.user.email,
+            first_name: action.payload.user.first_name,
+            last_name: action.payload.user.last_name,
+            image_url: action.payload.user.image_url,
+            role: action.payload.user.role,
+            phone: action.payload.user.phone,
+            created_at: action.payload.user.created_at
+            };
         } else {
-          // Try to construct a user object from available fields
-          state.user = {
-            id: action.payload.userId || action.payload.id || 'unknown',
-            email: action.payload.email || '',
-            first_name: action.payload.first_name,
-            last_name: action.payload.last_name
-          };
+            // Fallback if user not provided (very rare)
+            state.user = null;
         }
         
-        // Ensure undefined is converted to null
-        state.token = action.payload.token || action.payload.accessToken || null;
+        state.token = action.payload.token || action.payload.access_token || null;
       })
       // When login fails
       .addCase(loginUser.rejected, (state, action) => {
+        console.error("LOGIN REJECTED PAYLOAD:", action.payload); 
         state.isLoading = false;
         state.isError = true;
         state.errorMessage = action.payload ?? 'Login failed. Please try again.';

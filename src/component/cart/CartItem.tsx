@@ -1,109 +1,203 @@
-import React from 'react';
-import Image from 'next/image';
-import { Trash2 } from 'lucide-react';
+import React, { memo } from 'react';
+import { AlertTriangle, Trash2 } from 'lucide-react';
+import { CartProduct } from '@/types/cart';
 
-// Define the CartProduct type to ensure consistency
-export type CartProduct = {
-  id: string;
-  name: string;
-  price: number;
-  quantity: number;
-  total: number;
-  color?: string;
-  size?: string;
-  image?: string;
-};
-
-type CartItemProps = {
+// Define props interface for the component
+interface CartItemProps {
   item: CartProduct;
-  onRemove?: (id: string) => void;
-  onQuantityChange?: (id: string, quantity: number) => void;
-};
+  isSelected: boolean;
+  onSelect: (itemId: string) => void;
+  onRemove: (itemId: string) => void;
+  onUpdateQuantity: (itemId: string, quantity: number) => void;
+  onIncrement: (itemId: string) => void;
+  onDecrement: (itemId: string) => void;
+  maxQuantity: number;
+  isLoading: boolean;
+  isSmallScreen: boolean;
+}
 
-const CartItem: React.FC<CartItemProps> = ({ item, onRemove, onQuantityChange }) => {
-  return (
-    <div className="flex items-center py-2 w-full">
-      <div className="w-16 h-16 flex-shrink-0 mr-4 bg-gray-100 rounded overflow-hidden">
-        {item.image ? (
-          <Image 
-            src={item.image} 
-            alt={item.name} 
-            width={64} 
-            height={64} 
-            className="w-full h-full object-cover"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center text-gray-400">
-            No image
+const CartItem: React.FC<CartItemProps> = memo(({
+  item,
+  isSelected,
+  onSelect,
+  onRemove,
+  onUpdateQuantity,
+  onIncrement,
+  onDecrement,
+  maxQuantity,
+  isLoading,
+  isSmallScreen
+}) => {
+  // Render different layouts based on screen size
+  if (isSmallScreen) {
+    return (
+      <div className={`p-4 ${isSelected ? 'bg-[#E6F4EA]/30' : 'bg-white'}`}>
+        <div className="flex items-start">
+          <div className="mt-1">
+            <input
+              type="checkbox"
+              checked={isSelected}
+              onChange={() => onSelect(item.id)}
+              className="w-4 h-4 accent-[#20603D] cursor-pointer"
+              aria-label={`Select ${item.name}`}
+            />
           </div>
-        )}
-      </div>
-      
-      <div className="flex-grow grid grid-cols-5 gap-2">
-        <div className="col-span-2">
-          <h3 className="font-medium text-[#20603D]">{item.name}</h3>
-          <div className="flex items-center mt-1 text-sm text-gray-500">
-            {item.color && <span className="mr-4">Color: {item.color}</span>}
-            {item.size && <span>Size: {item.size}</span>}
-          </div>
-        </div>
-        
-        <div className="flex items-center justify-center">
-          <span className="font-medium">${item.price.toFixed(2)}</span>
-        </div>
-        
-        <div className="flex items-center justify-center">
-          <div className="flex items-center">
-            {onQuantityChange ? (
-              <>
-                <button 
-                  onClick={() => item.quantity > 1 && onQuantityChange(item.id, item.quantity - 1)} 
-                  className="w-8 h-8 flex items-center justify-center border border-gray-300 rounded-l hover:bg-gray-100"
-                  disabled={item.quantity <= 1}
+          <div className="ml-3 flex-grow">
+            <div className="flex items-start">
+              {item.image && (
+                <img src={item.image} alt={item.name} className="w-16 h-16 object-cover mr-3 rounded" />
+              )}
+              <div className="flex-grow">
+                <h3 className="font-medium text-gray-900">{item.name}</h3>
+                {item.color && (
+                  <div className="text-sm text-gray-500">
+                    Color: <span className="font-medium">{item.color}</span>
+                  </div>
+                )}
+                {item.size && (
+                  <div className="text-sm text-gray-500">
+                    Size: <span className="font-medium">{item.size}</span>
+                  </div>
+                )}
+                <div className="flex justify-between items-center mt-2">
+                  <div>
+                    <div className="text-sm text-gray-500">Price: <span className="font-medium">${item.price.toFixed(2)}</span></div>
+                    <div className="text-sm font-medium mt-1">Total: <span className="text-[#20603D]">${item.total.toFixed(2)}</span></div>
+                  </div>
+                  <button 
+                    onClick={() => onRemove(item.id)}
+                    className="text-red-500 hover:text-red-700 p-1"
+                    aria-label={`Remove ${item.name} from cart`}
+                  >
+                    <Trash2 className="h-5 w-5" />
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div className="mt-3">
+              <label htmlFor={`quantity-${item.id}`} className="block text-sm text-gray-500 mb-1">Quantity:</label>
+              <div className="flex items-center">
+                <button
+                  onClick={() => onDecrement(item.id)}
+                  disabled={item.quantity <= 1 || isLoading}
+                  className="bg-[#E6F4EA] p-1 rounded-l border border-[#2E8B57] disabled:opacity-50"
+                  aria-label="Decrease quantity"
                 >
                   -
                 </button>
-                <input 
-                  type="number" 
-                  value={item.quantity} 
-                  onChange={(e) => {
-                    const value = parseInt(e.target.value);
-                    if (!isNaN(value) && value > 0) {
-                      onQuantityChange(item.id, value);
-                    }
-                  }}
-                  className="w-10 h-8 text-center border-t border-b border-gray-300"
+                <input
+                  id={`quantity-${item.id}`}
+                  type="number"
                   min="1"
+                  max={maxQuantity}
+                  value={item.quantity}
+                  onChange={(e) => onUpdateQuantity(item.id, parseInt(e.target.value) || 1)}
+                  className="w-12 text-center border-t border-b border-[#2E8B57] py-1"
+                  aria-label={`Quantity for ${item.name}`}
                 />
-                <button 
-                  onClick={() => onQuantityChange(item.id, item.quantity + 1)} 
-                  className="w-8 h-8 flex items-center justify-center border border-gray-300 rounded-r hover:bg-gray-100"
+                <button
+                  onClick={() => onIncrement(item.id)}
+                  disabled={isLoading || item.quantity >= maxQuantity}
+                  className="bg-[#E6F4EA] p-1 rounded-r border border-[#2E8B57] disabled:opacity-50"
+                  aria-label="Increase quantity"
                 >
                   +
                 </button>
-              </>
-            ) : (
-              <span>{item.quantity}</span>
+                {item.quantity >= maxQuantity && (
+                  <span className="ml-2 text-xs text-amber-600 flex items-center">
+                    <AlertTriangle className="w-3 h-3 mr-1" /> Max quantity
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Desktop view (table row)
+  return (
+    <tr className={isSelected ? 'bg-[#E6F4EA]/30' : ''}>
+      <td className="px-3 py-4 text-center">
+        <input
+          type="checkbox"
+          checked={isSelected}
+          onChange={() => onSelect(item.id)}
+          className="w-4 h-4 accent-[#20603D] cursor-pointer"
+          aria-label={`Select ${item.name}`}
+        />
+      </td>
+      <td className="px-3 py-4">
+        <div className="flex items-center">
+          {item.image && (
+            <img src={item.image} alt={item.name} className="w-16 h-16 object-cover mr-4 rounded" />
+          )}
+          <div>
+            <h3 className="font-medium text-gray-900">{item.name}</h3>
+            {item.color && (
+              <div className="text-sm text-gray-500">
+                Color: <span className="font-medium">{item.color}</span>
+              </div>
+            )}
+            {item.size && (
+              <div className="text-sm text-gray-500">
+                Size: <span className="font-medium">{item.size}</span>
+              </div>
             )}
           </div>
         </div>
-        
-        <div className="flex items-center justify-between">
-          <span className="font-bold text-[#20603D]">${item.total.toFixed(2)}</span>
-          
-          {onRemove && (
-            <button 
-              onClick={() => onRemove(item.id)} 
-              className="p-1 text-red-500 hover:text-red-700 transition-colors"
-              aria-label="Remove item"
-            >
-              <Trash2 className="h-5 w-5" />
-            </button>
+      </td>
+      <td className="px-3 py-4 text-center">${item.price.toFixed(2)}</td>
+      <td className="px-3 py-4">
+        <div className="flex items-center justify-center">
+          <button
+            onClick={() => onDecrement(item.id)}
+            disabled={item.quantity <= 1 || isLoading}
+            className="bg-[#E6F4EA] p-1 rounded-l border border-[#2E8B57] disabled:opacity-50"
+            aria-label="Decrease quantity"
+          >
+            -
+          </button>
+          <input
+            type="number"
+            min="1"
+            max={maxQuantity}
+            value={item.quantity}
+            onChange={(e) => onUpdateQuantity(item.id, parseInt(e.target.value) || 1)}
+            className="w-12 text-center border-t border-b border-[#2E8B57] py-1"
+            aria-label={`Quantity for ${item.name}`}
+          />
+          <button
+            onClick={() => onIncrement(item.id)}
+            disabled={isLoading || item.quantity >= maxQuantity}
+            className="bg-[#E6F4EA] p-1 rounded-r border border-[#2E8B57] disabled:opacity-50"
+            aria-label="Increase quantity"
+          >
+            +
+          </button>
+          {item.quantity >= maxQuantity && (
+            <span className="ml-2 text-xs text-amber-600 flex items-center">
+              <AlertTriangle className="w-3 h-3 mr-1" /> Max
+            </span>
           )}
         </div>
-      </div>
-    </div>
+      </td>
+      <td className="px-3 py-4 text-center font-medium">${item.total.toFixed(2)}</td>
+      <td className="px-3 py-4 text-center">
+        <button 
+          onClick={() => onRemove(item.id)}
+          disabled={isLoading}
+          className="text-red-500 hover:text-red-700 p-1"
+          aria-label={`Remove ${item.name} from cart`}
+        >
+          <Trash2 className="h-5 w-5" />
+        </button>
+      </td>
+    </tr>
   );
-};
+});
+
+CartItem.displayName = 'CartItem';
 
 export default CartItem;

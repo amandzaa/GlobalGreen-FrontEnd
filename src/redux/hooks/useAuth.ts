@@ -1,30 +1,49 @@
+// hooks/useAuth.ts
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { useAppSelector } from '../store';
+import { useAppSelector, useAppDispatch } from '@/redux/store';
+import { logout } from '@/redux/features/auth/authSlice';
+import { isTokenValid } from '@/utils/tokenValidation';
 
-interface UseAuthOptions {
-  required?: boolean;
-}
-
-/**
- * Custom hook to handle authentication state and redirects
- * @param options Configuration options
- * @param options.required If true, redirects to login page when user is not authenticated
- * @returns Authentication state
- */
-export function useAuth({ required = false }: UseAuthOptions = {}) {
-  const { user, token } = useAppSelector((state) => state.auth);
+export const useAuth = (requireAuth = false, redirectTo = '/login') => {
   const router = useRouter();
+  const dispatch = useAppDispatch();
+  const { user, token, isLoading } = useAppSelector((state) => state.auth);
+  
+  // Check if the user is authenticated based on token validity
+  const isAuthenticated = !!token && isTokenValid(token);
 
   useEffect(() => {
-    // If auth is required and there's no user, redirect to login
-    if (required && !user && !token) {
-      router.push('/login');
+    // If we require authentication and the token is invalid, redirect to login
+    if (requireAuth && !isLoading && !isAuthenticated) {
+      router.replace(redirectTo);
     }
-  }, [required, user, token, router]);
-
-  return { 
-    user, 
-    isAuthenticated: !!user && !!token 
+    
+    // Listen for unauthorized responses
+    const handleUnauthorized = () => {
+      router.replace(redirectTo);
+    };
+    
+    // Add event listener for custom unauthorized event from API interceptor
+    window.addEventListener('unauthorizedResponse', handleUnauthorized);
+    
+    // Clean up event listener on unmount
+    return () => {
+      window.removeEventListener('unauthorizedResponse', handleUnauthorized);
+    };
+  }, [isAuthenticated, isLoading, requireAuth, redirectTo, router]);
+  
+  // Function to handle logout
+  const handleLogout = () => {
+    dispatch(logout());
+    router.push(redirectTo);
   };
-}
+  
+  return {
+    user,
+    token,
+    isLoading,
+    isAuthenticated,
+    logout: handleLogout
+  };
+};

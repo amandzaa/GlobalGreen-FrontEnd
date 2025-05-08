@@ -15,7 +15,9 @@ import {
   LayoutDashboard
 } from 'lucide-react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { useDispatch } from 'react-redux';
+import { logout } from '@/redux/features/auth/authSlice';
 import { colors } from '@/types';
 
 // Define the structure for menu items
@@ -49,10 +51,19 @@ const Sidebar: React.FC<SidebarProps> = ({
   isMobileOpen = false // Default to closed on mobile
 }) => {
   const pathname = usePathname();
+  const router = useRouter();
+  const dispatch = useDispatch();
   const currentPath = activePath || pathname;
   const [isMinimized, setIsMinimized] = useState(false);
   const [isMobileScreen, setIsMobileScreen] = useState(false);
   const [isTabletScreen, setIsTabletScreen] = useState(false);
+  
+  // Handle sign out
+  const handleSignOut = () => {
+    // Dispatch logout action directly
+    dispatch(logout());
+    router.push('/seller-homepage');
+  };
   
   // Check screen size and set responsive states
   useEffect(() => {
@@ -94,8 +105,6 @@ const Sidebar: React.FC<SidebarProps> = ({
       icon: <Package size={18} />,
       items: [
         { name: 'My Order', href: '/seller-dashboard/my-order', icon: <Package size={16} /> },
-        { name: 'Refund/Cancellation', href: '/seller-dashboard/refund-cancellation', icon: <Package size={16} /> },
-        { name: 'Shipping Settings', href: '/seller-dashboard/shipping-settings', icon: <Package size={16} /> },
       ],
     },
     {
@@ -105,7 +114,6 @@ const Sidebar: React.FC<SidebarProps> = ({
       items: [
         { name: 'My Products', href: '/seller-dashboard/my-products', icon: <ShoppingBag size={16} /> },
         { name: 'Add New Product', href: '/seller-dashboard/add-product', icon: <ShoppingBag size={16} /> },
-        { name: 'Edit Product', href: '/seller-dashboard/edit-product', icon: <ShoppingBag size={16} /> },
       ],
     },
     {
@@ -115,7 +123,6 @@ const Sidebar: React.FC<SidebarProps> = ({
       items: [
         { name: 'My Vouchers', href: '/seller-dashboard/my-vouchers', icon: <Tag size={16} /> },
         { name: 'Add New Voucher', href: '/seller-dashboard/add-voucher', icon: <Tag size={16} /> },
-        { name: 'Edit Voucher', href: '/seller-dashboard/edit-voucher', icon: <Tag size={16} /> },
       ],
     },
     {
@@ -132,7 +139,6 @@ const Sidebar: React.FC<SidebarProps> = ({
       icon: <Store size={18} />,
       items: [
         { name: 'Store Settings', href: '/seller-dashboard/store-settings', icon: <Store size={16} /> },
-        { name: 'Account & Security', href: '/seller-dashboard/account-security', icon: <Settings size={16} /> },
       ],
     },
   ];
@@ -366,6 +372,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           </div>
           
           <div 
+            onClick={handleSignOut}
             className={`p-2 hover:bg-mediumGreen/50 rounded-md cursor-pointer flex items-center text-white my-1 ${
               isMinimized ? 'justify-center' : ''
             }`}
