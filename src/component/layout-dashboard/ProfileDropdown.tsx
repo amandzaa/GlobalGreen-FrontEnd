@@ -9,27 +9,35 @@ import { colors } from '@/types';
 
 export default function ProfileDropdown() {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
-  // Using the theme value but not setting it directly
   const { user } = useAuth();
   const router = useRouter();
   const dispatch = useAppDispatch();
   
-  // Get system/browser theme preference
-  const [theme] = useState(() => {
-    // Check if window is defined (for SSR)
-    if (typeof window !== 'undefined') {
-      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-    }
-    return 'light';
-  });
+  // Use useEffect for client-side theme detection to avoid hydration mismatch
+  const [theme, setTheme] = useState('light'); // Default to light for both server and client
   
-  const userName = user ? 
-    (user.first_name && user.last_name) ? 
-      `${user.first_name} ${user.last_name}` : 
-      (user.name || 'Guest') : 
-    'Guest';
-  const userEmail = user?.email || '';
-  const userImageUrl = user?.imageUrl || '';
+  useEffect(() => {
+    // Only run in browser after hydration is complete
+    const darkModePreference = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    setTheme(darkModePreference ? 'dark' : 'light');
+  }, []);
+  
+  // Use useEffect to ensure user state is only accessed after hydration
+  const [displayName, setDisplayName] = useState('Guest'); // Default to Guest for both server and client
+  const [userEmail, setUserEmail] = useState('');
+  const [userImageUrl, setUserImageUrl] = useState('');
+  
+  useEffect(() => {
+    if (user) {
+      const name = (user.first_name && user.last_name) ? 
+        `${user.first_name} ${user.last_name}` : 
+        (user.name || 'Guest');
+        
+      setDisplayName(name);
+      setUserEmail(user.email || '');
+      setUserImageUrl(user.image_url || '');
+    }
+  }, [user]);
   
   // Create refs for both the dropdown menu and the toggle button with proper typing
   const profileMenuRef = useRef<HTMLDivElement | null>(null);
@@ -62,7 +70,7 @@ export default function ProfileDropdown() {
     // Dispatch logout action directly
     dispatch(logout());
     setShowProfileMenu(false);
-    router.push('/login');
+    router.push('/seller-homepage');
   };
 
   return (
@@ -81,7 +89,7 @@ export default function ProfileDropdown() {
           {userImageUrl ? (
             <img 
               src={userImageUrl} 
-              alt={userName} 
+              alt={displayName} 
               className="w-full h-full object-cover"
             />
           ) : (
@@ -94,7 +102,7 @@ export default function ProfileDropdown() {
         
         {/* Username display */}
         <span className="text-sm font-medium hidden md:block">
-          {userName}
+          {displayName}
         </span>
         
         <ChevronDown
@@ -119,7 +127,7 @@ export default function ProfileDropdown() {
       >
         <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
           <p className="text-sm font-medium">
-            Welcome, <span className="font-semibold">{userName}</span>
+            Welcome, <span className="font-semibold">{displayName}</span>
           </p>
           <p className="text-xs mt-1 text-gray-500 dark:text-gray-400">
             {userEmail}
@@ -166,12 +174,3 @@ export default function ProfileDropdown() {
     </div>
   );
 }
-
-// // Demo component for display in isolation
-// export function Demo() {
-//   return (
-//     <div className="flex justify-end p-4 border-b border-gray-200">
-//       <ProfileDropdown />
-//     </div>
-//   );
-// }

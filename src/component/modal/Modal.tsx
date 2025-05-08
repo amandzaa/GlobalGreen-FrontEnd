@@ -103,7 +103,7 @@ const Modal = ({
       
       {/* Modal content with transition */}
       <div 
-        className={`bg-white rounded-md shadow-lg w-full ${sizeClasses[size]} z-10 max-h-[90vh] flex flex-col transition-all duration-300 ease-in-out ${
+        className={`bg-[var(--color-paleGreen)] rounded-2xl shadow-green-900 shadow-2xl w-full ${sizeClasses[size]} z-10 max-h-[90vh] flex flex-col transition-all duration-300 ease-in-out ${
           isVisible ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-8 scale-95'
         }`}
         style={{ pointerEvents: isVisible ? 'auto' : 'none' }}

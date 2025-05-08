@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, ShoppingCart, Trash2, Check } from 'lucide-react';
+import { ArrowLeft, ShoppingCart, Trash2, Check, Edit, CreditCard } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '@/redux/store';
 import { 
@@ -11,28 +11,71 @@ import {
   decrementQuantity
 } from '@/redux/features/cart/cartSlice';
 import { CartProduct } from '@/types/cart';
+import CartItem from './CartItem';
 
 // Define interface for component props
 interface CartTableProps {
   onSelectedItemsChange: (selectedItems: CartProduct[]) => void;
+  maxQuantity?: number; // Optional max quantity per item
+  isLoading?: boolean; // Added for checkout loading state
 }
 
-const CartTable: React.FC<CartTableProps> = ({ onSelectedItemsChange }) => {
+const CartTable: React.FC<CartTableProps> = ({ 
+  onSelectedItemsChange,
+  maxQuantity = 99, // Default max quantity
+  isLoading = false
+}) => {
   const dispatch = useDispatch<AppDispatch>();
   const { items, loading, error } = useSelector((state: RootState) => state.cart);
   
+  // State for selected items, loading states, and confirmation modals
   const [selectedItemIds, setSelectedItemIds] = useState<Record<string, boolean>>({});
   const [selectAll, setSelectAll] = useState(false);
+  const [itemToRemove, setItemToRemove] = useState<string | null>(null);
+  const [isSmallScreen, setIsSmallScreen] = useState(false);
   
-  // Calculate the selected items
-  const selectedItems = items.filter(item => selectedItemIds[item.id]);
+  // Check window size for responsive design
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsSmallScreen(window.innerWidth < 768);
+    };
+    
+    // Initial check
+    checkScreenSize();
+    
+    // Add event listener
+    window.addEventListener('resize', checkScreenSize);
+    
+    // Cleanup
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
+  
+  // Memoize selected items for performance
+  const selectedItems = useMemo(() => {
+    return items.filter(item => selectedItemIds[item.id]);
+  }, [items, selectedItemIds]);
   
   // Call the parent's callback when selected items change
   useEffect(() => {
     onSelectedItemsChange(selectedItems);
   }, [selectedItems, onSelectedItemsChange]);
   
-  // Memoized select all handler to prevent unnecessary re-renders
+  // Initialize all items as selected when items load
+  useEffect(() => {
+    if (items.length > 0) {
+      const initialSelectedItemIds: Record<string, boolean> = {};
+      items.forEach(item => {
+        initialSelectedItemIds[item.id] = true;
+      });
+      setSelectedItemIds(initialSelectedItemIds);
+      setSelectAll(true);
+    } else {
+      setSelectedItemIds({});
+      setSelectAll(false);
+    }
+  }, [items.length]);
+  
+  // Memoized select all handler
   const handleSelectAll = useCallback(() => {
     const newSelectAll = !selectAll;
     setSelectAll(newSelectAll);
@@ -52,8 +95,8 @@ const CartTable: React.FC<CartTableProps> = ({ onSelectedItemsChange }) => {
         [itemId]: !prev[itemId]
       };
       
-      // Update selectAll state based on if all items are selected
-      setSelectAll(items.every(item => newSelectedItemIds[item.id]));
+      const allSelected = items.every(item => newSelectedItemIds[item.id]);
+      setSelectAll(allSelected);
       
       return newSelectedItemIds;
     });
@@ -61,28 +104,45 @@ const CartTable: React.FC<CartTableProps> = ({ onSelectedItemsChange }) => {
   
   // Handle removing an item from cart
   const handleRemoveItem = useCallback((itemId: string) => {
-    if (window.confirm('Are you sure you want to remove this item?')) {
-      dispatch(removeFromCart(itemId));
+    setItemToRemove(itemId);
+  }, []);
+
+  // Confirm removal of item
+  const confirmRemoveItem = useCallback(() => {
+    if (itemToRemove) {
+      dispatch(removeFromCart(itemToRemove));
       // Also update the selection state
       setSelectedItemIds(prev => {
         const newSelectedItemIds = { ...prev };
-        delete newSelectedItemIds[itemId];
+        delete newSelectedItemIds[itemToRemove];
         return newSelectedItemIds;
       });
+      setItemToRemove(null);
     }
-  }, [dispatch]);
+  }, [dispatch, itemToRemove]);
 
-  // Handle updating item quantity
+  // Cancel removal
+  const cancelRemoveItem = useCallback(() => {
+    setItemToRemove(null);
+  }, []);
+
+  // Handle updating item quantity with validation
   const handleUpdateQuantity = useCallback((itemId: string, newQuantity: number) => {
-    if (newQuantity > 0) {
+    if (newQuantity > 0 && newQuantity <= maxQuantity) {
       dispatch(updateQuantity({ productId: itemId, quantity: newQuantity }));
+    } else if (newQuantity > maxQuantity) {
+      dispatch(updateQuantity({ productId: itemId, quantity: maxQuantity }));
+      // You could also add toast notification here
     }
-  }, [dispatch]);
+  }, [dispatch, maxQuantity]);
 
   // Optimized increment and decrement handlers
   const handleIncrementQuantity = useCallback((itemId: string) => {
-    dispatch(incrementQuantity(itemId));
-  }, [dispatch]);
+    const item = items.find(item => item.id === itemId);
+    if (item && item.quantity < maxQuantity) {
+      dispatch(incrementQuantity(itemId));
+    }
+  }, [dispatch, items, maxQuantity]);
 
   const handleDecrementQuantity = useCallback((itemId: string) => {
     const item = items.find(item => item.id === itemId);
@@ -103,8 +163,8 @@ const CartTable: React.FC<CartTableProps> = ({ onSelectedItemsChange }) => {
   }, [selectedItems]);
   
   const handleClearCart = useCallback(() => {
-    if (window.confirm('Are you sure you want to clear your cart?')) {
-      // Implement cart clearing logic
+    if (window.confirm('Are you sure you want to clear selected items from your cart?')) {
+      // Remove selected items from cart
       selectedItems.forEach(item => {
         dispatch(removeFromCart(item.id));
       });
@@ -113,24 +173,220 @@ const CartTable: React.FC<CartTableProps> = ({ onSelectedItemsChange }) => {
     }
   }, [dispatch, selectedItems]);
   
-  // Initialize all items as selected when items load
-  useEffect(() => {
-    if (items.length > 0) {
-      const initialSelectedItemIds: Record<string, boolean> = {};
-      items.forEach(item => {
-        initialSelectedItemIds[item.id] = true;
-      });
-      setSelectedItemIds(initialSelectedItemIds);
-      setSelectAll(true);
-    }
-  }, [items]);
+  // Calculate subtotals for the table's footer
+  const selectedSubtotal = useMemo(() => {
+    return selectedItems.reduce((total, item) => total + item.total, 0);
+  }, [selectedItems]);
   
-  // Calculate subtotal for the table's footer
-  const selectedSubtotal = selectedItems.reduce((total, item) => total + item.total, 0);
-  const allItemsSubtotal = items.reduce((total, item) => total + item.total, 0);
+  const allItemsSubtotal = useMemo(() => {
+    return items.reduce((total, item) => total + item.total, 0);
+  }, [items]);
+
+  // Render mobile view for small screens
+  const renderMobileView = () => {
+    return (
+      <div className="divide-y divide-[#E6F4EA]">
+        {loading ? (
+          <div className="p-8 text-center">
+            <div className="flex justify-center items-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#20603D]"></div>
+              <span className="ml-2 text-[#20603D]">Loading cart...</span>
+            </div>
+          </div>
+        ) : items.length > 0 ? (
+          items.map((item) => (
+            <CartItem
+              key={item.id}
+              item={item}
+              isSelected={!!selectedItemIds[item.id]}
+              onSelect={handleSelectItem}
+              onRemove={handleRemoveItem}
+              onUpdateQuantity={handleUpdateQuantity}
+              onIncrement={handleIncrementQuantity}
+              onDecrement={handleDecrementQuantity}
+              maxQuantity={maxQuantity}
+              isLoading={loading || isLoading}
+              isSmallScreen={true}
+            />
+          ))
+        ) : (
+          <div className="p-8 text-center text-gray-500">
+            <div className="flex flex-col items-center">
+              <ShoppingCart className="h-12 w-12 text-[#2E8B57] mb-2" />
+              <p className="mb-4">Your shopping cart is empty</p>
+              <Link href="/products" className="bg-[#2E8B57] text-white px-4 py-2 rounded hover:bg-[#20603D] transition-colors">
+                <span className="flex items-center">
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  Continue Shopping
+                </span>
+              </Link>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  // Render desktop table view
+  const renderDesktopView = () => {
+    return (
+      <>
+        <table className="min-w-full divide-y divide-[#2E8B57]" aria-label="Shopping cart items">
+          <thead className="bg-[#2E8B57] text-white">
+            <tr>
+              <th scope="col" className="px-3 py-3 text-center w-10">
+                <div className="flex justify-center items-center">
+                  <input
+                    type="checkbox"
+                    checked={selectAll && items.length > 0}
+                    onChange={handleSelectAll}
+                    disabled={items.length === 0 || loading}
+                    className="w-4 h-4 accent-[#20603D] cursor-pointer"
+                    aria-label="Select all items"
+                  />
+                </div>
+              </th>
+              <th scope="col" className="px-3 py-3 text-left text-sm font-medium">Product</th>
+              <th scope="col" className="px-3 py-3 text-center text-sm font-medium">Price</th>
+              <th scope="col" className="px-3 py-3 text-center text-sm font-medium">Quantity</th>
+              <th scope="col" className="px-3 py-3 text-center text-sm font-medium">Total</th>
+              <th scope="col" className="px-3 py-3 text-center text-sm font-medium">Actions</th>
+            </tr>
+          </thead>
+          
+          <tbody className="bg-white divide-y divide-[#E6F4EA]">
+            {loading ? (
+              <tr>
+                <td colSpan={6} className="px-4 py-8 text-center">
+                  <div className="flex justify-center items-center">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#20603D]"></div>
+                    <span className="ml-2 text-[#20603D]">Loading cart...</span>
+                  </div>
+                </td>
+              </tr>
+            ) : items.length > 0 ? (
+              items.map((item) => (
+                <CartItem
+                  key={item.id}
+                  item={item}
+                  isSelected={!!selectedItemIds[item.id]}
+                  onSelect={handleSelectItem}
+                  onRemove={handleRemoveItem}
+                  onUpdateQuantity={handleUpdateQuantity}
+                  onIncrement={handleIncrementQuantity}
+                  onDecrement={handleDecrementQuantity}
+                  maxQuantity={maxQuantity}
+                  isLoading={loading || isLoading}
+                  isSmallScreen={false}
+                />
+              ))
+            ) : (
+              <tr>
+                <td colSpan={6} className="px-4 py-8 text-center text-gray-500">
+                  <div className="flex flex-col items-center">
+                    <ShoppingCart className="h-12 w-12 text-[#2E8B57] mb-2" />
+                    <p className="mb-4">Your shopping cart is empty</p>
+                    <Link href="/products" className="bg-[#2E8B57] text-white px-4 py-2 rounded hover:bg-[#20603D] transition-colors">
+                      <span className="flex items-center">
+                        <ArrowLeft className="h-4 w-4 mr-2" />
+                        Continue Shopping
+                      </span>
+                    </Link>
+                  </div>
+                </td>
+              </tr>
+            )}
+          </tbody>
+          
+          <tfoot className="bg-[#E6F4EA]">
+            {items.length > 0 && (
+              <>
+                <tr>
+                  <td colSpan={4} className="px-4 py-2 text-right font-medium text-[#20603D]">
+                    Selected items ({selectedItems.length}/{items.length}):
+                  </td>
+                  <td className="px-4 py-2 text-center font-bold text-[#20603D]">
+                    ${selectedSubtotal.toFixed(2)}
+                  </td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <td colSpan={4} className="px-4 py-2 text-right font-medium text-[#20603D]">
+                    All items subtotal:
+                  </td>
+                  <td className="px-4 py-2 text-center font-bold text-[#20603D]">
+                    ${allItemsSubtotal.toFixed(2)}
+                  </td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <td colSpan={4} className="px-4 py-2 text-right text-sm text-[#20603D]">
+                    Estimated shipping:
+                  </td>
+                  <td className="px-4 py-2 text-center text-sm font-medium text-[#20603D]">
+                    {selectedSubtotal >= 50 ? (
+                      <span className="text-green-600">FREE</span>
+                    ) : (
+                      '$4.99'
+                    )}
+                  </td>
+                  <td></td>
+                </tr>
+                <tr className="border-t-2 border-[#2E8B57]">
+                  <td colSpan={4} className="px-4 py-3 text-right font-bold text-lg text-[#20603D]">
+                    Selected total:
+                  </td>
+                  <td className="px-4 py-3 text-center font-bold text-lg text-[#20603D]">
+                    ${selectedSubtotal >= 50 ? selectedSubtotal.toFixed(2) : (selectedSubtotal + 4.99).toFixed(2)}
+                  </td>
+                  <td></td>
+                </tr>
+                {selectedSubtotal < 50 && selectedSubtotal > 0 && (
+                  <tr>
+                    <td colSpan={6} className="px-4 py-2 text-center text-sm bg-[#87CEEB] bg-opacity-20 text-[#20603D]">
+                      Add ${(50 - selectedSubtotal).toFixed(2)} more to qualify for free shipping!
+                    </td>
+                  </tr>
+                )}
+              </>
+            )}
+          </tfoot>
+        </table>
+
+        <div className="p-4 flex flex-col sm:flex-row gap-3 justify-between bg-white border-t border-[#E6F4EA]">
+          <Link href="/products" className="flex items-center px-4 py-2 rounded-full text-white bg-[#2E8B57] hover:bg-[#20603D] transition-colors">
+            <ArrowLeft className="h-4 w-4 mr-2" /> Continue Shopping
+          </Link>
+          
+          <div className="flex gap-3">
+            {items.length > 0 && (
+              <>
+                <Link href="/cart/edit" className="flex items-center px-4 py-2 rounded-full text-white bg-[#87CEEB] hover:bg-blue-500 transition-colors">
+                  <Edit className="h-4 w-4 mr-2" /> Edit Cart
+                </Link>
+                <button 
+                  onClick={handleProcessSelected} 
+                  disabled={isLoading || selectedItems.length === 0} 
+                  className="flex items-center px-6 py-2 rounded-full text-white bg-[#20603D] hover:bg-[#20603D]/80 transition-colors font-medium disabled:opacity-50"
+                >
+                  <CreditCard className="h-4 w-4 mr-2" /> Checkout Selected
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+
+        {items.length > 0 && (
+          <div className="p-3 bg-[#E6F4EA] text-xs text-center text-[#20603D] border-t border-[#2E8B57]/20">
+            <p>Free shipping on orders over $50. 30-day return policy. Select items you wish to checkout.</p>
+          </div>
+        )}
+      </>
+    );
+  };
 
   return (
-    <div className="bg-[#E6F4EA] overflow-x-auto rounded-lg shadow-md">
+    <div className="bg-[#E6F4EA] overflow-hidden rounded-lg shadow-md">
       <div className="p-4 flex items-center justify-between bg-[#20603D] text-white">
         <h2 className="text-lg font-semibold flex items-center">
           <ShoppingCart className="mr-2" /> Shopping Cart
@@ -143,6 +399,7 @@ const CartTable: React.FC<CartTableProps> = ({ onSelectedItemsChange }) => {
                 onClick={handleProcessSelected}
                 disabled={loading || selectedItems.length === 0}
                 className="flex items-center text-sm bg-[#87CEEB] hover:bg-blue-500 px-3 py-1 rounded transition-colors disabled:opacity-50"
+                aria-label="Process selected items"
               >
                 <Check className="h-4 w-4 mr-1" />
                 {loading ? 'Processing...' : 'Process Selected'}
@@ -151,6 +408,7 @@ const CartTable: React.FC<CartTableProps> = ({ onSelectedItemsChange }) => {
                 onClick={handleClearCart}
                 disabled={loading || selectedItems.length === 0}
                 className="flex items-center text-sm bg-red-500 hover:bg-red-600 px-3 py-1 rounded transition-colors disabled:opacity-50"
+                aria-label="Clear selected items"
               >
                 <Trash2 className="h-4 w-4 mr-1" />
                 {loading ? 'Clearing...' : 'Clear Selected'}
@@ -161,155 +419,38 @@ const CartTable: React.FC<CartTableProps> = ({ onSelectedItemsChange }) => {
       </div>
 
       {error && (
-        <div className="p-4 bg-red-100 text-red-700 border-b border-red-200">
+        <div className="p-4 bg-red-100 text-red-700 border-b border-red-200" role="alert">
           Error loading cart: {error}
         </div>
       )}
 
-      <table className="min-w-full divide-y divide-[#2E8B57]">
-        <thead className="bg-[#2E8B57] text-white">
-          <tr>
-            <th scope="col" className="px-3 py-3 text-center w-10">
-              <div className="flex justify-center items-center">
-                <input
-                  type="checkbox"
-                  checked={selectAll && items.length > 0}
-                  onChange={handleSelectAll}
-                  disabled={items.length === 0 || loading}
-                  className="w-4 h-4 accent-[#20603D] cursor-pointer"
-                  title="Select all items"
-                />
-              </div>
-            </th>
-            <th scope="col" className="px-3 py-3 text-left text-sm font-medium">Product</th>
-            <th scope="col" className="px-3 py-3 text-center text-sm font-medium">Price</th>
-            <th scope="col" className="px-3 py-3 text-center text-sm font-medium">Quantity</th>
-            <th scope="col" className="px-3 py-3 text-center text-sm font-medium">Total</th>
-            <th scope="col" className="px-3 py-3 text-center text-sm font-medium">Actions</th>
-          </tr>
-        </thead>
-        
-        <tbody className="bg-white divide-y divide-[#E6F4EA]">
-          {loading ? (
-            <tr>
-              <td colSpan={6} className="px-4 py-8 text-center">
-                <div className="flex justify-center items-center">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#20603D]"></div>
-                  <span className="ml-2 text-[#20603D]">Loading cart...</span>
-                </div>
-              </td>
-            </tr>
-          ) : items.length > 0 ? (
-            items.map((item) => (
-              <tr key={item.id} className={selectedItemIds[item.id] ? 'bg-[#E6F4EA]/30' : ''}>
-                <td className="px-3 py-4 text-center">
-                  <input
-                    type="checkbox"
-                    checked={!!selectedItemIds[item.id]}
-                    onChange={() => handleSelectItem(item.id)}
-                    className="w-4 h-4 accent-[#20603D] cursor-pointer"
-                  />
-                </td>
-                <td className="px-3 py-4">
-                  <div className="flex items-center">
-                    {item.image && (
-                      <img src={item.image} alt={item.name} className="w-16 h-16 object-cover mr-4 rounded" />
-                    )}
-                    <div>
-                      <h3 className="font-medium text-gray-900">{item.name}</h3>
-                      {item.color && (
-                        <div className="text-sm text-gray-500">
-                          Color: <span className="font-medium">{item.color}</span>
-                        </div>
-                      )}
-                      {item.size && (
-                        <div className="text-sm text-gray-500">
-                          Size: <span className="font-medium">{item.size}</span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </td>
-                <td className="px-3 py-4 text-center">${item.price.toFixed(2)}</td>
-                <td className="px-3 py-4">
-                  <div className="flex items-center justify-center">
-                    <button
-                      onClick={() => handleDecrementQuantity(item.id)}
-                      disabled={item.quantity <= 1 || loading}
-                      className="bg-[#E6F4EA] p-1 rounded-l border border-[#2E8B57] disabled:opacity-50"
-                    >
-                      -
-                    </button>
-                    <input
-                      type="number"
-                      min="1"
-                      value={item.quantity}
-                      onChange={(e) => handleUpdateQuantity(item.id, parseInt(e.target.value) || 1)}
-                      className="w-12 text-center border-t border-b border-[#2E8B57] py-1"
-                    />
-                    <button
-                      onClick={() => handleIncrementQuantity(item.id)}
-                      disabled={loading}
-                      className="bg-[#E6F4EA] p-1 rounded-r border border-[#2E8B57] disabled:opacity-50"
-                    >
-                      +
-                    </button>
-                  </div>
-                </td>
-                <td className="px-3 py-4 text-center font-medium">${item.total.toFixed(2)}</td>
-                <td className="px-3 py-4 text-center">
-                  <button 
-                    onClick={() => handleRemoveItem(item.id)}
-                    disabled={loading}
-                    className="text-red-500 hover:text-red-700 p-1"
-                    title="Remove item"
-                  >
-                    <Trash2 className="h-5 w-5" />
-                  </button>
-                </td>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan={6} className="px-4 py-8 text-center text-gray-500">
-                <div className="flex flex-col items-center">
-                  <ShoppingCart className="h-12 w-12 text-[#2E8B57] mb-2" />
-                  <p className="mb-4">Your shopping cart is empty</p>
-                  <Link href="/products" className="bg-[#2E8B57] text-white px-4 py-2 rounded hover:bg-[#20603D] transition-colors">
-                    <span className="flex items-center">
-                      <ArrowLeft className="h-4 w-4 mr-2" />
-                      Continue Shopping
-                    </span>
-                  </Link>
-                </div>
-              </td>
-            </tr>
-          )}
-        </tbody>
-        
-        {items.length > 0 && (
-          <tfoot className="bg-[#E6F4EA]">
-            <tr>
-              <td colSpan={4} className="px-4 py-3 text-right font-medium text-[#20603D]">
-                Selected Subtotal:
-              </td>
-              <td className="px-3 py-3 text-center font-bold text-[#20603D]">
-                ${selectedSubtotal.toFixed(2)}
-              </td>
-              <td></td>
-            </tr>
-            <tr>
-              <td colSpan={4} className="px-4 py-3 text-right text-sm text-gray-600">
-                All Items Subtotal:
-              </td>
-              <td className="px-3 py-3 text-center text-sm text-gray-600">
-                ${allItemsSubtotal.toFixed(2)}
-              </td>
-              <td></td>
-            </tr>
-          </tfoot>
-        )}
-      </table>
+      <div className="overflow-x-auto">
+        {isSmallScreen ? renderMobileView() : renderDesktopView()}
+      </div>
+
+      {/* Confirmation modal for item removal */}
+      {itemToRemove && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" role="dialog" aria-modal="true">
+          <div className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full">
+            <h3 className="text-lg font-medium mb-4">Remove Item</h3>
+            <p className="mb-6">Are you sure you want to remove this item from your cart?</p>
+            <div className="flex justify-end space-x-3">
+              <button 
+                onClick={cancelRemoveItem}
+                className="px-4 py-2 border border-gray-300 rounded hover:bg-gray-100"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={confirmRemoveItem}
+                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+              >
+                Remove
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -1,32 +1,33 @@
+// components/ProtectedRoute.tsx
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { useAppSelector } from '../redux/store';
+import { useAppSelector } from '@/redux/store';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
 }
 
-/**
- * Component to protect routes that require authentication
- * Redirects to login page if user is not authenticated
- */
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-  const { user, token } = useAppSelector((state) => state.auth);
   const router = useRouter();
+  const { token } = useAppSelector((state) => state.auth);
 
   useEffect(() => {
-    // Redirect to login if not authenticated
-    if (!user || !token) {
+    // If no token is found, redirect to login
+    if (!token) {
       router.push('/login');
     }
-  }, [user, token, router]);
+  }, [token, router]);
 
-  // Show loading state while checking authentication or redirecting
-  if (!user || !token) {
-    return <div>Loading...</div>;
+  // While checking auth status, you could show a loading indicator
+  if (!token) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
+      </div>
+    );
   }
 
-  // Render children if authenticated
+  // If token exists, render the protected content
   return <>{children}</>;
 };
 

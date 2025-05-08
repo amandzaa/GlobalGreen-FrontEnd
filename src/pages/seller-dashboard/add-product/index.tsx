@@ -1,105 +1,72 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 import DashboardLayout from "@/component/layout-dashboard/DashboardLayout";
 import { ProductImageUploader, ProductPreview } from "@/component/uploadimage";
 import { colors } from "@/types";
 
-// Define types for product state
-interface ProductNutrition {
-  calories: number;
-  fat: string;
-  carbs: string;
-  protein: string;
-}
+// Define product schema with Zod
+const productSchema = z.object({
+  name: z.string().min(1, "Product name is required"),
+  category: z.string().min(1, "Category is required"),
+  price: z.number().min(0.01, "Price must be greater than 0"),
+  salePrice: z.number().min(0, "Sale price cannot be negative"),
+  stock: z.number().int().min(0, "Stock cannot be negative"),
+  unit: z.string(),
+  description: z.string().min(10, "Description must be at least 10 characters"),
+  nutrition: z.object({
+    calories: z.number().min(0, "Calories cannot be negative"),
+    fat: z.string(),
+    carbs: z.string(),
+    protein: z.string(),
+  }),
+  organic: z.boolean(),
+  featured: z.boolean(),
+  status: z.enum(["draft", "published"]),
+});
 
-interface ProductData {
-  name: string;
-  category: string;
-  price: number;
-  salePrice: number;
-  stock: number;
-  unit: string;
-  description: string;
-  images: string[];
-  nutrition: ProductNutrition;
-  organic: boolean;
-  featured: boolean;
-  status: "draft" | "published";
-}
-
-// Define type for product categories
-interface Category {
-  id: number;
-  name: string;
-}
+// Type derived from the schema
+type ProductFormValues = z.infer<typeof productSchema>;
 
 export default function AddNewProductPage() {
-
-  // Empty product state for new products
-  const [product, setProduct] = useState<ProductData>({
-    name: "",
-    category: "Fruits",
-    price: 0,
-    salePrice: 0,
-    stock: 0,
-    unit: "each",
-    description: "",
-    images: [],
-    nutrition: {
-      calories: 0,
-      fat: "0g",
-      carbs: "0g",
-      protein: "0g",
+  // Initialize the form
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors, isValid, isDirty },
+    setValue,
+    getValues,
+  } = useForm<ProductFormValues>({
+    resolver: zodResolver(productSchema),
+    defaultValues: {
+      name: "",
+      category: "Fruits",
+      price: 0,
+      salePrice: 0,
+      stock: 0,
+      unit: "each",
+      description: "",
+      nutrition: {
+        calories: 0,
+        fat: "0g",
+        carbs: "0g",
+        protein: "0g",
+      },
+      organic: false,
+      featured: false,
+      status: "draft",
     },
-    organic: false,
-    featured: false,
-    status: "draft",
   });
 
-  // For tracking form completion
-  const [formProgress, setFormProgress] = useState({
-    basicInfo: false,
-    pricing: false,
-    images: false,
-    description: false,
-  });
-
-  // Function to handle form changes - FIXED to ensure numeric values
-  const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >
-  ) => {
-    const { name, value, type } = e.target;
-    const checked =
-      type === "checkbox" ? (e.target as HTMLInputElement).checked : undefined;
-    
-    // Handle numeric fields specially
-    if (name === "price" || name === "salePrice" || name === "stock") {
-      setProduct({
-        ...product,
-        [name]: type === "checkbox" ? checked : Number(value),  // Convert to number
-      });
-    } else {
-      setProduct({
-        ...product,
-        [name]: type === "checkbox" ? checked : value,
-      });
-    }
-
-    // Update form progress
-    if (name === "name" && value.trim() !== "") {
-      setFormProgress((prev) => ({ ...prev, basicInfo: true }));
-    } else if ((name === "price" || name === "stock") && Number(value) > 0) {
-      setFormProgress((prev) => ({ ...prev, pricing: true }));
-    } else if (name === "description" && value.trim().length > 10) {
-      setFormProgress((prev) => ({ ...prev, description: true }));
-    }
-  };
+  // Watch values for preview component
+  const productValues = watch();
 
   // List of available categories
-  const categories: Category[] = [
+  const categories = [
     { id: 1, name: "Fruits" },
     { id: 2, name: "Vegetables" },
     { id: 3, name: "Herbs" },
@@ -107,6 +74,53 @@ export default function AddNewProductPage() {
     { id: 5, name: "Fresh Juices" },
     { id: 6, name: "Dried Fruits" },
   ];
+
+  // Handle images separately
+  const [images, setImages] = React.useState<string[]>([]);
+
+  const handleImagesChange = (newImages: string[]) => {
+    setImages(newImages);
+  };
+
+  // Form submission handler
+  const onSubmit = (data: ProductFormValues) => {
+    const productData = {
+      ...data,
+      images, // Add the images to the form data
+    };
+    console.log("Submitting product:", productData);
+    alert("Product successfully added!");
+    // Here you would typically send the data to your API
+  };
+
+  // Save as draft handler
+  const handleSaveAsDraft = () => {
+    const currentValues = getValues();
+    const productData = {
+      ...currentValues,
+      images,
+      status: "draft",
+    };
+    console.log("Saving draft:", productData);
+    alert("Product saved as draft!");
+  };
+
+  // Calculate form completion percentage
+  const calculateCompletion = () => {
+    const fields = ["name", "price", "stock", "description"];
+    const completed = fields.filter((field) => {
+      const value = getValues(field as any);
+      return field === "description" 
+        ? value && value.length >= 10
+        : field === "price" || field === "stock" 
+          ? value > 0 
+          : value;
+    });
+    
+    return (completed.length / fields.length) * 100;
+  };
+
+  const completionPercentage = calculateCompletion();
 
   // Sample similar products
   const similarProducts = [
@@ -133,41 +147,12 @@ export default function AddNewProductPage() {
     },
   ];
 
-  // Calculate overall form completion percentage
-  const completionPercentage =
-    (Object.values(formProgress).filter(Boolean).length /
-      Object.values(formProgress).length) *
-    100;
-
-  // Handle form submission
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Here you would typically send the data to your API
-    console.log("Submitting product:", product);
-    // Example of what you might do after successful submission:
-    alert("Product successfully added!");
-    // Redirect or clear form, etc.
-  };
-
-  // Handle save as draft
-  const handleSaveAsDraft = () => {
-    console.log("Saving draft:", product);
-    alert("Product saved as draft!");
-  };
-
-  const handleImagesChange = (images: string[]) => {
-    setProduct({
-      ...product,
-      images,
-    });
-  };
-
   return (
     <DashboardLayout
       title="Add New Product"
       breadcrumb="Products > Add New Product"
       activePath="/seller-dashboard/add-product"
-      defaultCollapsed={{product: false}}
+      defaultCollapsed={{ product: false }}
       notificationCount={3}
       messageCount={2}
     >
@@ -198,7 +183,7 @@ export default function AddNewProductPage() {
             </div>
 
             {/* Form fields */}
-            <form className="space-y-6" onSubmit={handleSubmit}>
+            <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
               {/* Basic Info Section */}
               <div className="border-b border-gray-200 pb-6">
                 <h2 className="text-lg font-medium text-gray-700 mb-4">
@@ -211,14 +196,17 @@ export default function AddNewProductPage() {
                       Product Name<span className="text-red-500">*</span>
                     </label>
                     <input
-                      type="text"
-                      name="name"
-                      value={product.name}
-                      onChange={handleChange}
-                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-offset-0 focus:ring-opacity-50 focus:ring-green-500 focus:border-green-500"
-                      required
+                      {...register("name")}
+                      className={`w-full p-2 border ${
+                        errors.name ? "border-red-500" : "border-gray-300"
+                      } rounded-md focus:ring-2 focus:ring-offset-0 focus:ring-opacity-50 focus:ring-green-500 focus:border-green-500`}
                       placeholder="Enter product name"
                     />
+                    {errors.name && (
+                      <p className="mt-1 text-xs text-red-500">
+                        {errors.name.message}
+                      </p>
+                    )}
                     <p className="mt-1 text-xs text-gray-500">
                       Choose a descriptive and appealing name
                     </p>
@@ -229,11 +217,10 @@ export default function AddNewProductPage() {
                       Category<span className="text-red-500">*</span>
                     </label>
                     <select
-                      name="category"
-                      value={product.category}
-                      onChange={handleChange}
-                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                      required
+                      {...register("category")}
+                      className={`w-full p-2 border ${
+                        errors.category ? "border-red-500" : "border-gray-300"
+                      } rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500`}
                     >
                       {categories.map((category) => (
                         <option key={category.id} value={category.name}>
@@ -241,6 +228,11 @@ export default function AddNewProductPage() {
                         </option>
                       ))}
                     </select>
+                    {errors.category && (
+                      <p className="mt-1 text-xs text-red-500">
+                        {errors.category.message}
+                      </p>
+                    )}
                     <p className="mt-1 text-xs text-gray-500">
                       Select the most relevant category
                     </p>
@@ -261,14 +253,18 @@ export default function AddNewProductPage() {
                     </label>
                     <input
                       type="number"
-                      name="price"
-                      value={product.price}
-                      onChange={handleChange}
                       step="0.01"
                       min="0"
-                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                      required
+                      {...register("price", { valueAsNumber: true })}
+                      className={`w-full p-2 border ${
+                        errors.price ? "border-red-500" : "border-gray-300"
+                      } rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500`}
                     />
+                    {errors.price && (
+                      <p className="mt-1 text-xs text-red-500">
+                        {errors.price.message}
+                      </p>
+                    )}
                   </div>
 
                   <div>
@@ -277,13 +273,18 @@ export default function AddNewProductPage() {
                     </label>
                     <input
                       type="number"
-                      name="salePrice"
-                      value={product.salePrice}
-                      onChange={handleChange}
                       step="0.01"
                       min="0"
-                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                      {...register("salePrice", { valueAsNumber: true })}
+                      className={`w-full p-2 border ${
+                        errors.salePrice ? "border-red-500" : "border-gray-300"
+                      } rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500`}
                     />
+                    {errors.salePrice && (
+                      <p className="mt-1 text-xs text-red-500">
+                        {errors.salePrice.message}
+                      </p>
+                    )}
                     <p className="mt-1 text-xs text-gray-500">
                       Leave 0 if not on sale
                     </p>
@@ -294,9 +295,7 @@ export default function AddNewProductPage() {
                       Unit
                     </label>
                     <select
-                      name="unit"
-                      value={product.unit}
-                      onChange={handleChange}
+                      {...register("unit")}
                       className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
                     >
                       <option value="each">Each</option>
@@ -313,13 +312,17 @@ export default function AddNewProductPage() {
                     </label>
                     <input
                       type="number"
-                      name="stock"
-                      value={product.stock}
-                      onChange={handleChange}
                       min="0"
-                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                      required
+                      {...register("stock", { valueAsNumber: true })}
+                      className={`w-full p-2 border ${
+                        errors.stock ? "border-red-500" : "border-gray-300"
+                      } rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500`}
                     />
+                    {errors.stock && (
+                      <p className="mt-1 text-xs text-red-500">
+                        {errors.stock.message}
+                      </p>
+                    )}
                   </div>
 
                   <div className="md:col-span-2 flex items-center space-x-6 mt-6">
@@ -327,9 +330,7 @@ export default function AddNewProductPage() {
                       <input
                         type="checkbox"
                         id="organic"
-                        name="organic"
-                        checked={product.organic}
-                        onChange={handleChange}
+                        {...register("organic")}
                         className="h-4 w-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
                       />
                       <label
@@ -339,33 +340,26 @@ export default function AddNewProductPage() {
                         Organic Product
                       </label>
                     </div>
-
-                    <div className="flex items-center">
-                      <input
-                        type="checkbox"
-                        id="featured"
-                        name="featured"
-                        checked={product.featured}
-                        onChange={handleChange}
-                        className="h-4 w-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
-                      />
-                      <label
-                        htmlFor="featured"
-                        className="ml-2 text-sm text-gray-700"
-                      >
-                        Featured Product
-                      </label>
-                    </div>
                   </div>
                 </div>
               </div>
 
               {/* Images Section */}
-              <ProductImageUploader
-                images={product.images}
-                onImagesChange={handleImagesChange}
-                required={true}
-              />
+              <div className="border-b border-gray-200 pb-6">
+                <h2 className="text-lg font-medium text-gray-700 mb-4">
+                  Product Images<span className="text-red-500">*</span>
+                </h2>
+                <ProductImageUploader
+                  images={images}
+                  onImagesChange={handleImagesChange}
+                  required={true}
+                />
+                {images.length === 0 && (
+                  <p className="mt-1 text-xs text-red-500">
+                    At least one image is required
+                  </p>
+                )}
+              </div>
 
               {/* Description Section */}
               <div className="border-b border-gray-200 pb-6">
@@ -375,14 +369,18 @@ export default function AddNewProductPage() {
 
                 <div>
                   <textarea
-                    name="description"
-                    value={product.description}
-                    onChange={handleChange}
+                    {...register("description")}
                     rows={4}
-                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                    className={`w-full p-2 border ${
+                      errors.description ? "border-red-500" : "border-gray-300"
+                    } rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500`}
                     placeholder="Describe your product's features, benefits, origin, etc."
-                    required
                   ></textarea>
+                  {errors.description && (
+                    <p className="mt-1 text-xs text-red-500">
+                      {errors.description.message}
+                    </p>
+                  )}
                   <p className="mt-1 text-xs text-gray-500">
                     Min. 10 characters
                   </p>
@@ -402,19 +400,15 @@ export default function AddNewProductPage() {
                     </label>
                     <input
                       type="number"
-                      name="nutrition.calories"
-                      value={product.nutrition.calories}
-                      onChange={(e) =>
-                        setProduct({
-                          ...product,
-                          nutrition: {
-                            ...product.nutrition,
-                            calories: Number(e.target.value),
-                          },
-                        })
-                      }
+                      min="0"
+                      {...register("nutrition.calories", { valueAsNumber: true })}
                       className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
                     />
+                    {errors.nutrition?.calories && (
+                      <p className="mt-1 text-xs text-red-500">
+                        {errors.nutrition.calories.message}
+                      </p>
+                    )}
                   </div>
 
                   <div>
@@ -423,17 +417,7 @@ export default function AddNewProductPage() {
                     </label>
                     <input
                       type="text"
-                      name="nutrition.fat"
-                      value={product.nutrition.fat}
-                      onChange={(e) =>
-                        setProduct({
-                          ...product,
-                          nutrition: {
-                            ...product.nutrition,
-                            fat: e.target.value,
-                          },
-                        })
-                      }
+                      {...register("nutrition.fat")}
                       className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
                       placeholder="e.g. 15g"
                     />
@@ -445,17 +429,7 @@ export default function AddNewProductPage() {
                     </label>
                     <input
                       type="text"
-                      name="nutrition.carbs"
-                      value={product.nutrition.carbs}
-                      onChange={(e) =>
-                        setProduct({
-                          ...product,
-                          nutrition: {
-                            ...product.nutrition,
-                            carbs: e.target.value,
-                          },
-                        })
-                      }
+                      {...register("nutrition.carbs")}
                       className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
                       placeholder="e.g. 9g"
                     />
@@ -467,17 +441,7 @@ export default function AddNewProductPage() {
                     </label>
                     <input
                       type="text"
-                      name="nutrition.protein"
-                      value={product.nutrition.protein}
-                      onChange={(e) =>
-                        setProduct({
-                          ...product,
-                          nutrition: {
-                            ...product.nutrition,
-                            protein: e.target.value,
-                          },
-                        })
-                      }
+                      {...register("nutrition.protein")}
                       className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
                       placeholder="e.g. 2g"
                     />
@@ -505,20 +469,11 @@ export default function AddNewProductPage() {
                   type="submit"
                   className="px-6 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-green-500"
                   style={{
-                    backgroundColor:
-                      formProgress.basicInfo &&
-                      formProgress.pricing &&
-                      formProgress.images &&
-                      formProgress.description
-                        ? colors.darkGreen
-                        : colors.primary,
+                    backgroundColor: isValid && images.length > 0
+                      ? colors.darkGreen
+                      : colors.primary,
                   }}
-                  disabled={
-                    !formProgress.basicInfo ||
-                    !formProgress.pricing ||
-                    !formProgress.images ||
-                    !formProgress.description
-                  }
+                  disabled={!isValid || images.length === 0}
                 >
                   Add Product
                 </button>
@@ -530,7 +485,7 @@ export default function AddNewProductPage() {
         {/* Right side - Preview & Tips */}
         <div className="lg:w-1/3">
           {/* Product Preview */}
-          <ProductPreview product={product} />
+          <ProductPreview product={{ ...productValues, images }} />
 
           {/* Tips & Similar Products */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6 mb-6">
