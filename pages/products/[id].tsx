@@ -32,6 +32,7 @@ const ProductDetailsPage = () => {
         throw new Error('Failed to fetch product details');
       }
       const productData = await response.json();
+      console.log(productData);// log the fetched product data
       setProduct(productData);
     } catch (error) {
       console.error('Error fetching product details:', error);
@@ -48,7 +49,7 @@ const ProductDetailsPage = () => {
   }
 
   const handleAddToCart = () => {
-    dispatch(addToCart({ ...product, quantity: 1 }));
+    dispatch(addToCart({ ...product,stock_quantity: 1 }));
   };
 
   return (

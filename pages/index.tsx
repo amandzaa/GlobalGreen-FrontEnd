@@ -12,7 +12,7 @@ const HomePage: React.FC = () => {
     <div style={{ maxWidth: 1000, margin: '2rem auto', padding: '0 1rem' }}>
       <div className="home-hero">
         <h2 className="home-title">Welcome to Global Greens!</h2>
-        <p className="home-subtitle">Discover the freshest, organic produce delivered to your door.</p>
+        <p className="home-subtitle">Eco-Conscious Living Starts Here.</p>
         <Link href="/products" className="btn-primary home-cta">Browse All Products</Link>
       </div>
 

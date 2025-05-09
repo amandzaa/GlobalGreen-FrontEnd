@@ -14,7 +14,7 @@ interface Product {
   isNew: boolean;
   stock: number;
   category: string;
-  quantity: number; // Add this line to the Product type
+  stock_quantity: number;
 }
 
 const ProductDetailsPage: React.FC = () => {

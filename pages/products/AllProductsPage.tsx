@@ -20,6 +20,7 @@ interface Product {
   weight: string;
   ingredients: string;
   allergens: string;
+  stock_quantity: number;
 }
 
 const AllProductsPage = () => {
@@ -29,18 +30,19 @@ const AllProductsPage = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
+  const fetchProducts = async () => {
+    try {
+      const response = await fetch('https://globalgreen-backend-production.up.railway.app/users'); // Replace with your actual API URL
+      const data = await response.json();
+      setProducts(data);
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await fetch('https://globalgreen-backend-production.up.railway.app/products');
-        const productData = await response.json();
-        setProducts(productData);
-      } catch (error) {
-        setError('Failed to load products');
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchProducts();
   }, []);
 
@@ -56,18 +58,16 @@ const AllProductsPage = () => {
   if (error) return <div>Error: {error}</div>;
 
   return (
-    <div className="all-products-page">
-      <h2 className="products-title">All Products</h2>
-      <div className="product-list">
-        {products.map((product) => (
-          <div key={product.id} className="product-item">
-            <img src={product.image} alt={product.name} className="product-image" />
-            <h3>{product.name}</h3>
-            <p>Price: ${product.price}</p>
-            <button onClick={() => handleAddToCart(product)}>Add to Cart</button>
-          </div>
-        ))}
-      </div>
+    <div className="products-container">
+      {products.map((product) => (
+        <div key={product.id} className="product-card">
+          <img src={product.image} alt={product.name} className="product-image" />
+          <h3 className="product-name">{product.name}</h3>
+          <p className="product-description">{product.description}</p>
+          <p className="product-price">${product.price}</p>
+          <button onClick={() => handleAddToCart(product)}>Add to Cart</button>
+        </div>
+      ))}
     </div>
   );
 };
