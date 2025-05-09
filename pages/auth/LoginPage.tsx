@@ -1,10 +1,21 @@
-import React, { useState, ChangeEvent, FormEvent } from 'react';
+import React, { useState, ChangeEvent, FormEvent, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useDispatch, useSelector } from 'react-redux';
 import { EnvelopeIcon, LockClosedIcon } from '@heroicons/react/24/outline';
 import { RootState } from '../../store/store';
 import { loginStart, loginSuccess, loginFailure } from '../../store/slices/authSlice';
+import { loginUser } from '../../public/services/api';
+
+interface User {
+  created_at: string;
+  email: string;
+  first_name: string;
+  last_name: string;
+  phone: string;
+  role: string;
+  user_id: number;
+}
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState<string>('');
@@ -14,28 +25,38 @@ const LoginPage: React.FC = () => {
   const router = useRouter();
   const dispatch = useDispatch();
   const { loading, error } = useSelector((state: RootState) => state.auth);
+  const [user, setUser] = useState<User | null>(null);
+  const [accessToken, setAccessToken] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await fetch('https://globalgreen-backend-production.up.railway.app/login'); // Replace with your friend's login API URL
+        const data = await response.json();
+        setUser(data.user);
+        setAccessToken(data.access_token);
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    };
+    fetchUserData();
+  }, []);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     dispatch(loginStart());
 
     try {
-      // TODO: Replace with actual API call
-      const mockUser = {
-        id: '1',
-        name: 'Test User',
-        email: email,
-        role: role,
-      };
-      
-      dispatch(loginSuccess(mockUser));
+      const userData = await loginUser(email, password); // Call the API with email and password
+      dispatch(loginSuccess(userData)); // Dispatch success with user data
+
       if (role === 'seller') {
         router.push('/seller/dashboard');
       } else {
         router.push('/');
       }
     } catch (err) {
-      dispatch(loginFailure('Invalid email or password'));
+      dispatch(loginFailure('Invalid email or password')); // Handle errors
     }
   };
 
@@ -110,9 +131,20 @@ const LoginPage: React.FC = () => {
             {loading ? 'Signing in...' : 'Sign in'}
           </button>
         </form>
+        {user ? (
+          <div>
+            <h2>Welcome, {user.first_name} {user.last_name}</h2>
+            <p>Email: {user.email}</p>
+            <p>Phone: {user.phone}</p>
+            <p>Role: {user.role}</p>
+            <p>User ID: {user.user_id}</p>
+          </div>
+        ) : (
+          <p>Loading user data...</p>
+        )}
       </div>
     </div>
   );
 };
 
-export default LoginPage; 
+export default LoginPage;

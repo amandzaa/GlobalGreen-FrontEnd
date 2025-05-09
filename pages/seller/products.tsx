@@ -1,59 +1,48 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
 import ProductCard from '../../components/ProductCard';
 import { useWishlist } from '../../contexts/WishlistContext';
 
-// Mock products with sellerId
-const products = [
-  {
-    id: 1,
-    name: "Organic Carrots",
-    price: 2.99,
-    description: "Fresh, crunchy organic carrots grown locally with sustainable farming practices.",
-    image: "https://images.unsplash.com/photo-1447175008436-054170c2e979?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
-    category: "root-vegetables",
-    organic: true,
-    origin: "Local Farm",
-    stock: 10,
-    isNew: true,
-    sellerId: '1',
-  },
-  {
-    id: 2,
-    name: "Fresh Spinach",
-    price: 3.49,
-    description: "Tender, nutrient-rich spinach leaves, perfect for salads and cooking.",
-    image: "https://images.unsplash.com/photo-1576045057995-568f588f82fb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
-    category: "leafy-greens",
-    organic: true,
-    origin: "Local Farm",
-    stock: 0,
-    isNew: false,
-    sellerId: '2',
-  },
-  {
-    id: 3,
-    name: "Heirloom Tomatoes",
-    price: 4.99,
-    description: "Juicy, flavorful heirloom tomatoes grown using traditional methods.",
-    image: "https://images.unsplash.com/photo-1518977676601-b53f82aba655?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
-    category: "fruits",
-    organic: true,
-    origin: "Local Farm",
-    stock: 5,
-    isNew: true,
-    sellerId: '1',
-  }
-];
+interface Product {
+  category_id: number;
+  created_at: string;
+  description: string;
+  image_url: string;
+  images: string[];
+  name: string;
+  organic: boolean;
+  price: number;
+  product_id: number;
+  quantity_stock: number;
+  unit_type: string;
+  update_at: string;
+  sellerId: number;
+}
 
 const SellerProductsPage = () => {
   const user = useSelector((state: RootState) => state.auth.user);
   const { isWishlisted, toggleWishlist } = useWishlist();
+  const [products, setProducts] = useState<Product[]>([]);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch('https://globalgreen-backend-production.up.railway.app/products'); // Update with your API URL
+        const productsData = await response.json();
+        setProducts(productsData);
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      }
+    };
+    fetchProducts();
+  }, []);
+
   if (!user || user.role !== 'seller') {
     return <div><h2>My Products</h2><p>You are not authorized to view this page.</p></div>;
   }
-  const sellerProducts = products.filter(p => p.sellerId === user.id);
+
+  const sellerProducts = products.filter(p => p.sellerId === parseInt(user.id, 10));
 
   return (
     <div style={{ maxWidth: 1000, margin: '2rem auto', padding: '0 1rem' }}>
@@ -63,7 +52,13 @@ const SellerProductsPage = () => {
       ) : (
         <div className="products-grid">
           {sellerProducts.map(product => (
-            <ProductCard key={product.id} product={product} onAddToCart={() => {}} onViewDetails={() => {}} />
+            <div key={product.product_id}>
+              <img src={product.image_url} alt={product.name} />
+              <h3>{product.name}</h3>
+              <p>{product.description}</p>
+              <p>Price: ${product.price}</p>
+              <p>Stock: {product.quantity_stock} {product.unit_type}</p>
+            </div>
           ))}
         </div>
       )}
@@ -71,4 +66,4 @@ const SellerProductsPage = () => {
   );
 };
 
-export default SellerProductsPage; 
+export default SellerProductsPage;

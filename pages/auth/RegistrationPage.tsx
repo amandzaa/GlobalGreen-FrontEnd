@@ -1,9 +1,9 @@
-import React, { useState, ChangeEvent, FormEvent } from 'react';
+import React, { useState, ChangeEvent, FormEvent, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useDispatch, useSelector } from 'react-redux';
-import { UserIcon, EnvelopeIcon, LockClosedIcon } from '@heroicons/react/24/outline';
 import { RootState } from '../../store/store';
+import { UserIcon, EnvelopeIcon, LockClosedIcon } from '@heroicons/react/24/outline';
 import { registerStart, registerSuccess, registerFailure } from '../../store/slices/authSlice';
 
 interface FormData {
@@ -25,18 +25,51 @@ const RegistrationPage: React.FC = () => {
   const router = useRouter();
   const dispatch = useDispatch();
   const { loading, error } = useSelector((state: RootState) => state.auth);
+  const [message, setMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchMessage = async () => {
+      try {
+        const response = await fetch('https://globalgreen-backend-production.up.railway.app/auth/register');
+        const data = await response.json();
+        setMessage(data.msg);
+      } catch (error) {
+        console.error('Error fetching message:', error);
+      }
+    };
+    fetchMessage();
+  }, []);
+
+  const registerUser = async (email: string, password: string, name: string, role: string) => {
+    try {
+      const response = await fetch('https://globalgreen-backend-production.up.railway.app/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password, name, role }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Registration failed');
+      }
+
+      const data = await response.json();
+      return data; // Return user data or token as needed
+    } catch (error) {
+      console.error('Error registering:', error);
+      throw error; // Rethrow the error for further handling
+    }
+  };
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
+
     if (formData.password !== formData.confirmPassword) {
       dispatch(registerFailure('Passwords do not match'));
       return;
@@ -45,15 +78,8 @@ const RegistrationPage: React.FC = () => {
     dispatch(registerStart());
 
     try {
-      // TODO: Replace with actual API call
-      const mockUser = {
-        id: '1',
-        name: formData.name,
-        email: formData.email,
-        role: formData.role,
-      };
-      
-      dispatch(registerSuccess(mockUser));
+      const userData = await registerUser(formData.email, formData.password, formData.name, formData.role);
+      dispatch(registerSuccess(userData));
       router.push('/');
     } catch (err) {
       dispatch(registerFailure('Registration failed. Please try again.'));
@@ -64,6 +90,11 @@ const RegistrationPage: React.FC = () => {
     <div className="auth-container">
       <div className="auth-form">
         <h2>Create a new account</h2>
+        {message ? (
+          <p>{message}</p>
+        ) : (
+          <p>Loading message...</p>
+        )}
         <p>
           Already have an account?{' '}
           <Link href="/login">Sign in</Link>
@@ -160,4 +191,4 @@ const RegistrationPage: React.FC = () => {
   );
 };
 
-export default RegistrationPage; 
+export default RegistrationPage;

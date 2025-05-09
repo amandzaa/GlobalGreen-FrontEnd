@@ -1,52 +1,46 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useDispatch } from 'react-redux';
 import { addToCart } from '../../store/slices/cartSlice';
 
-const products = [
-  {
-    id: 1,
-    name: "Organic Carrots",
-    price: 2.99,
-    description: "Fresh, crunchy organic carrots grown locally with sustainable farming practices.",
-    image: "https://images.unsplash.com/photo-1447175008436-054170c2e979?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
-    category: "root-vegetables",
-    organic: true,
-    origin: "Local Farm",
-    stock: 10,
-    isNew: true,
-  },
-  {
-    id: 2,
-    name: "Fresh Spinach",
-    price: 3.49,
-    description: "Tender, nutrient-rich spinach leaves, perfect for salads and cooking.",
-    image: "https://images.unsplash.com/photo-1576045057995-568f588f82fb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
-    category: "leafy-greens",
-    organic: true,
-    origin: "Local Farm",
-    stock: 0,
-    isNew: false,
-  },
-  {
-    id: 3,
-    name: "Heirloom Tomatoes",
-    price: 4.99,
-    description: "Juicy, flavorful heirloom tomatoes grown using traditional methods.",
-    image: "https://images.unsplash.com/photo-1518977676601-b53f82aba655?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
-    category: "fruits",
-    organic: true,
-    origin: "Local Farm",
-    stock: 5,
-    isNew: true,
-  }
-];
+interface Product {
+  id: number;
+  name: string;
+  image: string;
+  price: number;
+  description: string;
+  origin: string;
+  organic: boolean;
+  isNew: boolean;
+  stock: number;
+  category: string;
+  quantity: number; // Add this line to the Product type
+}
 
 const ProductDetailsPage: React.FC = () => {
   const router = useRouter();
   const { id } = router.query;
   const dispatch = useDispatch();
-  const product = products.find(p => p.id === Number(id));
+  const [product, setProduct] = useState<Product | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchProductDetails = async () => {
+    try {
+      const response = await fetch('https://globalgreen-backend-production.up.railway.app/products/' + router.query.id);
+      const productData: Product = await response.json();
+      setProduct(productData);
+    } catch (error) {
+      setError('Failed to fetch product details');
+    }
+  };
+
+  useEffect(() => {
+    fetchProductDetails();
+  }, []);
+
+  if (error) {
+    return <div style={{ padding: '2rem', textAlign: 'center' }}><h2>{error}</h2></div>;
+  }
 
   if (!product) {
     return <div style={{ padding: '2rem', textAlign: 'center' }}><h2>Product not found</h2></div>;
@@ -66,6 +60,7 @@ const ProductDetailsPage: React.FC = () => {
           <p className="product-price" style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#4CAF50', marginBottom: 16 }}>${product.price.toFixed(2)}</p>
           <p style={{ marginBottom: 16 }}>{product.description}</p>
           <p style={{ marginBottom: 16 }}><strong>Origin:</strong> {product.origin}</p>
+          <p style={{ marginBottom: 16 }}><strong>Category:</strong> {product.category}</p>
           {product.stock === 0 ? (
             <button className="btn-disabled" disabled>Out of Stock</button>
           ) : (
