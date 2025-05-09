@@ -89,6 +89,7 @@ export const fetchCart = createAsyncThunk(
       const response = await mockFetchCart();
       return response;
     } catch (error) {
+        console.log(error)
       return rejectWithValue('Failed to fetch cart items. Please try again later.');
     }
   }

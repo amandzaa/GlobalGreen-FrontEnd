@@ -193,7 +193,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   // Colors for styling - can be adjusted to match your theme
   const activeHighlightColor = colors.secondary || '#4cceac';
-  const hoverTransition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+  // const hoverTransition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
 
   return (
     <aside 

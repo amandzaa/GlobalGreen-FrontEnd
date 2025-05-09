@@ -4,7 +4,6 @@ import { ArrowLeft, ShoppingCart, Trash2, Check, Edit, CreditCard } from 'lucide
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '@/redux/store';
 import { 
-  fetchCart, 
   removeFromCart, 
   updateQuantity,
   incrementQuantity,

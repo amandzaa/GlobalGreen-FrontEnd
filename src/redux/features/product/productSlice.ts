@@ -234,10 +234,10 @@ const productSlice = createSlice({
       state.selectedProduct = action.payload;
     },
     // Additional reducer for filtering products locally
-    filterProducts: (state, action: PayloadAction<string>) => {
-      // This is just a placeholder. Actual filtering is done in the component
-      // but we could implement additional filtering logic here if needed
-    },
+    // filterProducts: (state, action: PayloadAction<string>) => {
+    //   // This is just a placeholder. Actual filtering is done in the component
+    //   // but we could implement additional filtering logic here if needed
+    // },
   },
   extraReducers: (builder) => {
     builder
@@ -370,5 +370,5 @@ const productSlice = createSlice({
   },
 });
 
-export const { clearProducts, setSelectedProduct, filterProducts } = productSlice.actions;
+export const { clearProducts, setSelectedProduct/*, filterProducts8*/ } = productSlice.actions;
 export default productSlice.reducer;

@@ -1,6 +1,5 @@
 // components/RegisterForm.tsx
 import React, { useState, useEffect } from 'react';
-import Image from 'next/image';
 import { Mail, User, Phone, Eye, EyeOff, Lock, AlertCircle, CheckCircle, Info, Store, UserCircle } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 import { registerUser, reset } from '@/redux/features/auth/authSlice';
@@ -485,7 +484,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin, onClose })
                 <Info className="w-5 h-5 text-blue-600 mr-2 flex-shrink-0 mt-0.5" />
                 <div className="text-sm text-blue-700">
                   <p className="font-medium mb-1">Creating a Seller Account</p>
-                  <p>After registration, you'll need to complete your seller profile with business details before you can list products on the marketplace.</p>
+                  <p>After registration, you&apos;ll need to complete your seller profile with business details before you can list products on the marketplace.</p>
                 </div>
               </div>
             </div>
@@ -542,10 +541,11 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin, onClose })
               {role === 'seller' && (
                 <div className="mt-3 p-3 bg-blue-50 border border-blue-100 rounded text-left">
                   <p className="text-sm text-blue-700">
-                    <span className="font-medium">Next steps:</span> After signing in, you'll need to complete your seller profile before you can list products on the marketplace.
+                    <span className="font-medium">Next steps:</span> After signing in, you&apos;ll need to complete your seller profile before you can list products on the marketplace.
                   </p>
                 </div>
               )}
+
             </div>
             
             <div className="mt-6">
