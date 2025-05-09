@@ -23,6 +23,7 @@ export const cartApi = {
         const response = await axios.get(`${API_URL}/cart`);
         return response.data;
         } catch (error) {
+            console.log(error)
         throw new Error('Failed to fetch cart');
         }
     },
@@ -32,6 +33,7 @@ export const cartApi = {
       const response = await axios.post(`${API_URL}/cart/add`, product);
       return response.data;
     } catch (error) {
+        console.log(error)
       throw new Error('Failed to add item to cart');
     }
   },
@@ -41,6 +43,7 @@ export const cartApi = {
       const response = await axios.put(`${API_URL}/cart/update`, { productId, quantity });
       return response.data;
     } catch (error) {
+        console.log(error)
       throw new Error('Failed to update item quantity');
     }
   },
@@ -50,6 +53,7 @@ export const cartApi = {
       const response = await axios.delete(`${API_URL}/cart/remove/${productId}`);
       return response.data;
     } catch (error) {
+        console.log(error)
       throw new Error('Failed to remove item from cart');
     }
   },
@@ -59,6 +63,7 @@ export const cartApi = {
       const response = await axios.post(`${API_URL}/cart/voucher`, payload);
       return response.data;
     } catch (error) {
+        console.log(error)
       throw new Error('Failed to apply voucher');
     }
   },

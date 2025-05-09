@@ -37,8 +37,7 @@ export default function AddNewProductPage() {
     register,
     handleSubmit,
     watch,
-    formState: { errors, isValid, isDirty },
-    setValue,
+    formState: { errors, isValid},
     getValues,
   } = useForm<ProductFormValues>({
     resolver: zodResolver(productSchema),
@@ -104,17 +103,17 @@ export default function AddNewProductPage() {
     console.log("Saving draft:", productData);
     alert("Product saved as draft!");
   };
-
+  const fields = ["name", "price", "stock", "description"] as const;
+  type FieldName = typeof fields[number];
   // Calculate form completion percentage
   const calculateCompletion = () => {
-    const fields = ["name", "price", "stock", "description"];
     const completed = fields.filter((field) => {
-      const value = getValues(field as any);
-      return field === "description" 
-        ? value && value.length >= 10
-        : field === "price" || field === "stock" 
-          ? value > 0 
-          : value;
+      const value = getValues(field as FieldName);
+      return field === "description"
+      ? typeof value === "string" && value.length >= 10
+      : field === "price" || field === "stock"
+        ? typeof value === "number" && value > 0
+        : Boolean(value);
     });
     
     return (completed.length / fields.length) * 100;

@@ -1,10 +1,9 @@
 import React, { useState } from "react";
-import { User, Edit, Check, X } from "lucide-react";
+import { Edit, Check, X } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/redux/store"; // path to your store types
 import { updateUser } from "@/redux/features/user/userSlice";
 import { UserData } from "@/types/user";
-import { ProfileInfoItem } from "./ProfileInfoItem";
 
 interface ProfileSidebarProps {
   userData: UserData;

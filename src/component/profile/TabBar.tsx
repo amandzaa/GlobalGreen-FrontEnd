@@ -4,10 +4,10 @@ interface TabBarProps {
   tabs: TabItem[];
   activeTab: string;
   onTabChange: (tabId: string) => void;
-  onEditProfile: () => void;
+
 }
 
-export const TabBar: React.FC<TabBarProps> = ({ tabs, activeTab, onTabChange, onEditProfile }) => {
+export const TabBar: React.FC<TabBarProps> = ({ tabs, activeTab, onTabChange }) => {
   return (
     <div className="bg-white border-b border-gray-200">
       <div className="flex justify-between items-center px-8 py-4">

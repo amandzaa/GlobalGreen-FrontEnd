@@ -24,7 +24,7 @@ const StoreSetting = () => {
   const [editField, setEditField] = useState("");
   const [editValue, setEditValue] = useState("");
   const [isMounted, setIsMounted] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+  const [, setIsMobile] = useState(false);
   const [shippingData, setShippingData] = useState({
     shippingMethod: "Standard Shipping",
     shippingTime: "3-5 business days",
@@ -106,9 +106,9 @@ console.log("cek authuser", authUser)
       toast.error("Unable to save: User data not available");
       return;
     }
-
-    const updateData: { [key: string]: any } = { email: userData.email };
-
+  
+    const updateData: Record<string, unknown> = { email: userData.email };
+  
     switch (field) {
       case "username":
         updateData.username = value;
@@ -137,7 +137,7 @@ console.log("cek authuser", authUser)
       updatedUser.first_name = nameParts[0] || "";
       updatedUser.last_name = nameParts.slice(1).join(" ") || "";
     } else if (field !== "password") {
-      //@ts-ignore
+      // @ts-expect-error: field might not exist on userData type, but assigning dynamically
       updatedUser[field] = value;
     }
     setUserData(updatedUser);
@@ -194,7 +194,7 @@ console.log("cek authuser", authUser)
 
           {/* Main content */}
           <div className="flex-1">
-            <TabBar tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} onEditProfile={() => handleEditField("username", userData.username || "")} />
+            <TabBar tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab}  />
             <motion.div 
             key={activeTab} 
             initial={{ opacity: 0, y: 10 }} 
