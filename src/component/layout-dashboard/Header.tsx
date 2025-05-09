@@ -138,7 +138,7 @@ export default function Header({
     const img = new Image();
     img.src = '/path/to/user-image.jpg';
     img.onload = () => setUserImageLoaded(true);
-    img.onerror = () => setUserImageLoaded(true); // Still set to true on error to show placeholder
+    img.onerror = () => setUserImageLoaded(true);
   }, []);
 
   // Default placeholder image as a fallback
@@ -148,7 +148,7 @@ export default function Header({
     <header 
       className="sticky top-0 z-50 shadow-md transition-colors duration-200"
       style={{ 
-        backgroundColor: theme === 'dark' ? '#1A1E2A' : '#FFFFFF',
+        backgroundColor: theme === 'dark' ? '#20603D' : '#FFFFFF',
         borderBottom: `1px solid ${theme === 'dark' ? '#2D3748' : '#E2E8F0'}`
       }}
     >
@@ -185,7 +185,7 @@ export default function Header({
           {/* Notifications */}
           <div className="relative">
             <button
-              className="p-2 rounded-full relative transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
+              className="p-2 rounded-full relative transition-colors hover:bg-gray-100 dark:hover:bg-green-500"
               onClick={() => {
                 setShowNotifications(!showNotifications);
                 setShowMessages(false);
@@ -196,13 +196,13 @@ export default function Header({
               }`}
               aria-expanded={showNotifications}
               aria-haspopup="true"
-              style={{ color: colors.darkGreen }}
+              style={{ color: colors.black }}
             >
-              <Bell size={20} />
+              <Bell size={23} />
               {notificationCount > 0 && (
                 <span
                   className="absolute top-0 right-0 w-4 h-4 rounded-full text-white text-xs flex items-center justify-center animate-pulse"
-                  style={{ backgroundColor: colors.primary }}
+                  style={{ backgroundColor: colors.red }}
                   aria-hidden="true"
                 >
                   {notificationCount > 9 ? "9+" : notificationCount}
@@ -215,8 +215,8 @@ export default function Header({
                 ref={notificationsPanelRef}
                 role="menu"
                 style={{ 
-                  backgroundColor: theme === 'dark' ? '#1F2937' : 'white',
-                  border: `1px solid ${theme === 'dark' ? '#374151' : '#E5E7EB'}`
+                  backgroundColor: theme === 'dark' ? '#20603D' : 'white',
+                  border: `1px solid ${theme === 'dark' ? '#20603D' : '#E5E7EB'}`
                 }}
               >
                 <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
@@ -236,7 +236,7 @@ export default function Header({
           {/* Messages - Hidden on smallest screens */}
           <div className="relative hidden sm:block">
             <button
-              className="p-2 rounded-full relative transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
+              className="p-2 rounded-full relative transition-colors hover:bg-gray-100 dark:hover:bg-green-500"
               onClick={() => {
                 setShowMessages(!showMessages);
                 setShowNotifications(false);
@@ -245,13 +245,13 @@ export default function Header({
               aria-label={`Messages${
                 messageCount > 0 ? ` (${messageCount} unread)` : ""
               }`}
-              style={{ color: colors.darkGreen }}
+              style={{ color: colors.black }}
             >
               <MessageCircle size={20} />
               {messageCount > 0 && (
                 <span
                   className="absolute top-0 right-0 w-4 h-4 rounded-full text-white text-xs flex items-center justify-center animate-pulse"
-                  style={{ backgroundColor: colors.primary }}
+                  style={{ backgroundColor: colors.red }}
                   aria-hidden="true"
                 >
                   {messageCount > 9 ? "9+" : messageCount}

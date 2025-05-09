@@ -44,7 +44,7 @@ const Home: React.FC = () => {
       description:
         "Step into the season with fresh, vibrant styles curated to refresh your store's look. Discover top-selling trends, limited-edition pieces, and exclusive discounts on our new spring arrivals—available for a limited time only.",
       buttonText: "Shop Now",
-      imageSrc: "https://picsum.photos/id/1011/800/400",
+      imageSrc: "https://picsum.photos/id/627/800/400",
       buttonLink: "/spring-collection",
     },
     {
@@ -52,7 +52,7 @@ const Home: React.FC = () => {
       description:
         "Unleash the power of cutting-edge AI and automation with our latest tools designed specifically for online sellers. From smarter inventory management to automated customer service, discover features that save time and boost your bottom line.",
       buttonText: "Learn More",
-      imageSrc: "https://picsum.photos/id/1005/800/400",
+      imageSrc: "https://picsum.photos/id/1080/800/400",
       buttonLink: "/seller-tools",
     },
     {
@@ -60,7 +60,7 @@ const Home: React.FC = () => {
       description:
         "Stay ahead of the curve with our free weekly webinars hosted by top e-commerce professionals. Learn best practices, marketing strategies, and real-life growth hacks that help sellers scale faster and smarter—live Q&A included.",
       buttonText: "Sign Up Free",
-      imageSrc: "https://picsum.photos/id/1027/800/400",
+      imageSrc: "https://picsum.photos/id/824/800/400",
       buttonLink: "/webinar-series",
     },
     {
@@ -68,7 +68,7 @@ const Home: React.FC = () => {
       description:
         "Give your online store the makeover it deserves. Our customizable storefront tools let you tweak layouts, banners, colors, and more—no design experience needed. Make a lasting impression that converts visitors into loyal customers.",
       buttonText: "Get Started",
-      imageSrc: "https://picsum.photos/id/1035/800/400",
+      imageSrc: "https://picsum.photos/id/493/800/400",
       buttonLink: "/storefront-tools",
     },
     {
@@ -76,7 +76,7 @@ const Home: React.FC = () => {
       description:
         "Take a behind-the-scenes look at how our most successful sellers achieved their goals. From humble beginnings to six-figure stores, these stories highlight the strategies, tools, and habits that truly make a difference.",
       buttonText: "Read Stories",
-      imageSrc: "https://picsum.photos/id/1043/800/400",
+      imageSrc: "https://picsum.photos/id/517/800/400",
       buttonLink: "/success-stories",
     },
   ];
@@ -109,19 +109,19 @@ const Home: React.FC = () => {
       title: "7 Effective Ways to Increase Your Sales on GlobalGreen",
       description:
         "Proven strategies to enhance store visibility and sales conversion",
-      image: "https://picsum.photos/id/103/800/400",
+      image: "https://picsum.photos/id/292/800/400",
       category: "Business Strategy",
     },
     {
       title: "Complete Guide to Using GreenAds for Beginners",
       description: "How to maximize advertising to boost your product sales",
-      image: "https://picsum.photos/id/365/800/400",
+      image: "https://picsum.photos/id/326/800/400",
       category: "Digital Marketing",
     },
     {
       title: "Tips for Building a Trusted Store Reputation",
       description: "Secrets to getting positive reviews and loyal customers",
-      image: "https://picsum.photos/id/203/800/400",
+      image: "https://picsum.photos/id/429/800/400",
       category: "Customer Service",
     },
   ];

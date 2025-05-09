@@ -72,11 +72,11 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         {/* Optional: Notifications sidebar could be added here */}
       </div>
 
-      {/* Floating Action Buttons */}
+      {/* Floating Action Buttons
       <FloatingActionButtons
         notificationCount={{ count: notificationCount }}
         messageCount={{ count: messageCount }}
-      />
+      /> */}
     </div>
   );
 };

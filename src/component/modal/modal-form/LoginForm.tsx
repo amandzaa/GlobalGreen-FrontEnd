@@ -196,7 +196,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToRegister }) => {
           )}
         </div>
 
-        {/* Remember Me & Forgot Password */}
+        {/* Remember Me & Forgot Password
         <div className="flex items-center justify-between mt-2">
           <div className="flex items-center">
             <input
@@ -219,7 +219,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToRegister }) => {
           >
             Forgot Password?
           </button>
-        </div>
+        </div> */}
 
         {/* Submit Button */}
         <button

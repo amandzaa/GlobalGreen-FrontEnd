@@ -15,6 +15,7 @@ import authReducer from "./features/auth/authSlice";
 import cartReducer from "./features/cart/cartSlice";
 import productReducer from "./features/product/productSlice";
 import userReducer from "./features/user/userSlice";
+import categoriesReducer from "./features/categories/categorySlice"
 
 import storageSession from "redux-persist/lib/storage/session";
 
@@ -30,6 +31,7 @@ const rootReducer = combineReducers({
   cart: cartReducer,
   products: productReducer,
   users: userReducer,
+  categories: categoriesReducer,
 });
 const persistConfig = {
   key: "root",
