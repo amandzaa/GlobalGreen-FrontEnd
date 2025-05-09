@@ -1,13 +1,13 @@
 import { UserData } from "@/types/user";
 import { Mail, Phone, MapPin, User, ShoppingBag, CalendarIcon } from "lucide-react";
-import { ContactInfoCard } from "./ContactInfoCard";
+// import { ContactInfoCard } from "./ContactInfoCard";
 
 interface OverviewTabProps {
   userData: UserData;
   onEditField: (field: string, value: string) => void;
 }
 
-export const OverviewTab: React.FC<OverviewTabProps> = ({ userData, onEditField }) => {
+export const OverviewTab: React.FC<OverviewTabProps> = ({ userData}) => {
   return (
     <div className="p-8">
       <div className="bg-white rounded shadow-sm overflow-hidden mb-8">

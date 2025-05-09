@@ -76,9 +76,9 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToRegister }) => {
     dispatch(reset());
   };
 
-  const handleForgotPassword = () => {
-    router.push("/forgot-password");
-  };
+  // const handleForgotPassword = () => {
+  //   router.push("/forgot-password");
+  // };
 
   return (
     <div className="bg-white p-8 rounded-2xl shadow-lg max-w-md w-full">

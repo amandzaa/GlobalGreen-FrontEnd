@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { User, ChevronDown, Settings, HelpCircle, LogOut } from 'lucide-react';
+import { User, ChevronDown, Settings, LogOut } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth } from '@/redux/hooks/useAuth';
 import { useRouter } from 'next/router';
