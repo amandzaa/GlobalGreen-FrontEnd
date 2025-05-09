@@ -76,9 +76,9 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToRegister }) => {
     dispatch(reset());
   };
 
-  const handleForgotPassword = () => {
-    router.push("/forgot-password");
-  };
+  // const handleForgotPassword = () => {
+  //   router.push("/forgot-password");
+  // };
 
   return (
     <div className="bg-white p-8 rounded-2xl shadow-lg max-w-md w-full">
@@ -196,7 +196,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToRegister }) => {
           )}
         </div>
 
-        {/* Remember Me & Forgot Password */}
+        {/* Remember Me & Forgot Password
         <div className="flex items-center justify-between mt-2">
           <div className="flex items-center">
             <input
@@ -219,7 +219,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToRegister }) => {
           >
             Forgot Password?
           </button>
-        </div>
+        </div> */}
 
         {/* Submit Button */}
         <button

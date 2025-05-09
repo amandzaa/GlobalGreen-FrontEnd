@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { User, ChevronDown, Settings, HelpCircle, LogOut } from 'lucide-react';
+import { User, ChevronDown, Settings, LogOut } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth } from '@/redux/hooks/useAuth';
 import { useRouter } from 'next/router';
@@ -77,13 +77,13 @@ export default function ProfileDropdown() {
     <div className="relative">
       <button
         ref={buttonRef}
-        className="flex items-center space-x-2 p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+        className="flex items-center space-x-2 p-1 rounded-full hover:bg-gray-100 dark:hover:bg-green-500 transition-colors"
         onClick={() => setShowProfileMenu(!showProfileMenu)}
         aria-expanded={showProfileMenu}
         aria-haspopup="true"
       >
         <div
-          className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden"
+          className="w-9 h-9 rounded-full bg-gray-200 dark:bg-[var(--color-primary)]] flex items-center justify-center overflow-hidden"
           style={{ border: `2px solid ${colors.primary}` }}
         >
           {userImageUrl ? (
@@ -121,12 +121,12 @@ export default function ProfileDropdown() {
         ref={profileMenuRef}
         role="menu"
         style={{
-          backgroundColor: theme === 'dark' ? '#1F2937' : 'white',
-          border: `1px solid ${theme === 'dark' ? '#374151' : '#E5E7EB'}`
+          backgroundColor: theme === 'dark' ? '#20603D' : 'white',
+          border: `1px solid ${theme === 'dark' ? '#2E8B57' : '#E5E7EB'}`
         }}
       >
-        <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
-          <p className="text-sm font-medium">
+        <div className="px-4 py-3 border-b border-gray-200 dark:border-[var(--color-darkGreen)]">
+          <p className="text-sm font-medium text-green-50">
             Welcome, <span className="font-semibold">{displayName}</span>
           </p>
           <p className="text-xs mt-1 text-gray-500 dark:text-gray-400">
@@ -137,34 +137,26 @@ export default function ProfileDropdown() {
         <div className="py-1">
           <Link
             href="/seller-dashboard/profile"
-            className="flex items-center px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-            style={{ color: theme === 'dark' ? '#E2E8F0' : '#4B5563' }}
+            className="flex items-center px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-green-700 transition-colors"
+            style={{ color: theme === 'dark' ? '#E2E8F0' : '#2E8B57' }}
           >
             <User size={16} className="mr-2" />
             My Profile
           </Link>
           <Link
-            href="/seller-dashboard/settings"
-            className="flex items-center px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-            style={{ color: theme === 'dark' ? '#E2E8F0' : '#4B5563' }}
+            href="/seller-dashboard/store-settings"
+            className="flex items-center px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-green-700 transition-colors"
+            style={{ color: theme === 'dark' ? '#E2E8F0' : '#2E8B57' }}
           >
             <Settings size={16} className="mr-2" />
             Settings
-          </Link>
-          <Link
-            href="/help"
-            className="flex items-center px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-            style={{ color: theme === 'dark' ? '#E2E8F0' : '#4B5563' }}
-          >
-            <HelpCircle size={16} className="mr-2" />
-            Help Center
           </Link>
         </div>
         
         <div className="py-1 border-t border-gray-200 dark:border-gray-700">
           <button
             onClick={handleSignOut}
-            className="flex items-center w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            className="flex items-center w-full text-left px-4 py-2 text-sm text-white hover:bg-gray-100 dark:hover:bg-green-700 transition-colors"
           >
             <LogOut size={16} className="mr-2" />
             Sign out

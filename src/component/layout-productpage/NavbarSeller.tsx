@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from "next/image";
 import { Search, ShoppingCart, ChevronDown, Menu, X } from 'lucide-react';
 
 interface NavbarGlobalGreenProps {
@@ -25,9 +26,15 @@ const NavbarGlobalGreen: React.FC<NavbarGlobalGreenProps> = ({
         <div className="flex w-full justify-between items-center mb-3">
           {/* Logo - always visible */}
           <Link href="/" className="flex items-center">
-            <div className="w-8 h-8 bg-[var(--color-paleGreen)] rounded text-[var(--color-darkGreen)] flex items-center justify-center mr-2">
-              <span className="font-bold text-lg">G</span>
-            </div>
+          <div className="w-8 h-8 relative mr-2">
+            <Image 
+              src="/assets/GlobalGreen-icon.png" 
+              alt="GlobalGreen Logo" 
+              width={42} 
+              height={42} 
+              className="object-contain"
+            />
+          </div>
             <span className="font-bold text-2xl">GlobalGreen</span>
           </Link>
 

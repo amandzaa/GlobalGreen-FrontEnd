@@ -1,13 +1,13 @@
 import { UserData } from "@/types/user";
 import { Mail, Phone, MapPin, User, ShoppingBag, CalendarIcon } from "lucide-react";
-import { ContactInfoCard } from "./ContactInfoCard";
+// import { ContactInfoCard } from "./ContactInfoCard";
 
 interface OverviewTabProps {
   userData: UserData;
   onEditField: (field: string, value: string) => void;
 }
 
-export const OverviewTab: React.FC<OverviewTabProps> = ({ userData, onEditField }) => {
+export const OverviewTab: React.FC<OverviewTabProps> = ({ userData}) => {
   return (
     <div className="p-8">
       <div className="bg-white rounded shadow-sm overflow-hidden mb-8">
@@ -19,24 +19,27 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ userData, onEditField 
             <div>
               <h3 className="text-lg font-medium mb-4">Contact Information</h3>
               <div className="space-y-3">
-                <ContactInfoCard
-                  icon={<Mail />}
-                  title="Email Address"
-                  value={userData.email}
-                  onEdit={() => onEditField("email", userData.email)}
-                />
-                <ContactInfoCard
-                  icon={<Phone />}
-                  title="Phone Number"
-                  value={userData.phone}
-                  onEdit={() => onEditField("phone", userData.phone || "")}
-                />
-                <ContactInfoCard
-                  icon={<MapPin />}
-                  title="Address"
-                  value={userData.address}
-                  onEdit={() => onEditField("address", userData.address || "")}
-                />
+                <div className="flex items-start">
+                  <Mail className="w-6 h-6 text-gray-500 mt-0.5 mr-3" />
+                  <div>
+                    <p className="text-sm font-medium">Email Address</p>
+                    <p className="text-sm text-gray-600">{userData.email || "-"}</p>
+                  </div>
+                </div>
+                <div className="flex items-start">
+                  <Phone className="w-6 h-6 text-gray-500 mt-0.5 mr-3" />
+                  <div>
+                    <p className="text-sm font-medium">Phone Number</p>
+                    <p className="text-sm text-gray-600">{userData.phone || "-"}</p>
+                  </div>
+                </div>
+                <div className="flex items-start">
+                  <MapPin className="w-6 h-6 text-gray-500 mt-0.5 mr-3" />
+                  <div>
+                    <p className="text-sm font-medium">Address</p>
+                    <p className="text-sm text-gray-600">{userData.address || "-"}</p>
+                  </div>
+                </div>
               </div>
             </div>
             
@@ -44,12 +47,13 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ userData, onEditField 
             <div>
               <h3 className="text-lg font-medium mb-4">Store Information</h3>
               <div className="space-y-3">
-                <ContactInfoCard
-                  icon={<User />}
-                  title="Username"
-                  value={userData.username}
-                  onEdit={() => onEditField("username", userData.username || "")}
-                />
+                <div className="flex items-start">
+                  <User className="w-6 h-6 text-gray-500 mt-0.5 mr-3" />
+                  <div>
+                    <p className="text-sm font-medium">Username</p>
+                    <p className="text-sm text-gray-600">{userData.username}</p>
+                  </div>
+                </div>
                 <div className="flex items-start">
                   <ShoppingBag className="w-5 h-5 text-gray-500 mt-0.5 mr-3" />
                   <div>

@@ -57,6 +57,11 @@ export interface Product {
     white: '#FFFFFF',
     accent: '#3875B5',
     lightGray: '#F5F7F5',
+    black: '#000',
+    red:'#FF2548',
+    error: '#F44336',
+    warning: '#FFC107',
+    success: '#4CAF50',
   };
   
 

@@ -1,11 +1,13 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { useAppSelector, useAppDispatch } from '@/redux/hooks';
+import { fetchAllCategories} from "@/redux/features/categories/categorySlice"
 import DashboardLayout from "@/component/layout-dashboard/DashboardLayout";
-import { ProductImageUploader, ProductPreview } from "@/component/uploadimage";
+import { ProductImageUrlUploader, ProductPreview } from "@/component/uploadimage";
 import { colors } from "@/types";
 
 // Define product schema with Zod
@@ -32,6 +34,20 @@ const productSchema = z.object({
 type ProductFormValues = z.infer<typeof productSchema>;
 
 export default function AddNewProductPage() {
+  // Get Redux dispatch function
+  const dispatch = useAppDispatch();
+  
+  // Select categories from the Redux store
+  const { categories, loading: categoriesLoading, error: categoriesError } = 
+  useAppSelector((state) => state.categories);
+
+  console.log("cek categories : ", categories)
+
+  // Fetch categories when component mounts
+  useEffect(() => {
+    dispatch(fetchAllCategories());
+  }, [dispatch]);
+
   // Initialize the form
   const {
     register,
@@ -43,7 +59,7 @@ export default function AddNewProductPage() {
     resolver: zodResolver(productSchema),
     defaultValues: {
       name: "",
-      category: "Fruits",
+      category: "", // Set empty initially to show placeholder
       price: 0,
       salePrice: 0,
       stock: 0,
@@ -64,16 +80,6 @@ export default function AddNewProductPage() {
   // Watch values for preview component
   const productValues = watch();
 
-  // List of available categories
-  const categories = [
-    { id: 1, name: "Fruits" },
-    { id: 2, name: "Vegetables" },
-    { id: 3, name: "Herbs" },
-    { id: 4, name: "Organic Bundles" },
-    { id: 5, name: "Fresh Juices" },
-    { id: 6, name: "Dried Fruits" },
-  ];
-
   // Handle images separately
   const [images, setImages] = React.useState<string[]>([]);
 
@@ -85,26 +91,17 @@ export default function AddNewProductPage() {
   const onSubmit = (data: ProductFormValues) => {
     const productData = {
       ...data,
-      images, // Add the images to the form data
+      images,
     };
     console.log("Submitting product:", productData);
     alert("Product successfully added!");
     // Here you would typically send the data to your API
   };
 
-  // Save as draft handler
-  const handleSaveAsDraft = () => {
-    const currentValues = getValues();
-    const productData = {
-      ...currentValues,
-      images,
-      status: "draft",
-    };
-    console.log("Saving draft:", productData);
-    alert("Product saved as draft!");
-  };
+  
   const fields = ["name", "price", "stock", "description"] as const;
   type FieldName = typeof fields[number];
+  
   // Calculate form completion percentage
   const calculateCompletion = () => {
     const completed = fields.filter((field) => {
@@ -123,27 +120,9 @@ export default function AddNewProductPage() {
 
   // Sample similar products
   const similarProducts = [
-    {
-      id: 1,
-      name: "Organic Apples",
-      category: "Fruits",
-      price: 3.49,
-      image: "/api/placeholder/200/200",
-    },
-    {
-      id: 2,
-      name: "Fresh Broccoli",
-      category: "Vegetables",
-      price: 2.29,
-      image: "/api/placeholder/200/200",
-    },
-    {
-      id: 3,
-      name: "Organic Bananas",
-      category: "Fruits",
-      price: 1.99,
-      image: "/api/placeholder/200/200",
-    },
+    { id: 1, name: "Organic Apples", category: "Fruits", price: 3.49, image: "/api/placeholder/200/200" },
+    { id: 2, name: "Fresh Broccoli", category: "Vegetables", price: 2.29, image: "/api/placeholder/200/200" },
+    { id: 3, name: "Organic Bananas", category: "Fruits", price: 1.99, image: "/api/placeholder/200/200" },
   ];
 
   return (
@@ -215,18 +194,31 @@ export default function AddNewProductPage() {
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Category<span className="text-red-500">*</span>
                     </label>
-                    <select
-                      {...register("category")}
-                      className={`w-full p-2 border ${
-                        errors.category ? "border-red-500" : "border-gray-300"
-                      } rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500`}
-                    >
-                      {categories.map((category) => (
-                        <option key={category.id} value={category.name}>
-                          {category.name}
-                        </option>
-                      ))}
-                    </select>
+                    
+                    {categoriesLoading ? (
+                      <div className="w-full p-2 border border-gray-300 rounded-md bg-gray-50">
+                        Loading categories...
+                      </div>
+                    ) : categoriesError ? (
+                      <div className="w-full p-2 border border-red-300 rounded-md bg-red-50 text-red-500 text-sm">
+                        Error loading categories: {categoriesError}
+                      </div>
+                    ) : (
+                      <select
+                        {...register("category")}
+                        className={`w-full p-2 border ${
+                          errors.category ? "border-red-500" : "border-gray-300"
+                        } rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500`}
+                      >
+                        <option value="">Select a category</option>
+                        {categories.map((category) => (
+                          <option key={category.category_id} value={category.category_id}>
+                            {category.name}
+                          </option>
+                        ))}
+                      </select>
+                    )}
+                    
                     {errors.category && (
                       <p className="mt-1 text-xs text-red-500">
                         {errors.category.message}
@@ -239,6 +231,7 @@ export default function AddNewProductPage() {
                 </div>
               </div>
 
+              {/* Rest of the form remains the same */}
               {/* Pricing Section */}
               <div className="border-b border-gray-200 pb-6">
                 <h2 className="text-lg font-medium text-gray-700 mb-4">
@@ -345,13 +338,11 @@ export default function AddNewProductPage() {
 
               {/* Images Section */}
               <div className="border-b border-gray-200 pb-6">
-                <h2 className="text-lg font-medium text-gray-700 mb-4">
-                  Product Images<span className="text-red-500">*</span>
-                </h2>
-                <ProductImageUploader
+                <ProductImageUrlUploader
                   images={images}
                   onImagesChange={handleImagesChange}
                   required={true}
+                  maxImages={5}
                 />
                 {images.length === 0 && (
                   <p className="mt-1 text-xs text-red-500">
@@ -386,68 +377,6 @@ export default function AddNewProductPage() {
                 </div>
               </div>
 
-              {/* Nutrition Facts */}
-              <div className="border-b border-gray-200 pb-6">
-                <h2 className="text-lg font-medium text-gray-700 mb-4">
-                  Nutrition Facts
-                </h2>
-
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Calories
-                    </label>
-                    <input
-                      type="number"
-                      min="0"
-                      {...register("nutrition.calories", { valueAsNumber: true })}
-                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                    />
-                    {errors.nutrition?.calories && (
-                      <p className="mt-1 text-xs text-red-500">
-                        {errors.nutrition.calories.message}
-                      </p>
-                    )}
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Fat
-                    </label>
-                    <input
-                      type="text"
-                      {...register("nutrition.fat")}
-                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                      placeholder="e.g. 15g"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Carbs
-                    </label>
-                    <input
-                      type="text"
-                      {...register("nutrition.carbs")}
-                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                      placeholder="e.g. 9g"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Protein
-                    </label>
-                    <input
-                      type="text"
-                      {...register("nutrition.protein")}
-                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                      placeholder="e.g. 2g"
-                    />
-                  </div>
-                </div>
-              </div>
-
               {/* Action Buttons */}
               <div className="flex justify-end space-x-4">
                 <button
@@ -456,14 +385,7 @@ export default function AddNewProductPage() {
                 >
                   Cancel
                 </button>
-                <button
-                  type="button"
-                  onClick={handleSaveAsDraft}
-                  className="px-6 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-green-500"
-                  style={{ backgroundColor: colors.secondary }}
-                >
-                  Save Draft
-                </button>
+                
                 <button
                   type="submit"
                   className="px-6 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-green-500"
@@ -486,7 +408,7 @@ export default function AddNewProductPage() {
           {/* Product Preview */}
           <ProductPreview product={{ ...productValues, images }} />
 
-          {/* Tips & Similar Products */}
+          {/* Tips & Similar Products sections remain the same */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6 mb-6">
             <h2 className="text-lg font-medium text-gray-700 mb-4">
               Tips for Better Products
