@@ -40,10 +40,25 @@ export interface ProductSummary {
   images: string[];
 }
 
+// Filter options interface
+export interface FilterOptions {
+  search?: string;
+  categories?: string[];
+  seasonal?: 'all' | 'in-season';
+  type?: 'all' | 'organic' | 'conventional';
+  minPrice?: number;
+  maxPrice?: number;
+  inStock?: boolean;
+  onSale?: boolean;
+  sortBy?: 'price-asc' | 'price-desc' | 'newest' | 'popularity';
+}
+
 interface ProductState {
   products: Product[];
   selectedProduct: Product | null;
   productSummaries: ProductSummary[];
+  filteredProducts: (Product | ProductSummary)[];
+  filters: FilterOptions;
   loading: boolean;
   error: string | null;
   lastFetched: number | null;
@@ -53,22 +68,36 @@ const initialState: ProductState = {
   products: [],
   selectedProduct: null,
   productSummaries: [],
+  filteredProducts: [],
+  filters: {
+    search: '',
+    categories: [],
+    seasonal: 'all',
+    type: 'all'
+  },
   loading: false,
   error: null,
   lastFetched: null,
 };
 
-// Async thunk to fetch all products
+// Async thunk to fetch all products with optional filter parameters
 export const fetchAllProducts = createAsyncThunk<
   Product[],
-  void,
+  FilterOptions | void,
   { rejectValue: string }
 >(
   'products/fetchAll',
-  async (_, { rejectWithValue }) => {
+  async (filters, { rejectWithValue, dispatch }) => {
     try {
+      // If filters are provided, update the filter state
+      if (filters) {
+        dispatch(setFilters(filters));
+      }
+      
+      // In a real implementation, you would pass these filters as query parameters
+      // For now, we'll just fetch all products and filter them client-side
       const response = await axios.get<Product[]>(API_URL);
-      return response.data;
+      return response.data || []; // Add fallback to empty array
     } catch (error) {
       const err = error as AxiosError<{ message?: string }>;
       console.error("Fetch product error:", err.response?.data || err.message);
@@ -92,7 +121,7 @@ export const fetchProductsByUserId = createAsyncThunk<
   async (userId, { rejectWithValue }) => {
     try {
       const response = await axios.get<Product[]>(`${API_URL}/seller/${userId}`);
-      return response.data;
+      return response.data || []; // Add fallback to empty array
     } catch (error) {
       const err = error as AxiosError<{ message?: string }>;
       console.error("Fetch user products error:", err.response?.data || err.message);
@@ -116,6 +145,9 @@ export const fetchProductById = createAsyncThunk<
   async (productId, { rejectWithValue }) => {
     try {
       const response = await axios.get<Product>(`${API_URL}/${productId}`);
+      if (!response.data) {
+        return rejectWithValue(`Product with ID: ${productId} not found`);
+      }
       return response.data;
     } catch (error) {
       const err = error as AxiosError<{ message?: string }>;
@@ -140,7 +172,7 @@ export const fetchProductSummaries = createAsyncThunk<
   async (_, { rejectWithValue }) => {
     try {
       const response = await axios.get<ProductSummary[]>(`${API_URL}/summary`);
-      return response.data;
+      return response.data || []; // Add fallback to empty array
     } catch (error) {
       if (axios.isAxiosError(error)) {
         return rejectWithValue(error.response?.data?.message || error.message);
@@ -160,6 +192,9 @@ export const createProduct = createAsyncThunk<
   async (productData, { rejectWithValue }) => {
     try {
       const response = await axios.post<Product>(API_URL, productData);
+      if (!response.data) {
+        return rejectWithValue('No data returned from create product request');
+      }
       return response.data;
     } catch (error) {
       const err = error as AxiosError<{ error?: string, message?: string }>;
@@ -181,6 +216,10 @@ export const updateProduct = createAsyncThunk<
   async ({ id, data }, { rejectWithValue, dispatch }) => {
     try {
       const response = await axios.put<Product>(`${API_URL}/${id}`, data);
+      if (!response.data) {
+        return rejectWithValue(`No data returned from update product request for ID: ${id}`);
+      }
+      
       // Only dispatch fetchUserById if the user ID is included in the response
       if (response.data.user_id) {
         dispatch(fetchUserById(response.data.user_id));
@@ -222,6 +261,167 @@ export const deleteProduct = createAsyncThunk<
   }
 );
 
+// Helper function to apply filters to products with improved error handling
+const applyFilters = (
+  items: (Product | ProductSummary)[], 
+  filters: FilterOptions
+): (Product | ProductSummary)[] => {
+  // Safety check - if items is undefined or not an array, return an empty array
+  if (!items || !Array.isArray(items) || items.length === 0) {
+    return [];
+  }
+
+  try {
+    return items.filter(item => {
+      // Safety check for item
+      if (!item) return false;
+      
+      // Check if it's a Product or ProductSummary
+      const isProduct = 'name' in item;
+      
+      // Filter by search term (case insensitive)
+      if (filters.search && filters.search.trim() !== '') {
+        const searchTerm = filters.search.toLowerCase();
+        const nameToCheck = isProduct 
+          ? (item as Product).name?.toLowerCase()
+          : (item as ProductSummary).product_name?.toLowerCase();
+        
+        if (!nameToCheck || !nameToCheck.includes(searchTerm)) {
+          return false;
+        }
+      }
+      
+      // Filter by categories
+      if (filters.categories && filters.categories.length > 0) {
+        // For demonstration, we'll use a simple mapping of category IDs to category names
+        // In a real app, you would have a proper category mapping
+        const categoryMapping: Record<string, number> = {
+          'fruits': 1,
+          'vegetables': 2,
+          'exotic': 3,
+          'organic': 4
+        };
+        
+        // Check if the product's category matches any of the selected categories
+        if (isProduct) {
+          const product = item as Product;
+          // For 'organic' category, check the organic flag
+          if (filters.categories.includes('organic') && !product.organic) {
+            return false;
+          }
+          
+          // For other categories, check the category_id
+          const otherCategories = filters.categories.filter(cat => cat !== 'organic');
+          if (otherCategories.length > 0 && product.category_id) {
+            const categoryIds = otherCategories.map(cat => categoryMapping[cat] || 0);
+            if (!categoryIds.includes(product.category_id)) {
+              return false;
+            }
+          }
+        } else {
+          // For ProductSummary, we don't have enough information to filter by category
+          // You might want to add additional fields to ProductSummary or extend this logic
+        }
+      }
+      
+      // Filter by price range
+      if (filters.minPrice !== undefined || filters.maxPrice !== undefined) {
+        const price = isProduct ? (item as Product).price : (item as ProductSummary).price;
+        
+        if (filters.minPrice !== undefined && price < filters.minPrice) {
+          return false;
+        }
+        
+        if (filters.maxPrice !== undefined && price > filters.maxPrice) {
+          return false;
+        }
+      }
+      
+      // Filter by in-stock status
+      if (filters.inStock) {
+        if (isProduct) {
+          if ((item as Product).stock_quantity <= 0) {
+            return false;
+          }
+        } else {
+          if ((item as ProductSummary).stock <= 0) {
+            return false;
+          }
+        }
+      }
+      
+      // Filter by on-sale status
+      if (filters.onSale) {
+        if (isProduct) {
+          if (!(item as Product).discount_id) {
+            return false;
+          }
+        } else {
+          if ((item as ProductSummary).sale <= 0) {
+            return false;
+          }
+        }
+      }
+      
+      // Filter by seasonal status (in a real app, you would have this information)
+      // For now, we'll assume products with stock_quantity > 10 are "in season"
+      if (filters.seasonal === 'in-season') {
+        if (isProduct) {
+          if ((item as Product).stock_quantity <= 10) {
+            return false;
+          }
+        } else {
+          if ((item as ProductSummary).stock <= 10) {
+            return false;
+          }
+        }
+      }
+      
+      // Filter by product type (organic vs conventional)
+      if (filters.type !== 'all' && filters.type) {
+        if (isProduct) {
+          const product = item as Product;
+          if (filters.type === 'organic' && !product.organic) {
+            return false;
+          } else if (filters.type === 'conventional' && product.organic) {
+            return false;
+          }
+        } else {
+          // For ProductSummary, we don't have organic info
+          // You might want to add additional fields to ProductSummary or extend this logic
+        }
+      }
+      
+      return true;
+    }).sort((a, b) => {
+      // Safety check for sortBy
+      if (!filters.sortBy) {
+        return 0;
+      }
+      
+      // Determine if items are Products or ProductSummaries
+      const isProductA = 'name' in a;
+      const isProductB = 'name' in b;
+      
+      const priceA = isProductA ? (a as Product).price : (a as ProductSummary).price;
+      const priceB = isProductB ? (b as Product).price : (b as ProductSummary).price;
+      
+      switch (filters.sortBy) {
+        case 'price-asc':
+          return priceA - priceB;
+        case 'price-desc':
+          return priceB - priceA;
+        // Add more sorting options implementation
+        default:
+          return 0;
+      }
+    });
+  } catch (error) {
+    console.error('Error applying filters:', error);
+    return [];
+  }
+};
+
 const productSlice = createSlice({
   name: 'products',
   initialState,
@@ -233,11 +433,34 @@ const productSlice = createSlice({
     setSelectedProduct: (state, action: PayloadAction<Product | null>) => {
       state.selectedProduct = action.payload;
     },
-    // Additional reducer for filtering products locally
-    // filterProducts: (state, action: PayloadAction<string>) => {
-    //   // This is just a placeholder. Actual filtering is done in the component
-    //   // but we could implement additional filtering logic here if needed
-    // },
+    // Add a new reducer to set filters
+    setFilters: (state, action: PayloadAction<FilterOptions>) => {
+      state.filters = { ...state.filters, ...action.payload };
+      
+      // Apply filters to current products with try/catch
+      try {
+        const allProducts = [
+          ...state.products,
+          ...state.productSummaries
+        ];
+        
+        state.filteredProducts = applyFilters(allProducts, state.filters);
+      } catch (error) {
+        console.error('Error in setFilters:', error);
+        state.filteredProducts = [];
+        state.error = 'Error applying filters';
+      }
+    },
+    // Add a new reducer to clear filters
+    clearFilters: (state) => {
+      state.filters = {
+        search: '',
+        categories: [],
+        seasonal: 'all',
+        type: 'all'
+      };
+      state.filteredProducts = [];
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -250,10 +473,23 @@ const productSlice = createSlice({
         state.loading = false;
         state.products = action.payload;
         state.lastFetched = Date.now();
+        
+        // Apply current filters to the fetched products with try/catch
+        try {
+          const allProducts = [
+            ...action.payload,
+            ...state.productSummaries
+          ];
+          state.filteredProducts = applyFilters(allProducts, state.filters);
+        } catch (error) {
+          console.error('Error applying filters after fetchAllProducts:', error);
+          state.filteredProducts = [];
+          state.error = 'Error applying filters';
+        }
       })
       .addCase(fetchAllProducts.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload as string;
+        state.error = action.payload as string || 'Failed to fetch products';
       })
       
       // Handle fetchProductsByUserId
@@ -265,10 +501,23 @@ const productSlice = createSlice({
         state.loading = false;
         state.products = action.payload;
         state.lastFetched = Date.now();
+        
+        // Apply current filters to the fetched products with try/catch
+        try {
+          const allProducts = [
+            ...action.payload,
+            ...state.productSummaries
+          ];
+          state.filteredProducts = applyFilters(allProducts, state.filters);
+        } catch (error) {
+          console.error('Error applying filters after fetchProductsByUserId:', error);
+          state.filteredProducts = [];
+          state.error = 'Error applying filters';
+        }
       })
       .addCase(fetchProductsByUserId.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload as string;
+        state.error = action.payload as string || `Failed to fetch products by user ID`;
       })
       
       // Handle fetchProductById
@@ -286,10 +535,23 @@ const productSlice = createSlice({
         } else {
           state.products.push(action.payload);
         }
+        
+        // Re-apply filters to include the new product with try/catch
+        try {
+          const allProducts = [
+            ...state.products,
+            ...state.productSummaries
+          ];
+          state.filteredProducts = applyFilters(allProducts, state.filters);
+        } catch (error) {
+          console.error('Error applying filters after fetchProductById:', error);
+          state.filteredProducts = [];
+          state.error = 'Error applying filters';
+        }
       })
       .addCase(fetchProductById.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload as string;
+        state.error = action.payload as string || 'Failed to fetch product';
       })
       
       // Handle fetchProductSummaries
@@ -300,10 +562,23 @@ const productSlice = createSlice({
       .addCase(fetchProductSummaries.fulfilled, (state, action: PayloadAction<ProductSummary[]>) => {
         state.loading = false;
         state.productSummaries = action.payload;
+        
+        // Apply current filters to include the new summaries with try/catch
+        try {
+          const allProducts = [
+            ...state.products,
+            ...action.payload
+          ];
+          state.filteredProducts = applyFilters(allProducts, state.filters);
+        } catch (error) {
+          console.error('Error applying filters after fetchProductSummaries:', error);
+          state.filteredProducts = [];
+          state.error = 'Error applying filters';
+        }
       })
       .addCase(fetchProductSummaries.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload as string;
+        state.error = action.payload as string || 'Failed to fetch product summaries';
       })
       
       // Handle createProduct
@@ -314,10 +589,23 @@ const productSlice = createSlice({
       .addCase(createProduct.fulfilled, (state, action: PayloadAction<Product>) => {
         state.loading = false;
         state.products.push(action.payload);
+        
+        // Re-apply filters to include the new product with try/catch
+        try {
+          const allProducts = [
+            ...state.products,
+            ...state.productSummaries
+          ];
+          state.filteredProducts = applyFilters(allProducts, state.filters);
+        } catch (error) {
+          console.error('Error applying filters after createProduct:', error);
+          state.filteredProducts = [];
+          state.error = 'Error applying filters';
+        }
       })
       .addCase(createProduct.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload as string;
+        state.error = action.payload as string || 'Failed to create product';
       })
       
       // Handle updateProduct
@@ -342,10 +630,23 @@ const productSlice = createSlice({
             ...action.payload 
           };
         }
+        
+        // Re-apply filters after the update with try/catch
+        try {
+          const allProducts = [
+            ...state.products,
+            ...state.productSummaries
+          ];
+          state.filteredProducts = applyFilters(allProducts, state.filters);
+        } catch (error) {
+          console.error('Error applying filters after updateProduct:', error);
+          state.filteredProducts = [];
+          state.error = 'Error applying filters';
+        }
       })
       .addCase(updateProduct.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload as string;
+        state.error = action.payload as string || 'Failed to update product';
       })
       
       // Handle deleteProduct
@@ -362,13 +663,26 @@ const productSlice = createSlice({
         }
         // Also remove from summaries if present
         state.productSummaries = state.productSummaries.filter(p => p.product_id !== action.payload);
+        
+        // Re-apply filters after deletion with try/catch
+        try {
+          const allProducts = [
+            ...state.products,
+            ...state.productSummaries
+          ];
+          state.filteredProducts = applyFilters(allProducts, state.filters);
+        } catch (error) {
+          console.error('Error applying filters after deleteProduct:', error);
+          state.filteredProducts = [];
+          state.error = 'Error applying filters';
+        }
       })
       .addCase(deleteProduct.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload as string;
+        state.error = action.payload as string || 'Failed to delete product';
       });
   },
 });
 
-export const { clearProducts, setSelectedProduct/*, filterProducts8*/ } = productSlice.actions;
+export const { clearProducts, setSelectedProduct, setFilters, clearFilters } = productSlice.actions;
 export default productSlice.reducer;

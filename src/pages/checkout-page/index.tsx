@@ -1,6 +1,7 @@
 // pages/checkout.tsx
 import React, { useState } from 'react';
 import Head from 'next/head';
+import NavbarGlobalGreen from '@/component/layout-productpage/NavbarSeller';
 
 interface CartItem {
   id: number;
@@ -16,29 +17,30 @@ const CheckoutPage: React.FC = () => {
   const [cartItems] = useState<CartItem[]>([
     {
       id: 1,
-      name: 'Fitbit Sense Advanced Smartwatch',
-      description: 'with GPS',
-      price: 398,
+      name: 'Bayam Hijau Segar',
+      description: 'Organik, kaya zat besi',
+      price: 36000,
       quantity: 1,
-      image: '/images/fitbit.png'
+      image: '/images/products/bayam-hijau.png'
     },
     {
       id: 2,
-      name: 'iPhone 13 pro max',
-      description: 'Pacific Blue-128GB',
-      price: 398,
+      name: 'Apel Fuji Import',
+      description: 'Manis dan segar, kualitas premium',
+      price: 45000,
       quantity: 1,
-      image: '/images/iphone.png'
+      image: '/images/products/apel-fuji.png'
     },
     {
       id: 3,
-      name: 'Apple MacBook Pro 13 inch',
-      description: 'M1-8/256GB',
-      price: 65,
+      name: 'Brokoli Segar',
+      description: 'Tinggi serat dan vitamin C',
+      price: 38000,
       quantity: 1,
-      image: '/images/macbook.png'
+      image: '/images/products/brokoli.png'
     }
   ]);
+  
 
   // Form states
   const [formData, setFormData] = useState({
@@ -128,15 +130,18 @@ const CheckoutPage: React.FC = () => {
     // Handle form submission - connect to payment processor, etc.
     console.log('Order submitted:', formData);
     console.log('Order total:', total);
-    alert(`Order placed successfully! Total: $${total.toFixed(2)}`);
+    alert(`Order placed successfully! Total: Rp${total.toFixed(2)}`);
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen">
+    <div className="bg-gray-50 min-h-screen m-20 p-10">
       <Head>
         <title>Checkout</title>
         <meta name="description" content="Checkout page" />
       </Head>
+
+      {/* Navbar */}
+      <NavbarGlobalGreen />
 
       <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-6">Check out</h1>
@@ -242,7 +247,7 @@ const CheckoutPage: React.FC = () => {
                     <div className="flex-1">
                       <div className="flex justify-between">
                         <span className="font-medium">Free Shipping</span>
-                        <span className="font-medium">$0.00</span>
+                        <span className="font-medium">Rp0.00</span>
                       </div>
                       <div className="text-sm text-gray-500 mt-1">Est. delivery: Jun 21 - Jul 20</div>
                       <div className="text-sm text-blue-500 mt-1">Get Free Shipped products in Time!</div>
@@ -264,7 +269,7 @@ const CheckoutPage: React.FC = () => {
                     <div className="flex-1">
                       <div className="flex justify-between">
                         <span className="font-medium">Two days Shipping</span>
-                        <span className="font-medium">$20.00</span>
+                        <span className="font-medium">Rp20.00</span>
                       </div>
                       <div className="text-sm text-gray-500 mt-1">Est. delivery: Jun 21 - Jul 20</div>
                       <div className="text-sm text-blue-500 mt-1">Everything faster with minimum shipping fee.</div>
@@ -286,7 +291,7 @@ const CheckoutPage: React.FC = () => {
                     <div className="flex-1">
                       <div className="flex justify-between">
                         <span className="font-medium">Standard Shipping</span>
-                        <span className="font-medium">$10.00</span>
+                        <span className="font-medium">Rp10.00</span>
                       </div>
                       <div className="text-sm text-gray-500 mt-1">Est. delivery: Jun 21 - Jul 20</div>
                       <div className="text-sm text-blue-500 mt-1">Get timely delivery with economy shipping.</div>
@@ -311,7 +316,7 @@ const CheckoutPage: React.FC = () => {
                     <div className="flex-1">
                       <div className="flex justify-between">
                         <span className="font-medium">One day Shipping</span>
-                        <span className="font-medium">$30.00</span>
+                        <span className="font-medium">Rp30.00</span>
                       </div>
                       <div className="text-sm text-gray-500 mt-1">Est. delivery: Jun 21 - Jul 20</div>
                       <div className="text-sm text-blue-500 mt-1">Highest priority shipping at the lowest cost.</div>
@@ -544,7 +549,7 @@ const CheckoutPage: React.FC = () => {
                     </div>
                     <div className="ml-4 text-right">
                       <p className="text-sm font-medium text-gray-900">x{item.quantity}</p>
-                      <p className="text-sm font-medium text-gray-900">${item.price}</p>
+                      <p className="text-sm font-medium text-gray-900">Rp{item.price}</p>
                     </div>
                   </div>
                 ))}
@@ -553,30 +558,30 @@ const CheckoutPage: React.FC = () => {
               <div className="border-t pt-4 pb-2">
                 <div className="flex justify-between text-sm mb-2">
                   <span className="text-gray-600">Items subtotal:</span>
-                  <span className="font-medium">${itemsSubtotal}</span>
+                  <span className="font-medium">Rp{itemsSubtotal}</span>
                 </div>
                 <div className="flex justify-between text-sm mb-2">
                   <span className="text-gray-600">Discount:</span>
-                  <span className="font-medium text-red-500">-${discount}</span>
+                  <span className="font-medium text-red-500">-Rp{discount}</span>
                 </div>
                 <div className="flex justify-between text-sm mb-2">
                   <span className="text-gray-600">Tax:</span>
-                  <span className="font-medium">${tax.toFixed(2)}</span>
+                  <span className="font-medium">Rp{tax.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-sm mb-2">
                   <span className="text-gray-600">Subtotal</span>
-                  <span className="font-medium">${subtotal}</span>
+                  <span className="font-medium">Rp{subtotal}</span>
                 </div>
                 <div className="flex justify-between text-sm mb-2">
                   <span className="text-gray-600">Shipping Cost</span>
-                  <span className="font-medium">${shippingCost}</span>
+                  <span className="font-medium">Rp{shippingCost}</span>
                 </div>
               </div>
               
               <div className="border-t pt-4">
                 <div className="flex justify-between items-center">
                   <span className="text-lg font-bold text-gray-900">Total :</span>
-                  <span className="text-lg font-bold text-gray-900">${total.toFixed(2)}</span>
+                  <span className="text-lg font-bold text-gray-900">Rp{total.toFixed(2)}</span>
                 </div>
               </div>
               
@@ -585,7 +590,7 @@ const CheckoutPage: React.FC = () => {
                   type="submit"
                   className="w-full bg-blue-500 hover:bg-blue-600 text-white py-3 px-4 rounded transition duration-200"
                 >
-                  Pay ${total.toFixed(2)}
+                  Pay Rp{total.toFixed(2)}
                 </button>
                 
                 <button

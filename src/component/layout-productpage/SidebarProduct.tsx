@@ -1,5 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { Search, ChevronDown, ChevronUp, Sun, Leaf, Filter } from 'lucide-react';
+import { RootState } from '@/redux/store';
+import { 
+  setFilters, 
+  clearFilters 
+} from '@/redux/features/product/productSlice';
 
 // Define our types
 interface Category {
@@ -16,19 +22,64 @@ type ExpandedSections = {
 type SeasonalOption = 'all' | 'in-season';
 type ProductType = 'all' | 'organic' | 'conventional';
 
-export default function Sidebar() {
+interface FilterState {
+  searchTerm: string;
+  selectedCategories: string[];
+  selectedSeasonal: SeasonalOption;
+  selectedType: ProductType;
+}
+
+export default function SidebarProduct() {
+  const dispatch = useAppDispatch();
+  const {loading, filters: reduxFilters } = useAppSelector((state: RootState) => state.products);
+  
   const [expanded, setExpanded] = useState<ExpandedSections>({
     categories: true,
     seasonal: true,
     type: true
   });
-  const [searchTerm, setSearchTerm] = useState<string>('');
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [selectedSeasonal, setSelectedSeasonal] = useState<SeasonalOption>('all');
-  const [selectedType, setSelectedType] = useState<ProductType>('all');
+  
+  // Initialize local filter state from Redux state
+  const [filters, setLocalFilters] = useState<FilterState>({
+    searchTerm: reduxFilters?.search || '',
+    selectedCategories: reduxFilters?.categories || [],
+    selectedSeasonal: reduxFilters?.seasonal || 'all',
+    selectedType: reduxFilters?.type || 'all'
+  });
+  
   const [isVisible, setIsVisible] = useState<boolean>(true);
+  const [isMobile, setIsMobile] = useState<boolean>(false);
 
-  const categories: Category[] = [
+  // Check if we're on mobile on initial load and when window resizes
+  useEffect(() => {
+    const checkIfMobile = () => {
+      setIsMobile(window.innerWidth < 768); // 768px is the md breakpoint in Tailwind
+    };
+    
+    // Set initial value
+    checkIfMobile();
+    
+    // Add event listener
+    window.addEventListener('resize', checkIfMobile);
+    
+    // Clean up
+    return () => window.removeEventListener('resize', checkIfMobile);
+  }, []);
+
+  // Update local filters when Redux filters change
+  useEffect(() => {
+    if (reduxFilters) {
+      setLocalFilters({
+        searchTerm: reduxFilters.search || '',
+        selectedCategories: reduxFilters.categories || [],
+        selectedSeasonal: reduxFilters.seasonal || 'all',
+        selectedType: reduxFilters.type || 'all'
+      });
+    }
+  }, [reduxFilters]);
+
+  // Extract available categories from products
+  const availableCategories: Category[] = [
     { id: 'fruits', name: 'Fruits' },
     { id: 'vegetables', name: 'Vegetables' },
     { id: 'exotic', name: 'Exotic Produce' },
@@ -36,11 +87,19 @@ export default function Sidebar() {
   ];
 
   const toggleCategory = (categoryId: string): void => {
-    if (selectedCategories.includes(categoryId)) {
-      setSelectedCategories(selectedCategories.filter(id => id !== categoryId));
-    } else {
-      setSelectedCategories([...selectedCategories, categoryId]);
-    }
+    setLocalFilters(prev => {
+      if (prev.selectedCategories.includes(categoryId)) {
+        return {
+          ...prev,
+          selectedCategories: prev.selectedCategories.filter(id => id !== categoryId)
+        };
+      } else {
+        return {
+          ...prev,
+          selectedCategories: [...prev.selectedCategories, categoryId]
+        };
+      }
+    });
   };
 
   const toggleExpanded = (section: keyof ExpandedSections): void => {
@@ -50,9 +109,51 @@ export default function Sidebar() {
     });
   };
 
-  // Animation classes based on visibility state
-  const sidebarClasses = `w-64 bg-white p-4 h-screen border-r border-gray-200 overflow-y-auto 
-    transform transition-all duration-300 ease-in-out ${isVisible ? 'translate-x-0' : '-translate-x-full'}`;
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setLocalFilters(prev => ({ ...prev, searchTerm: e.target.value }));
+  };
+
+  const handleSeasonalChange = (value: SeasonalOption) => {
+    setLocalFilters(prev => ({ ...prev, selectedSeasonal: value }));
+  };
+
+  const handleTypeChange = (value: ProductType) => {
+    setLocalFilters(prev => ({ ...prev, selectedType: value }));
+  };
+
+  const handleClearFilters = () => {
+    // Reset local filters
+    setLocalFilters({
+      searchTerm: '',
+      selectedCategories: [],
+      selectedSeasonal: 'all',
+      selectedType: 'all'
+    });
+    
+    // Clear Redux filters
+    dispatch(clearFilters());
+  };
+
+  const applyFilters = () => {
+    // Dispatch the filters to Redux
+    dispatch(setFilters({
+      search: filters.searchTerm,
+      categories: filters.selectedCategories,
+      seasonal: filters.selectedSeasonal,
+      type: filters.selectedType
+    }));
+  };
+
+  // Animation and position classes based on visibility state
+  const sidebarClasses = `
+    bg-white p-4 border-r border-gray-200
+    transform transition-all duration-300 ease-in-out
+    ${isVisible ? 'translate-x-0' : '-translate-x-full'}
+    ${isMobile 
+      ? 'w-full h-auto z-30 fixed top-0 left-0 right-0 bottom-0 overflow-y-auto'
+      : 'w-64 sticky top-4 max-h-screen overflow-y-auto'
+    }
+  `;
 
   return (
     <div className={sidebarClasses}>
@@ -73,8 +174,8 @@ export default function Sidebar() {
             type="text"
             placeholder="Search fruits & vegetables..."
             className="w-full py-2 pl-10 pr-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-200 ease-in-out hover:border-green-300"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            value={filters.searchTerm}
+            onChange={handleSearchChange}
           />
           <Search className="absolute left-3 top-2.5 text-gray-400 h-5 w-5" />
         </div>
@@ -101,12 +202,12 @@ export default function Sidebar() {
             expanded.categories ? 'max-h-60 opacity-100' : 'max-h-0 opacity-0'
           }`}
         >
-          {categories.map((category) => (
+          {availableCategories.map((category) => (
             <div key={category.id} className="flex items-center transform transition hover:translate-x-1 duration-200">
               <input
                 type="checkbox"
                 id={category.id}
-                checked={selectedCategories.includes(category.id)}
+                checked={filters.selectedCategories.includes(category.id)}
                 onChange={() => toggleCategory(category.id)}
                 className="mr-2 h-4 w-4 rounded text-green-600 focus:ring-green-500"
               />
@@ -143,8 +244,8 @@ export default function Sidebar() {
               id="all-seasons"
               name="seasonal"
               value="all"
-              checked={selectedSeasonal === 'all'}
-              onChange={() => setSelectedSeasonal('all')}
+              checked={filters.selectedSeasonal === 'all'}
+              onChange={() => handleSeasonalChange('all')}
               className="mr-2 h-4 w-4 text-green-600 focus:ring-green-500"
             />
             <label htmlFor="all-seasons" className="text-sm text-gray-700">All Items</label>
@@ -155,8 +256,8 @@ export default function Sidebar() {
               id="in-season"
               name="seasonal"
               value="in-season"
-              checked={selectedSeasonal === 'in-season'}
-              onChange={() => setSelectedSeasonal('in-season')}
+              checked={filters.selectedSeasonal === 'in-season'}
+              onChange={() => handleSeasonalChange('in-season')}
               className="mr-2 h-4 w-4 text-green-600 focus:ring-green-500"
             />
             <label htmlFor="in-season" className="text-sm text-gray-700">In Season</label>
@@ -191,8 +292,8 @@ export default function Sidebar() {
               id="all-types"
               name="type"
               value="all"
-              checked={selectedType === 'all'}
-              onChange={() => setSelectedType('all')}
+              checked={filters.selectedType === 'all'}
+              onChange={() => handleTypeChange('all')}
               className="mr-2 h-4 w-4 text-green-600 focus:ring-green-500"
             />
             <label htmlFor="all-types" className="text-sm text-gray-700">All Items</label>
@@ -203,8 +304,8 @@ export default function Sidebar() {
               id="organic"
               name="type"
               value="organic"
-              checked={selectedType === 'organic'}
-              onChange={() => setSelectedType('organic')}
+              checked={filters.selectedType === 'organic'}
+              onChange={() => handleTypeChange('organic')}
               className="mr-2 h-4 w-4 text-green-600 focus:ring-green-500"
             />
             <label htmlFor="organic" className="text-sm text-gray-700">Organic Only</label>
@@ -215,8 +316,8 @@ export default function Sidebar() {
               id="conventional"
               name="type"
               value="conventional"
-              checked={selectedType === 'conventional'}
-              onChange={() => setSelectedType('conventional')}
+              checked={filters.selectedType === 'conventional'}
+              onChange={() => handleTypeChange('conventional')}
               className="mr-2 h-4 w-4 text-green-600 focus:ring-green-500"
             />
             <label htmlFor="conventional" className="text-sm text-gray-700">Conventional</label>
@@ -224,10 +325,34 @@ export default function Sidebar() {
         </div>
       </div>
       
-      {/* Apply Filters Button */}
-      <button className="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg font-medium transform transition duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50">
-        Apply Filters
-      </button>
+      {/* Buttons */}
+      <div className="flex flex-col gap-2">
+        {/* Apply Filters Button */}
+        <button 
+          className="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg font-medium transform transition duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
+          onClick={applyFilters}
+          disabled={loading}
+        >
+          {loading ? 'Applying...' : 'Apply Filters'}
+        </button>
+        
+        {/* Clear Filters Button */}
+        <button 
+          className="w-full bg-gray-200 hover:bg-gray-300 text-gray-700 py-2 rounded-lg font-medium transform transition duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50"
+          onClick={handleClearFilters}
+          disabled={loading}
+        >
+          Clear Filters
+        </button>
+      </div>
+      
+      {/* Mobile overlay backdrop */}
+      {isMobile && isVisible && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-20"
+          onClick={() => setIsVisible(false)}
+        />
+      )}
     </div>
   );
 }

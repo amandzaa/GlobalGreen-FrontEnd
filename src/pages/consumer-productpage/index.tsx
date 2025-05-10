@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { NextPage } from "next";
 import Head from "next/head";
 import { useAppSelector, useAppDispatch } from '@/redux/hooks';
@@ -9,7 +9,6 @@ import {
   Product, 
   ProductSummary
 } from "@/redux/features/product/productSlice";
-import StoreInfo from "@/component/layout-productpage/StoreInfo";
 import NavbarSeller from "@/component/layout-productpage/NavbarSeller";
 import PaginatedProductGrid from "@/component/layout-productpage/PaginatedProductGrid";
 import SidebarProduct from "@/component/layout-productpage/SidebarProduct";
@@ -36,7 +35,7 @@ function isProductSummary(item: Product | ProductSummary): item is ProductSummar
   return 'product_name' in item;
 }
 
-const GlobalGreenStorePageSeller: NextPage = () => {
+const GlobalGreenStorePage: NextPage = () => {
   const dispatch = useAppDispatch();
   
   // Get products and loading state from Redux store
@@ -56,14 +55,21 @@ const GlobalGreenStorePageSeller: NextPage = () => {
     memberSince: "3 Tahun Lalu",
   };
 
-  // Fetch products when component mounts
+  // Split data fetching to prioritize products loading first
   useEffect(() => {
+    // Fetch products immediately
     dispatch(fetchAllProducts());
-    dispatch(fetchProductSummaries());
+    
+    // Add a slight delay for product summaries to prioritize main product loading
+    const summariesTimer = setTimeout(() => {
+      dispatch(fetchProductSummaries());
+    }, 100);
+    
+    return () => clearTimeout(summariesTimer);
   }, [dispatch]);
 
   // Transform products to display format
-  const transformProducts = (items: Array<Product | ProductSummary>): TransformedProduct[] => {
+  const transformProducts = (items: Array<Product | ProductSummary> | null | undefined): TransformedProduct[] => {
     if (!items || !Array.isArray(items)) {
       return [];
     }
@@ -113,17 +119,79 @@ const GlobalGreenStorePageSeller: NextPage = () => {
     });
   };
 
-  // Use filtered products if available, otherwise use all products or summaries
-  const productsToDisplay = filteredProducts && filteredProducts.length > 0
-    ? filteredProducts
+  // Prioritize showing products immediately, then update with filtered results when available
+  // This helps with perceived performance - show something as quickly as possible
+  const baseProductsToDisplay = products && products.length > 0
+    ? products
     : productSummaries && productSummaries.length > 0
       ? productSummaries
-      : products || [];
+      : [];
+      
+  // Only apply filters after initial load
+  const productsToDisplay = filteredProducts && filteredProducts.length > 0 && !loading
+    ? filteredProducts
+    : baseProductsToDisplay;
 
   const displayProducts = transformProducts(productsToDisplay);
 
+  // Track component mounting and initial product loading state
+  const [isMounted, setIsMounted] = useState(false);
+  const [initialProductsLoaded, setInitialProductsLoaded] = useState(false);
+  
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+  
+  // Set initialProductsLoaded when we have at least some products to show
+  useEffect(() => {
+    if ((products && products.length > 0) || (productSummaries && productSummaries.length > 0)) {
+      setInitialProductsLoaded(true);
+    }
+  }, [products, productSummaries]);
+
+  // This ensures consistent server and client rendering
+  if (!isMounted) {
+    return (
+      <div className="bg-gray-100 min-h-screen pt-36">
+        <Head>
+          <title>{storeData.name} | GlobalGreen Indonesia</title>
+          <meta name="description" content="Fresh organic products from GlobalGreen" />
+        </Head>
+
+        {/* Simple loading skeleton that's identical on both server and client */}
+        <div className="container mx-auto px-4 mb-8 pt-4">
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="w-full md:w-64">
+              {/* Sidebar loading placeholder */}
+              <div className="bg-white rounded shadow p-4 h-96"></div>
+            </div>
+            <div className="flex-1">
+              <div className="py-6">
+                <div className="w-full grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  {[...Array(8)].map((_, i) => (
+                    <div
+                      key={i}
+                      className="bg-white rounded shadow overflow-hidden"
+                    >
+                      <div className="bg-gray-300 h-40 w-full"></div>
+                      <div className="p-3">
+                        <div className="h-4 bg-gray-300 rounded w-3/4 mb-2"></div>
+                        <div className="h-4 bg-gray-300 rounded w-1/2"></div>
+                        <div className="h-4 bg-gray-300 rounded w-1/4 mt-3"></div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="bg-gray-100 min-h-screen">
+    <div className="bg-gray-100 min-h-screen pt-36">
       <Head>
         <title>{storeData.name} | GlobalGreen Indonesia</title>
         <meta name="description" content="Fresh organic products from GlobalGreen" />
@@ -132,35 +200,18 @@ const GlobalGreenStorePageSeller: NextPage = () => {
       {/* Navbar */}
       <NavbarSeller />
 
-      {/* Store info */}
-      <div className="bg-white mb-4 pt-32 pb-4">
-        <div className="container mx-auto px-4">
-          <StoreInfo
-            name={storeData.name}
-            avatar={storeData.avatar}
-            lastActive={storeData.lastActive}
-            productCount={storeData.productCount}
-            followerCount={storeData.followerCount}
-            following={storeData.following}
-            chatPerformance={storeData.chatPerformance}
-            rating={storeData.rating}
-            reviewCount={storeData.reviewCount}
-            memberSince={storeData.memberSince}
-          />
-        </div>
-      </div>
-
       {/* Main content with sidebar and products */}
-      <div className="container mx-auto px-4 mb-8">
+      <div className="container mx-auto px-4 mb-8 pt-4">
         <div className="flex flex-col md:flex-row gap-4">
-          {/* Sidebar */}
-          <div className="w-full md:w-64 bg-white rounded shadow">
+          {/* Sidebar container - this div ensures proper positioning */}
+          <div className="w-full md:w-64">
             <SidebarProduct />
           </div>
 
           {/* Product listing section */}
           <div className="flex-1">
-            {loading ? (
+            {/* Show products ASAP - Use loading skeleton only for initial load */}
+            {!initialProductsLoaded ? (
               <div className="py-6">
                 <div className="w-full grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                   {[...Array(8)].map((_, i) => (
@@ -193,11 +244,22 @@ const GlobalGreenStorePageSeller: NextPage = () => {
                 <p className="text-gray-500">No products found matching your filters.</p>
               </div>
             ) : (
-              <PaginatedProductGrid
-                products={displayProducts}
-                productsPerPage={8}
-                title="Fresh Organic Products"
-              />
+              <>
+                <PaginatedProductGrid
+                  products={displayProducts}
+                  productsPerPage={8}
+                  title="Fresh Organic Products"
+                />
+                
+                {/* Show a subtle loading indicator for ongoing filter operations */}
+                {loading && (
+                  <div className="mt-4 text-center">
+                    <div className="inline-block px-4 py-2 bg-green-50 text-green-700 rounded-full text-sm">
+                      Updating filters...
+                    </div>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>
@@ -206,4 +268,4 @@ const GlobalGreenStorePageSeller: NextPage = () => {
   );
 };
 
-export default GlobalGreenStorePageSeller;
+export default GlobalGreenStorePage;

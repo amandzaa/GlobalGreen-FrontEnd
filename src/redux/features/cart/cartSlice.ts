@@ -4,33 +4,34 @@ import { CartProduct, ApplyVoucherPayload } from '@/types/cart';
 
 // Mock API calls - replace with actual API calls in production
 const mockFetchCart = (): Promise<CartProduct[]> => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve([
-        {
-          id: '1',
-          name: 'Organic Cotton T-Shirt',
-          price: 24.99,
-          quantity: 2,
-          total: 49.98,
-          color: 'Green',
-          size: 'M',
-          image: '/images/products/tshirt.jpg'
-        },
-        {
-          id: '2',
-          name: 'Recycled Denim Jeans',
-          price: 59.99,
-          quantity: 1,
-          total: 59.99,
-          color: 'Blue',
-          size: '32',
-          image: '/images/products/jeans.jpg'
-        }
-      ]);
-    }, 500);
-  });
-};
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve([
+          {
+            id: '1',
+            name: 'Bayam Hijau Segar',
+            price: 36000,
+            quantity: 2,
+            total: 72000,
+            color: 'Hijau',
+            size: '1 kg',
+            image: '/images/products/bayam-hijau.jpg'
+          },
+          {
+            id: '2',
+            name: 'Apel Fuji Import',
+            price: 45000,
+            quantity: 1,
+            total: 45000,
+            color: 'Merah',
+            size: '1 kg',
+            image: '/images/products/apel-fuji.jpg'
+          }
+        ]);
+      }, 500);
+    });
+  };
+  
 
 const mockApplyVoucher = (code: string): Promise<{ discountAmount: number }> => {
   return new Promise((resolve, reject) => {

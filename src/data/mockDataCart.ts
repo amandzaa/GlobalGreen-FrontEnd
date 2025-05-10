@@ -4,73 +4,73 @@ export const mockCartData: CartState = {
   items: [
     {
       id: '1',
-      name: 'Fitbit Sense Advanced Smartwatch with Tools for Heart Health, Stress Management & Skin Temperature',
-      image: '/images/fitbit.jpg',
-      price: 199,
-      color: 'Glossy black',
-      size: 'XL',
+      name: 'Bayam Hijau Segar',
+      image: '/images/bayam-hijau.jpg',
+      price: 36000,
+      color: 'Hijau',
+      size: '1 kg',
       quantity: 2,
-      total: 398
+      total: 72000
     },
     {
       id: '2',
-      name: 'iPhone 13 pro max-Pacific Blue-128GB storage',
-      image: '/images/iphone.jpg',
-      price: 150,
-      color: 'Glossy black',
-      size: 'XL',
+      name: 'Apel Fuji Import',
+      image: '/images/apel-fuji.jpg',
+      price: 45000,
+      color: 'Merah',
+      size: '1 kg',
       quantity: 2,
-      total: 300
+      total: 90000
     },
     {
       id: '3',
-      name: 'Apple MacBook Pro 13 inch-M1-8/256GB-space',
-      image: '/images/macbook.jpg',
-      price: 65,
-      color: 'Glossy Golden',
-      size: '34mm',
+      name: 'Pisang Cavendish Premium',
+      image: '/images/pisang-cavendish.jpg',
+      price: 32000,
+      color: 'Kuning',
+      size: '1 sisir',
       quantity: 2,
-      total: 130
+      total: 64000
     },
     {
       id: '4',
-      name: 'Apple MacBook 12 inch-M1-8/256GB-space',
-      image: '/images/macbook.jpg',
-      price: 65,
-      color: 'Glossy Golden',
-      size: '34mm',
+      name: 'Wortel Organik',
+      image: '/images/wortel-organik.jpg',
+      price: 28000,
+      color: 'Oranye',
+      size: '1 kg',
       quantity: 2,
-      total: 130
+      total: 56000
     },
     {
       id: '5',
-      name: 'Apple 17 inch-M1-8/256GB-space',
-      image: '/images/macbook.jpg',
-      price: 65,
-      color: 'Glossy Golden',
-      size: '34mm',
+      name: 'Jeruk Mandarin',
+      image: '/images/jeruk-mandarin.jpg',
+      price: 40000,
+      color: 'Oranye',
+      size: '1 kg',
       quantity: 2,
-      total: 130
+      total: 80000
     },
     {
       id: '6',
-      name: 'Apple MacBook 12 inch-M1-8/256GB-space',
-      image: '/images/macbook.jpg',
-      price: 65,
-      color: 'Glossy Golden',
-      size: '34mm',
+      name: 'Brokoli Segar',
+      image: '/images/brokoli.jpg',
+      price: 38000,
+      color: 'Hijau',
+      size: '1 kg',
       quantity: 2,
-      total: 130
+      total: 76000
     },
     {
       id: '7',
-      name: 'Apple 17 inch-M1-8/256GB-space',
-      image: '/images/macbook.jpg',
-      price: 65,
-      color: 'Glossy Golden',
-      size: '34mm',
+      name: 'Mangga Harum Manis',
+      image: '/images/mangga.jpg',
+      price: 35000,
+      color: 'Kuning',
+      size: '1 kg',
       quantity: 2,
-      total: 130
+      total: 70000
     }
   ],
   loading: false,
