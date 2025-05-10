@@ -3,6 +3,7 @@ import React from 'react';
 import Head from 'next/head';
 import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
+import NavbarGlobalGreen from '@/component/layout-productpage/NavbarSeller';
 // Define types for invoice data
 interface Product {
   id: number;
@@ -85,46 +86,47 @@ const InvoicePage: React.FC = () => {
     products: [
       {
         id: 1,
-        name: 'Fitbit Sense Advanced Smartwatch with Tools for Heart...',
-        color: 'Glossy black',
-        size: 'XL',
+        name: 'Bayam Hijau Organik Premium',
+        color: 'Hijau Segar',
+        size: '1 kg',
         quantity: 2,
-        price: 299,
+        price: 36000,
         taxRate: 2.5,
         taxType: 'VAT',
-        tax: 199,
-        total: 398,
+        tax: 1800,
+        total: 73800,
       },
       {
         id: 2,
-        name: '2021 Apple 12.9-inch iPad Pro (Wi-Fi, 128GB) - Space...',
-        color: 'Black',
-        size: 'Pro',
+        name: 'Apel Fuji Import',
+        color: 'Merah',
+        size: '1 kg',
         quantity: 1,
-        price: 199,
+        price: 45000,
         taxRate: 2.75,
         taxType: 'VAT',
-        tax: 199,
-        total: 398,
+        tax: 1237,
+        total: 46237,
       },
       {
         id: 3,
-        name: 'PlayStation 5 DualSense Wireless Controller',
-        color: 'White',
-        size: 'Regular',
+        name: 'Jeruk Mandarin Lokal',
+        color: 'Oranye',
+        size: '1 kg',
         quantity: 1,
-        price: 185,
+        price: 40000,
         taxRate: 3.5,
         taxType: 'VAT',
-        tax: 199,
-        total: 398,
+        tax: 1400,
+        total: 41400,
       },
     ],
-    subtotal: 398,
-    shippingCost: 50,
-    discount: 50,
-    grandTotal: 398,
-    amountInWords: 'Three Hundred and Ninety Eight USD',
+    subtotal: 161437,
+    shippingCost: 15000,
+    discount: 10000,
+    grandTotal: 166437,
+    amountInWords: 'One Hundred Sixty Six Thousand Four Hundred Thirty Seven Rupiah',
+    
   };
 
   // Function to handle PDF download
@@ -251,7 +253,7 @@ const InvoicePage: React.FC = () => {
         heightLeft -= pageHeight;
       }
       
-      pdf.save(`Invoice-${invoiceData.invoiceNo}.pdf`);
+      pdf.save(`Invoice-Rp{invoiceData.invoiceNo}.pdf`);
     }).catch(error => {
       console.error("Error generating PDF:", error);
       alert("There was an error generating the PDF. Please try again.");
@@ -265,7 +267,8 @@ const InvoicePage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8 pt-32">
+      <NavbarGlobalGreen/>
       <Head>
         <title>Invoice #{invoiceData.invoiceNo}</title>
         <meta name="description" content="Invoice details" />
@@ -469,10 +472,10 @@ const InvoicePage: React.FC = () => {
                     <td className="px-2 py-4 text-sm text-gray-900">{product.color}</td>
                     <td className="px-2 py-4 text-sm text-gray-900">{product.size}</td>
                     <td className="px-2 py-4 text-sm text-gray-900">{product.quantity}</td>
-                    <td className="px-2 py-4 text-sm text-gray-900">${product.price}</td>
+                    <td className="px-2 py-4 text-sm text-gray-900">Rp{product.price}</td>
                     <td className="px-2 py-4 text-sm text-gray-900 hidden print:table-cell md:table-cell">{product.taxRate}%</td>
-                    <td className="px-2 py-4 text-sm text-gray-900 hidden print:table-cell md:table-cell">${product.tax}</td>
-                    <td className="px-2 py-4 text-sm text-gray-900">${product.total}</td>
+                    <td className="px-2 py-4 text-sm text-gray-900 hidden print:table-cell md:table-cell">Rp{product.tax}</td>
+                    <td className="px-2 py-4 text-sm text-gray-900">Rp{product.total}</td>
                   </tr>
                 ))}
               </tbody>
@@ -484,19 +487,19 @@ const InvoicePage: React.FC = () => {
             <dl>
               <div className="bg-gray-100 px-6 py-4 grid grid-cols-3">
                 <dt className="text-sm font-medium text-gray-700 col-span-2 text-right">Subtotal</dt>
-                <dd className="text-sm text-gray-900 text-right">${invoiceData.subtotal}</dd>
+                <dd className="text-sm text-gray-900 text-right">Rp{invoiceData.subtotal}</dd>
               </div>
               <div className="bg-white px-6 py-4 grid grid-cols-3">
                 <dt className="text-sm font-medium text-gray-700 col-span-2 text-right">Shipping Cost</dt>
-                <dd className="text-sm text-gray-900 text-right">${invoiceData.shippingCost}</dd>
+                <dd className="text-sm text-gray-900 text-right">Rp{invoiceData.shippingCost}</dd>
               </div>
               <div className="bg-white px-6 py-4 grid grid-cols-3">
                 <dt className="text-sm font-medium text-gray-700 col-span-2 text-right">Discount/Voucher</dt>
-                <dd className="text-sm text-red-600 text-right">-${invoiceData.discount}</dd>
+                <dd className="text-sm text-red-600 text-right">-Rp{invoiceData.discount}</dd>
               </div>
               <div className="bg-gray-100 px-6 py-6 grid grid-cols-3">
                 <dt className="text-base font-bold text-gray-900 col-span-2 text-left">Grand Total</dt>
-                <dd className="text-base font-bold text-gray-900 text-right">${invoiceData.grandTotal}</dd>
+                <dd className="text-base font-bold text-gray-900 text-right">Rp{invoiceData.grandTotal}</dd>
               </div>
               <div className="bg-gray-100 px-6 py-2 grid grid-cols-3">
                 <dt className="text-sm font-medium text-gray-700 col-span-2 text-left">Amount in Words</dt>

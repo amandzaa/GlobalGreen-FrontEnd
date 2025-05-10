@@ -61,8 +61,8 @@ const CartItem: React.FC<CartItemProps> = memo(({
                 )}
                 <div className="flex justify-between items-center mt-2">
                   <div>
-                    <div className="text-sm text-gray-500">Price: <span className="font-medium">${item.price.toFixed(2)}</span></div>
-                    <div className="text-sm font-medium mt-1">Total: <span className="text-[#20603D]">${item.total.toFixed(2)}</span></div>
+                    <div className="text-sm text-gray-500">Price: <span className="font-medium">Rp{item.price.toFixed(2)}</span></div>
+                    <div className="text-sm font-medium mt-1">Total: <span className="text-[#20603D]">Rp{item.total.toFixed(2)}</span></div>
                   </div>
                   <button 
                     onClick={() => onRemove(item.id)}
@@ -148,7 +148,7 @@ const CartItem: React.FC<CartItemProps> = memo(({
           </div>
         </div>
       </td>
-      <td className="px-3 py-4 text-center">${item.price.toFixed(2)}</td>
+      <td className="px-3 py-4 text-center">Rp{item.price.toFixed(2)}</td>
       <td className="px-3 py-4">
         <div className="flex items-center justify-center">
           <button
@@ -183,7 +183,7 @@ const CartItem: React.FC<CartItemProps> = memo(({
           )}
         </div>
       </td>
-      <td className="px-3 py-4 text-center font-medium">${item.total.toFixed(2)}</td>
+      <td className="px-3 py-4 text-center font-medium">Rp{item.total.toFixed(2)}</td>
       <td className="px-3 py-4 text-center">
         <button 
           onClick={() => onRemove(item.id)}

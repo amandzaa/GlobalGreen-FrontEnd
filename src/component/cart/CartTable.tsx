@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, ShoppingCart, Trash2, Check, Edit, CreditCard } from 'lucide-react';
+import { ArrowLeft, ShoppingCart, Trash2 } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '@/redux/store';
 import { 
@@ -151,15 +151,15 @@ const CartTable: React.FC<CartTableProps> = ({
   }, [dispatch, items]);
   
   // Handle processing selected items
-  const handleProcessSelected = useCallback(() => {
-    if (selectedItems.length === 0) {
-      alert('Please select at least one item to process');
-      return;
-    }
+//   const handleProcessSelected = useCallback(() => {
+//     if (selectedItems.length === 0) {
+//       alert('Please select at least one item to process');
+//       return;
+//     }
     
-    // Implement actual processing logic here
-    console.log('Processing items:', selectedItems);
-  }, [selectedItems]);
+//     // Implement actual processing logic here
+//     console.log('Processing items:', selectedItems);
+//   }, [selectedItems]);
   
   const handleClearCart = useCallback(() => {
     if (window.confirm('Are you sure you want to clear selected items from your cart?')) {
@@ -213,7 +213,7 @@ const CartTable: React.FC<CartTableProps> = ({
             <div className="flex flex-col items-center">
               <ShoppingCart className="h-12 w-12 text-[#2E8B57] mb-2" />
               <p className="mb-4">Your shopping cart is empty</p>
-              <Link href="/products" className="bg-[#2E8B57] text-white px-4 py-2 rounded hover:bg-[#20603D] transition-colors">
+              <Link href="/consumer-productpage" className="bg-[#2E8B57] text-white px-4 py-2 rounded hover:bg-[#20603D] transition-colors">
                 <span className="flex items-center">
                   <ArrowLeft className="h-4 w-4 mr-2" />
                   Continue Shopping
@@ -285,7 +285,7 @@ const CartTable: React.FC<CartTableProps> = ({
                   <div className="flex flex-col items-center">
                     <ShoppingCart className="h-12 w-12 text-[#2E8B57] mb-2" />
                     <p className="mb-4">Your shopping cart is empty</p>
-                    <Link href="/products" className="bg-[#2E8B57] text-white px-4 py-2 rounded hover:bg-[#20603D] transition-colors">
+                    <Link href="/consumer-productpage" className="bg-[#2E8B57] text-white px-4 py-2 rounded hover:bg-[#20603D] transition-colors">
                       <span className="flex items-center">
                         <ArrowLeft className="h-4 w-4 mr-2" />
                         Continue Shopping
@@ -305,7 +305,7 @@ const CartTable: React.FC<CartTableProps> = ({
                     Selected items ({selectedItems.length}/{items.length}):
                   </td>
                   <td className="px-4 py-2 text-center font-bold text-[#20603D]">
-                    ${selectedSubtotal.toFixed(2)}
+                    Rp{selectedSubtotal.toFixed(2)}
                   </td>
                   <td></td>
                 </tr>
@@ -314,7 +314,7 @@ const CartTable: React.FC<CartTableProps> = ({
                     All items subtotal:
                   </td>
                   <td className="px-4 py-2 text-center font-bold text-[#20603D]">
-                    ${allItemsSubtotal.toFixed(2)}
+                    Rp{allItemsSubtotal.toFixed(2)}
                   </td>
                   <td></td>
                 </tr>
@@ -326,7 +326,7 @@ const CartTable: React.FC<CartTableProps> = ({
                     {selectedSubtotal >= 50 ? (
                       <span className="text-green-600">FREE</span>
                     ) : (
-                      '$4.99'
+                      'Rp4.99'
                     )}
                   </td>
                   <td></td>
@@ -336,14 +336,14 @@ const CartTable: React.FC<CartTableProps> = ({
                     Selected total:
                   </td>
                   <td className="px-4 py-3 text-center font-bold text-lg text-[#20603D]">
-                    ${selectedSubtotal >= 50 ? selectedSubtotal.toFixed(2) : (selectedSubtotal + 4.99).toFixed(2)}
+                    Rp{selectedSubtotal >= 50 ? selectedSubtotal.toFixed(2) : (selectedSubtotal + 4.99).toFixed(2)}
                   </td>
                   <td></td>
                 </tr>
                 {selectedSubtotal < 50 && selectedSubtotal > 0 && (
                   <tr>
                     <td colSpan={6} className="px-4 py-2 text-center text-sm bg-[#87CEEB] bg-opacity-20 text-[#20603D]">
-                      Add ${(50 - selectedSubtotal).toFixed(2)} more to qualify for free shipping!
+                      Add Rp{(50 - selectedSubtotal).toFixed(2)} more to qualify for free shipping!
                     </td>
                   </tr>
                 )}
@@ -353,31 +353,15 @@ const CartTable: React.FC<CartTableProps> = ({
         </table>
 
         <div className="p-4 flex flex-col sm:flex-row gap-3 justify-between bg-white border-t border-[#E6F4EA]">
-          <Link href="/products" className="flex items-center px-4 py-2 rounded-full text-white bg-[#2E8B57] hover:bg-[#20603D] transition-colors">
+          <Link href="/consumer-productpage" className="flex items-center px-4 py-2 rounded-full text-white bg-[#2E8B57] hover:bg-[#20603D] transition-colors">
             <ArrowLeft className="h-4 w-4 mr-2" /> Continue Shopping
           </Link>
-          
-          <div className="flex gap-3">
-            {items.length > 0 && (
-              <>
-                <Link href="/cart/edit" className="flex items-center px-4 py-2 rounded-full text-white bg-[#87CEEB] hover:bg-blue-500 transition-colors">
-                  <Edit className="h-4 w-4 mr-2" /> Edit Cart
-                </Link>
-                <button 
-                  onClick={handleProcessSelected} 
-                  disabled={isLoading || selectedItems.length === 0} 
-                  className="flex items-center px-6 py-2 rounded-full text-white bg-[#20603D] hover:bg-[#20603D]/80 transition-colors font-medium disabled:opacity-50"
-                >
-                  <CreditCard className="h-4 w-4 mr-2" /> Checkout Selected
-                </button>
-              </>
-            )}
-          </div>
+        
         </div>
 
         {items.length > 0 && (
           <div className="p-3 bg-[#E6F4EA] text-xs text-center text-[#20603D] border-t border-[#2E8B57]/20">
-            <p>Free shipping on orders over $50. 30-day return policy. Select items you wish to checkout.</p>
+            <p>Free shipping on orders over Rp50000. 30-day return policy. Select items you wish to checkout.</p>
           </div>
         )}
       </>
@@ -394,15 +378,6 @@ const CartTable: React.FC<CartTableProps> = ({
         <div className="flex space-x-2">
           {items.length > 0 && (
             <>
-              <button
-                onClick={handleProcessSelected}
-                disabled={loading || selectedItems.length === 0}
-                className="flex items-center text-sm bg-[#87CEEB] hover:bg-blue-500 px-3 py-1 rounded transition-colors disabled:opacity-50"
-                aria-label="Process selected items"
-              >
-                <Check className="h-4 w-4 mr-1" />
-                {loading ? 'Processing...' : 'Process Selected'}
-              </button>
               <button 
                 onClick={handleClearCart}
                 disabled={loading || selectedItems.length === 0}

@@ -7,37 +7,33 @@ import { store, persistor } from '../redux/store';
 import { ThemeProvider } from "@/component/darkmode/ThemeProvider";
 import Layout from "@/component/darkmode/Layout";
 import AuthInitializer from "@/component/AuthInitializer";
-import { useEffect, useState } from "react";
+import dynamic from 'next/dynamic';
+
+// Create a dynamic component for PersistGate to avoid hydration issues
+const PersistGateClient = dynamic(
+  () => {
+    return Promise.resolve(({ children }: { children: React.ReactNode }) => {
+      return (
+        <PersistGate loading={null} persistor={persistor}>
+          {children}
+        </PersistGate>
+      );
+    });
+  },
+  { ssr: false }
+);
 
 export default function MyApp({ Component, pageProps }: AppProps) {
-  // Add state to track client-side rendering
-  const [isClient, setIsClient] = useState(false);
-
-  // Set isClient to true when component mounts (client-side only)
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
   return (
     <Provider store={store}>
-      {isClient ? (
-        // Only render PersistGate on the client side
-        <PersistGate loading={null} persistor={persistor}>
-          <ThemeProvider>
-            <AuthInitializer />
-            <Layout>
-              <Component {...pageProps} />
-            </Layout>
-          </ThemeProvider>
-        </PersistGate>
-      ) : (
-        // On server-side, render without PersistGate
+      <PersistGateClient>
         <ThemeProvider>
+          <AuthInitializer />
           <Layout>
             <Component {...pageProps} />
           </Layout>
         </ThemeProvider>
-      )}
+      </PersistGateClient>
     </Provider>
   );
 }

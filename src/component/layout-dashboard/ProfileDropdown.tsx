@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
 import { User, ChevronDown, Settings, LogOut } from 'lucide-react';
-import Link from 'next/link';
 import { useAuth } from '@/redux/hooks/useAuth';
 import { useRouter } from 'next/router';
 import { useAppDispatch } from '@/redux/store';
@@ -26,6 +25,7 @@ export default function ProfileDropdown() {
   const [displayName, setDisplayName] = useState('Guest'); // Default to Guest for both server and client
   const [userEmail, setUserEmail] = useState('');
   const [userImageUrl, setUserImageUrl] = useState('');
+  const [userRole, setUserRole] = useState('consumer'); // Default to consumer
   
   useEffect(() => {
     if (user) {
@@ -36,6 +36,7 @@ export default function ProfileDropdown() {
       setDisplayName(name);
       setUserEmail(user.email || '');
       setUserImageUrl(user.image_url || '');
+      setUserRole(user.role || 'consumer');
     }
   }, [user]);
   
@@ -71,6 +72,18 @@ export default function ProfileDropdown() {
     dispatch(logout());
     setShowProfileMenu(false);
     router.push('/seller-homepage');
+  };
+
+  // Handle settings click based on user role
+  const handleSettingsClick = () => {
+    setShowProfileMenu(false);
+    // Redirect based on role
+    if (userRole === 'seller') {
+      router.push('/seller-dashboard/store-settings');
+    } else {
+      // Default to consumer profile
+      router.push('/consumer-profile');
+    }
   };
 
   return (
@@ -135,22 +148,14 @@ export default function ProfileDropdown() {
         </div>
         
         <div className="py-1">
-          <Link
-            href="/seller-dashboard/profile"
-            className="flex items-center px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-green-700 transition-colors"
-            style={{ color: theme === 'dark' ? '#E2E8F0' : '#2E8B57' }}
-          >
-            <User size={16} className="mr-2" />
-            My Profile
-          </Link>
-          <Link
-            href="/seller-dashboard/store-settings"
-            className="flex items-center px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-green-700 transition-colors"
+          <button
+            onClick={handleSettingsClick}
+            className="flex items-center w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-green-700 transition-colors"
             style={{ color: theme === 'dark' ? '#E2E8F0' : '#2E8B57' }}
           >
             <Settings size={16} className="mr-2" />
             Settings
-          </Link>
+          </button>
         </div>
         
         <div className="py-1 border-t border-gray-200 dark:border-gray-700">

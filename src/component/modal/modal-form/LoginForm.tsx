@@ -44,8 +44,15 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToRegister }) => {
         localStorage.removeItem("rememberedEmail");
       }
       
-      // Redirect to dashboard
-      router.push("/seller-dashboard");
+      // Redirect based on user role
+      if (user.role === "consumer") {
+        router.push("/consumer-productpage");
+      } else if (user.role === "seller") {
+        router.push("/seller-dashboard");
+      } else {
+        // Default fallback if role is undefined or something else
+        router.push("/dashboard");
+      }
     }
     return () => {
       dispatch(reset());

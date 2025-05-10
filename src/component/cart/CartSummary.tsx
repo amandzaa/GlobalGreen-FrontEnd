@@ -4,6 +4,7 @@ import { RootState } from '@/redux/store';
 import { CreditCard, ShoppingBag, Gift, Info, AlertCircle } from 'lucide-react';
 import { useVoucher } from '@/redux/hooks/useVoucher';
 import { CartProduct } from '@/types/cart';
+import { useRouter } from 'next/router'; // Import router for navigation
 
 // Define props interface to receive selected items from parent
 interface CartSummaryProps {
@@ -11,6 +12,7 @@ interface CartSummaryProps {
 }
 
 const CartSummary: React.FC<CartSummaryProps> = ({ selectedItems }) => {
+  const router = useRouter(); // Initialize router
   const { loading } = useSelector((state: RootState) => state.cart);
   const { 
     voucherCode, 
@@ -40,6 +42,12 @@ const CartSummary: React.FC<CartSummaryProps> = ({ selectedItems }) => {
   
   // Calculate total
   const total = subtotal - discount + tax + shipping;
+
+  // Handle checkout button click
+  const handleCheckout = () => {
+    // Navigate to checkout page
+    router.push('/checkout-page');
+  };
 
   return (
     <div className="bg-[#E6F4EA] p-6 rounded-lg shadow-md sticky top-6">
@@ -87,7 +95,7 @@ const CartSummary: React.FC<CartSummaryProps> = ({ selectedItems }) => {
           <div className="space-y-3 mb-5">
             <div className="flex justify-between">
               <span className="text-gray-600">Subtotal ({selectedItems.length} items):</span>
-              <span className="font-medium">${subtotal.toFixed(2)}</span>
+              <span className="font-medium">Rp{subtotal.toFixed(2)}</span>
             </div>
             
             {discount > 0 && (
@@ -96,13 +104,13 @@ const CartSummary: React.FC<CartSummaryProps> = ({ selectedItems }) => {
                   Discount:
                   <Gift className="w-4 h-4 ml-1 text-green-500" />
                 </span>
-                <span className="font-medium text-green-500">-${discount.toFixed(2)}</span>
+                <span className="font-medium text-green-500">-Rp{discount.toFixed(2)}</span>
               </div>
             )}
             
             <div className="flex justify-between">
               <span className="text-gray-600">Tax:</span>
-              <span className="font-medium">${tax.toFixed(2)}</span>
+              <span className="font-medium">Rp{tax.toFixed(2)}</span>
             </div>
             
             <div className="flex justify-between items-center">
@@ -114,9 +122,9 @@ const CartSummary: React.FC<CartSummaryProps> = ({ selectedItems }) => {
               </span>
               <span className="font-medium">
                 {isFreeShippingEligible ? (
-                  <span className="text-green-500">$0.00</span>
+                  <span className="text-green-500">Rp0.00</span>
                 ) : (
-                  `$${shipping.toFixed(2)}`
+                  `Rp${shipping.toFixed(2)}`
                 )}
               </span>
             </div>
@@ -125,14 +133,14 @@ const CartSummary: React.FC<CartSummaryProps> = ({ selectedItems }) => {
           {!isFreeShippingEligible && remainingForFreeShipping > 0 && (
             <div className="bg-[#87CEEB] bg-opacity-20 p-3 rounded-md mb-5 text-sm text-[#20603D] flex items-start">
               <Info className="w-5 h-5 mr-2 flex-shrink-0 mt-0.5" />
-              <span>Add <strong>${remainingForFreeShipping.toFixed(2)}</strong> more to your cart to qualify for free shipping!</span>
+              <span>Add <strong>Rp{remainingForFreeShipping.toFixed(2)}</strong> more to your cart to qualify for free shipping!</span>
             </div>
           )}
           
           <div className="mt-5 border-t border-[#2E8B57] pt-4">
             <div className="flex justify-between items-center">
               <span className="font-bold text-lg text-[#20603D]">Total:</span>
-              <span className="font-bold text-lg text-[#20603D]">${total.toFixed(2)}</span>
+              <span className="font-bold text-lg text-[#20603D]">Rp{total.toFixed(2)}</span>
             </div>
           </div>
           
@@ -169,13 +177,14 @@ const CartSummary: React.FC<CartSummaryProps> = ({ selectedItems }) => {
           {discount > 0 && (
             <div className="mt-3 bg-green-50 border border-green-200 rounded p-2 text-sm text-green-700 flex items-center">
               <Gift className="w-4 h-4 mr-2" />
-              Voucher applied successfully! You saved ${discount.toFixed(2)}
+              Voucher applied successfully! You saved Rp{discount.toFixed(2)}
             </div>
           )}
           
           <button 
             className="w-full mt-6 bg-[#20603D] hover:bg-[#20603D]/80 text-white py-3 rounded-lg font-medium transition-colors flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={selectedItems.length === 0 || loading}
+            onClick={handleCheckout}
           >
             <CreditCard className="w-5 h-5 mr-2" />
             Checkout ({selectedItems.length} items)

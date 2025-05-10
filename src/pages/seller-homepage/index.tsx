@@ -2,9 +2,7 @@
 import React, { useState } from "react";
 import Head from "next/head";
 import Image from "next/image";
-import AuthModals from "@/component/modal/AuthModal";
-import NavbarSeller from "@/component/layout-productpage/NavbarSeller";
-import HeroBanner, { BannerSlide } from "@/component/heropage/HeroBanner";
+import NavbarGlobalGreen from "@/component/layout-productpage/NavbarSeller"; 
 import {
   Award,
   BookOpen,
@@ -16,71 +14,6 @@ import {
 } from "lucide-react";
 
 const Home: React.FC = () => {
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
-
-  const openLoginModal = () => {
-    setIsLoginModalOpen(true);
-    setIsRegisterModalOpen(false);
-  };
-
-  const openRegisterModal = () => {
-    setIsRegisterModalOpen(true);
-    setIsLoginModalOpen(false);
-  };
-
-  const closeLoginModal = () => {
-    setIsLoginModalOpen(false);
-  };
-
-  const closeRegisterModal = () => {
-    setIsRegisterModalOpen(false);
-  };
-
-  // Banner slide data - you can replace these with actual content
-  const bannerSlides: BannerSlide[] = [
-    {
-      title: "Explore Our Spring Collection",
-      description:
-        "Step into the season with fresh, vibrant styles curated to refresh your store's look. Discover top-selling trends, limited-edition pieces, and exclusive discounts on our new spring arrivals—available for a limited time only.",
-      buttonText: "Shop Now",
-      imageSrc: "https://picsum.photos/id/627/800/400",
-      buttonLink: "/spring-collection",
-    },
-    {
-      title: "New Tools for Sellers in 2025",
-      description:
-        "Unleash the power of cutting-edge AI and automation with our latest tools designed specifically for online sellers. From smarter inventory management to automated customer service, discover features that save time and boost your bottom line.",
-      buttonText: "Learn More",
-      imageSrc: "https://picsum.photos/id/1080/800/400",
-      buttonLink: "/seller-tools",
-    },
-    {
-      title: "Join the Ultimate Seller Webinar Series",
-      description:
-        "Stay ahead of the curve with our free weekly webinars hosted by top e-commerce professionals. Learn best practices, marketing strategies, and real-life growth hacks that help sellers scale faster and smarter—live Q&A included.",
-      buttonText: "Sign Up Free",
-      imageSrc: "https://picsum.photos/id/824/800/400",
-      buttonLink: "/webinar-series",
-    },
-    {
-      title: "Level Up Your Storefront Design",
-      description:
-        "Give your online store the makeover it deserves. Our customizable storefront tools let you tweak layouts, banners, colors, and more—no design experience needed. Make a lasting impression that converts visitors into loyal customers.",
-      buttonText: "Get Started",
-      imageSrc: "https://picsum.photos/id/493/800/400",
-      buttonLink: "/storefront-tools",
-    },
-    {
-      title: "Top Seller Success Stories of the Month",
-      description:
-        "Take a behind-the-scenes look at how our most successful sellers achieved their goals. From humble beginnings to six-figure stores, these stories highlight the strategies, tools, and habits that truly make a difference.",
-      buttonText: "Read Stories",
-      imageSrc: "https://picsum.photos/id/517/800/400",
-      buttonLink: "/success-stories",
-    },
-  ];
-
   const [openSections, setOpenSections] = useState({
     tips: true,
     openStore: false,
@@ -150,14 +83,6 @@ const Home: React.FC = () => {
     },
   ];
 
-  // Handle banner button clicks
-  const handleBannerButtonClick = (index: number) => {
-    const slide = bannerSlides[index];
-    if (slide.buttonLink) {
-      // You can use router.push here if you want to navigate programmatically
-      console.log(`Navigating to: ${slide.buttonLink}`);
-    }
-  };
 
   return (
     <div className="min-h-screen bg-white">
@@ -170,21 +95,9 @@ const Home: React.FC = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      {/* Using the NavbarSeller component with custom handlers */}
-      <NavbarSeller
-        onLoginClick={openLoginModal}
-        onRegisterClick={openRegisterModal}
-      />
+      <NavbarGlobalGreen/>
 
-      <main>
-        {/* Hero Banner Component */}
-        <div className="pt-28">
-          <HeroBanner
-            slides={bannerSlides}
-            onButtonClick={handleBannerButtonClick}
-          />
-        </div>
-
+      <main className="pt-24">
         {/* Topic Selection */}
         <div className="max-w-7xl mx-auto px-4 py-12">
           <div className="max-w-7xl mx-auto px-4 py-6">
@@ -529,22 +442,6 @@ const Home: React.FC = () => {
           </div>
         </div>
       </main>
-
-      {/* Auth Modals */}
-      <AuthModals
-        isLoginOpen={isLoginModalOpen}
-        isRegisterOpen={isRegisterModalOpen}
-        onCloseLogin={closeLoginModal}
-        onCloseRegister={closeRegisterModal}
-        onSwitchToLogin={() => {
-          setIsRegisterModalOpen(false);
-          setIsLoginModalOpen(true);
-        }}
-        onSwitchToRegister={() => {
-          setIsLoginModalOpen(false);
-          setIsRegisterModalOpen(true);
-        }}
-      />
     </div>
   );
 };
